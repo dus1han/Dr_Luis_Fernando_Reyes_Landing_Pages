@@ -1,0 +1,153 @@
+# Launch checklist — `buccal-fat-removal`
+
+Work top to bottom. Nothing below requires touching page or section code.
+
+---
+
+## 1. Content sign-off
+
+- [ ] **Replace placeholder reviews — BLOCKING.**
+      `app/buccal-fat-removal/content.ts` → `REVIEWS.items`. Five of six
+      carry `placeholder: true`; they are written to demonstrate the
+      layout, not supplied by patients. Only the "Margo" entry came from
+      the clinic, and the source document supplied it three times.
+      Replace `quote` and `name`, then delete the flag.
+- [ ] **Set `SHOW_PLACEHOLDER_REVIEWS = false`** in `lib/site.ts`, then
+      confirm nothing unfinished shipped:
+      ```bash
+      npm run build
+      grep -c "placeholder" .next/server/app/buccal-fat-removal.html   # expect 0
+      ```
+      *Fabricated testimonials on a paid medical ad are both a Google Ads
+      policy violation and a regulatory risk under DHA advertising rules.
+      The switch makes removing them one line — it cannot supply real
+      ones.*
+- [ ] **Confirm the results photography.** The gallery currently uses
+      reference art, not identified patient records. If you swap in real
+      consented clinical photos, set `SHOW_RESULTS_DISCLAIMER = false` in
+      `lib/site.ts` (or keep it — "individual results vary" is a
+      reasonable line to leave up either way).
+- [ ] **Verify the phone number and email** in `lib/site.ts`. Currently
+      `+971 55 557 2547` / `luisfernandoreyesmd@yahoo.com`.
+      *A yahoo.com address on a premium clinic page reads as less
+      established than a domain address — worth considering.*
+- [ ] **Check the clinic location link** resolves correctly:
+      `SITE.mapUrl`.
+- [ ] **Add the clinic's street address — OUTSTANDING.** `SITE.addressLines`
+      in `lib/site.ts` is empty. An earlier value was read off a
+      text-searched Google listing and sat on a different street from the
+      coordinates the clinic supplied, so it was removed rather than left
+      to send patients to the wrong building.
+      The map is correct regardless (it is pinned by coordinates), and
+      `GeoCoordinates` is already in the structured data. Adding the
+      address fills the footer and `streetAddress` together.
+- [ ] Optionally set `SITE.openingHours` — the footer row appears only if
+      it's filled in.
+- [ ] Proofread `content.ts` end to end. Every word on the page is in
+      that one file.
+
+---
+
+## 2. Regulatory (UAE / DHA)
+
+Health-service advertising in Dubai requires prior approval, and claims
+about outcomes are scrutinised.
+
+- [ ] Get the page copy and imagery through **DHA advertising approval**
+      before spending on traffic.
+- [ ] **The general medical disclaimer has been removed from the footer**
+      at the client's request. Confirm with whoever handles DHA advertising
+      approval that the page is acceptable without it — only the results
+      photography disclaimer remains. Restoring it is one paragraph in
+      `components/lp/Footer.tsx`.
+- [ ] Confirm written patient consent exists for any real before/after
+      photography used.
+
+---
+
+## 3. Domain and hosting
+
+- [ ] Point the ads subdomain (e.g. `lp.drluisfernandoreyes.com`) at the
+      deployment.
+- [ ] Set `SITE.baseUrl` in `lib/site.ts` to that exact origin — it drives
+      canonical URLs and Open Graph tags.
+- [ ] Confirm HTTPS and that `http://` redirects to `https://`.
+- [ ] Confirm `/` redirects to `/buccal-fat-removal` (configured in
+      `next.config.ts`).
+
+---
+
+## 4. Lead delivery
+
+- [ ] Implement `deliver()` in `app/api/lead/route.ts`.
+      Everything else — validation, honeypot, timing check, `gclid`/UTM
+      capture — already works. Leads currently log to the server console.
+- [ ] Put any API key in an environment variable, never in the repo.
+- [ ] **Submit a real test lead** and confirm it arrives at the clinic.
+- [ ] Confirm someone owns follow-up. Speed-to-lead is the single largest
+      lever on paid-traffic conversion — minutes, not hours.
+- [ ] Test the failure path: the form shows a fallback phone number if
+      delivery fails, so nobody hits a dead end.
+
+---
+
+## 5. Tracking
+
+- [ ] Create the GTM container; put its ID in `lib/analytics.ts`.
+- [ ] Create the Google Ads conversion action for **form submit** and wire
+      it in GTM to the `form_submit` dataLayer event.
+- [ ] Add secondary conversions for `call_click` and `whatsapp_click`.
+- [ ] Link Google Ads ↔ GA4.
+- [ ] Verify in GTM Preview that every event fires:
+      `cta_click`, `call_click`, `whatsapp_click`, `form_start`,
+      `form_submit`, `form_error`, `slider_interact`, `faq_open`.
+- [ ] Submit a test lead with `?gclid=test123` in the URL and confirm the
+      value travels with the lead.
+
+> While the IDs are blank, **no tag scripts load at all**. Nothing to
+> disable for testing.
+
+---
+
+## 6. Pre-flight QA
+
+- [ ] Run `npm run build` — it must complete with no errors.
+- [ ] Open the page on a **real phone**, not just a simulator. Check the
+      sticky bottom bar, that click-to-call opens the dialler, and that
+      WhatsApp opens the right conversation.
+- [ ] Drag the hero before/after slider on touch.
+- [ ] Tab through the whole page — focus must always be visible.
+- [ ] Submit the form with deliberately bad input and confirm inline
+      errors appear and focus moves to the first problem.
+- [ ] Enable "reduce motion" in OS settings and reload — the page must be
+      fully readable and static.
+- [ ] Run Lighthouse (mobile). Targets: Performance ≥ 90, Accessibility
+      ≥ 95, Best Practices ≥ 95, SEO ≥ 95.
+- [ ] Validate structured data at
+      <https://search.google.com/test/rich-results>.
+
+---
+
+## 7. Google Ads setup
+
+- [ ] Final URL: `https://<subdomain>/buccal-fat-removal`
+- [ ] Enable auto-tagging (required for `gclid` capture).
+- [ ] Match ad copy to the page headline — "Buccal Fat Removal", "sharper
+      cheekbones", "no scarring on the face". Message match is a direct
+      Quality Score input, and Quality Score discounts your CPC.
+- [ ] Add sitelinks pointing at `#results`, `#surgeon`, `#faq`.
+- [ ] Add call extensions using the same number as the page.
+- [ ] Set geo-targeting to Dubai / UAE.
+- [ ] Confirm the page passes Google Ads' healthcare policy review before
+      scaling budget.
+
+---
+
+## 8. After launch
+
+- [ ] Watch `scroll_depth` and `faq_open` in GA4 to see where attention
+      drops off.
+- [ ] Compare `form_submit` against `call_click` + `whatsapp_click` —
+      in the UAE, messaging often outperforms forms, and if so the sticky
+      bar ordering is worth revisiting.
+- [ ] A/B the hero headline once there is enough traffic to read a result.

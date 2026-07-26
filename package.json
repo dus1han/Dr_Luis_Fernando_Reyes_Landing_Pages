@@ -1,0 +1,29 @@
+{
+  "name": "reyes-landing-pages",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Google Ads landing pages for Dr. Luis Fernando Reyes — Plastic & Aesthetic Surgery, Dubai",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prepare-images": "node scripts/prepare-images.mjs"
+  },
+  "dependencies": {
+    "motion": "^12.42.2",
+    "next": "^16.2.12",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  }
+}

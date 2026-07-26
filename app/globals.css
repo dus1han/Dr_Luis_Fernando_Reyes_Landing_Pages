@@ -1,0 +1,271 @@
+@import "tailwindcss";
+
+/* ============================================================
+   BRAND CONTRACT — Dr. Luis Fernando Reyes
+   Palette locked from colors.html. Shared by all 4 landing pages.
+   Do not introduce hues outside this scale.
+   ============================================================ */
+@theme {
+  --color-ink: #231b16;
+  --color-espresso: #33261f;
+  --color-espresso-deep: #1f1713;
+  --color-body: #3f352f;
+  --color-muted: #7a6a5f;
+  --color-gold: #a87f49;
+  --color-gold-light: #c8a063;
+  --color-champagne: #eddfc6;
+  --color-blush: #e7d3c8;
+  --color-ivory: #fbf8f4;
+  --color-sand: #f2ebe1;
+  --color-greige: #dcd5cb;
+  --color-danger: #a33a28;
+
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  /* Content column: generous on desktop, breathes on mobile. */
+  --shell: min(1220px, 90vw);
+  --edge: 1px solid rgb(51 38 31 / 0.16);
+  --edge-light: 1px solid rgb(237 223 198 / 0.18);
+  /* Sized for the stacked logo lockup (monogram over wordmark). */
+  --nav-h: 84px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --shell: min(1220px, 92vw);
+    --nav-h: 72px;
+  }
+}
+
+/* Element defaults live in @layer base so Tailwind utilities can always
+   override them. Unlayered CSS beats *any* layered rule in the cascade,
+   so a bare `h2 { font-family: display }` here would silently defeat a
+   `font-sans` class on that element. */
+@layer base {
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Anchor targets clear the sticky nav. */
+  scroll-padding-top: calc(var(--nav-h) + 12px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ivory);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 17.5px;
+  line-height: 1.78;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 16.5px;
+    /* Room for the sticky mobile CTA bar. */
+    padding-bottom: 76px;
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+p {
+  margin: 0 0 1.15em;
+}
+
+a {
+  color: inherit;
+}
+
+strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: #fff;
+}
+
+/* Visible, on-brand focus ring for keyboard users only. */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+} /* end @layer base */
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+@utility shell {
+  width: var(--shell);
+  margin-inline: auto;
+}
+
+/* Gold italic accent used inside display headings. */
+@utility accent {
+  font-style: italic;
+  color: var(--color-gold);
+}
+
+/* Hero-only: a highlight travels across the gold accent, like light
+   moving over metal.
+
+   Contrast note: the resting colour is --gold, which is 3.06:1 on ivory
+   and so passes the 3:1 minimum for large text. The travelling highlight
+   is lighter than that for the moment it crosses a given letter. The
+   band is deliberately narrow and the glint colour stops short of full
+   champagne, so most of the word is full-strength gold at any instant
+   and no letter is ever washed out for long. At 90px display size this
+   is a decorative glint, not body copy.
+
+   Inline padding extends the background box past the italic overhang;
+   without it, background-clip:text leaves the tail of the final glyph
+   unpainted. The negative margin keeps the layout identical.
+
+   Falls back to flat gold wherever background-clip:text is unsupported,
+   so the word can never render invisible. */
+@utility accent-sheen {
+  font-style: italic;
+  color: var(--color-gold);
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    padding-inline: 0.04em 0.16em;
+    margin-inline: 0 -0.16em;
+    background-image: linear-gradient(
+      100deg,
+      var(--color-gold) 0%,
+      var(--color-gold) 38%,
+      var(--color-gold-light) 46%,
+      #f0e2c4 50%,
+      var(--color-gold-light) 54%,
+      var(--color-gold) 62%,
+      var(--color-gold) 100%
+    );
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gold-sweep 5s linear infinite;
+  }
+}
+
+/* Grain overlay for dark editorial panels — keeps large flat
+   espresso areas from banding on cheap phone screens. */
+@utility grain {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+@keyframes bloom-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(2.5%, -3%, 0) scale(1.12);
+    opacity: 0.8;
+  }
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes gold-sweep {
+  from {
+    background-position: 180% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+
+@keyframes slow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer-sweep {
+  from {
+    transform: translate3d(-120%, 0, 0);
+  }
+  to {
+    transform: translate3d(220%, 0, 0);
+  }
+}
+
+.animate-bloom {
+  animation: bloom-drift 14s var(--ease-in-out-soft) infinite;
+}
+
+.animate-marquee {
+  animation: marquee-scroll var(--marquee-duration, 46s) linear infinite;
+}
+
+/* ============================================================
+   Reduced motion — a hard stop, not a suggestion.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
