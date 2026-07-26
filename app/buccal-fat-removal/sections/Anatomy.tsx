@@ -167,8 +167,17 @@ export function Anatomy() {
           <ol className="m-0 list-none p-0">
             {ANATOMY.steps.map((s, i) => {
               const isActive = i === active;
+              // max-lg:last:[&>button]:pb-0 — same reason as the assurance
+              // rows: the final step has no divider beneath it, so its 12px
+              // of bottom padding separates nothing and just deepens the gap
+              // to the next section. Only while the list is stacked; from lg
+              // it sits in a grid column beside the illustration and doesn't
+              // set the section height.
               return (
-                <li key={s.n} className="border-b border-ink/12 last:border-0">
+                <li
+                  key={s.n}
+                  className="border-b border-ink/12 last:border-0 max-lg:last:[&>button]:pb-0"
+                >
                   {/* Every step shows its detail at all times. Collapsing
                       the inactive ones hid two thirds of the explanation
                       behind a click and left the column half empty. */}

@@ -21,7 +21,7 @@ export function Booking() {
          shorter. The footer below is the same espresso-deep, so there's no
          tone change to mark the boundary — a full 68+68 between them read
          as one dead gap rather than two sections meeting. */
-      className="grain relative overflow-hidden bg-espresso-deep pb-[38px] pt-[58px] sm:pb-[44px] sm:pt-[68px]"
+      className="grain relative overflow-hidden bg-espresso-deep pb-[30px] pt-[44px] sm:pb-[44px] sm:pt-[68px]"
     >
       <div
         aria-hidden

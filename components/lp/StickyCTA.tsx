@@ -28,13 +28,16 @@ const WhatsAppIcon = () => (
  * form sits far down the page — this keeps call, WhatsApp and booking
  * one thumb-tap away for the whole scroll.
  *
- * Appears only after the hero so it never covers the first impression.
+ * Appears once the visitor starts moving. The threshold is deliberately
+ * early: the hero photo pushes its own CTAs just below the fold on
+ * phones, so this bar is what keeps a booking action reachable from the
+ * moment scrolling begins.
  */
 export function StickyCTA() {
   const { scrollY } = useScroll();
   const [shown, setShown] = useState(false);
 
-  useMotionValueEvent(scrollY, "change", (y) => setShown(y > 620));
+  useMotionValueEvent(scrollY, "change", (y) => setShown(y > 340));
 
   return (
     <AnimatePresence>

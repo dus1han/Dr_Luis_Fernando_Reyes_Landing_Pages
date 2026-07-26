@@ -4,6 +4,12 @@
  * so <Image> never causes layout shift and never flashes empty.
  */
 export const IMAGES = {
+  "hero-bg.jpg": {
+    "src": "/buccal-fat-removal/hero-bg.jpg",
+    "width": 1000,
+    "height": 1333,
+    "blurDataURL": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwBQCdASoUABsAPwl2tFKrpyUiqAqpcCEJYwCdMsdBRl6nCtdb8FnHhQbdrNFJp1XAAAD8XSOozSmk8JdUkdLX5lqmW78AaHJIdmSsEkatSa8wozjeYnKMFCtuYknHfMa5SARKuaIJwhzlTwkuq6h0qAAAAA=="
+  },
   "hero-before.jpg": {
     "src": "/buccal-fat-removal/hero-before.jpg",
     "width": 766,

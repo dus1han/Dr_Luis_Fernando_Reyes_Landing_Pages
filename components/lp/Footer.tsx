@@ -91,7 +91,7 @@ export function Footer() {
             below and every other separator on the page. The booking band
             above is the same espresso-deep, so this line is what marks the
             boundary — without it the two just merge. */}
-        <div className="border-t border-white/12 pt-[38px] sm:pt-[44px]">
+        <div className="border-t border-white/12 pt-[30px] sm:pt-[44px]">
           {/* Three columns, not four. A column holding only three social
               icons left a large hole beside the map — socials now sit under
               contact, and the map gets a full column to itself.

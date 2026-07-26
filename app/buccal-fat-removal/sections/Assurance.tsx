@@ -45,7 +45,12 @@ export function Assurance() {
             <motion.div
               key={item.title}
               variants={card}
-              className="group relative flex h-full items-start gap-5 border-b border-ink/10 py-6 text-left last:border-0 sm:flex-col sm:items-center sm:border-0 sm:px-2 sm:py-0 sm:text-center"
+              /* last:pb-0 — the final row has no divider under it, so its
+                 24px of bottom padding isn't separating anything; it just
+                 stacks onto the section's own padding and reads as a hole.
+                 Only below sm, where these are rows: from sm up they're
+                 columns with py-0 already. */
+              className="group relative flex h-full items-start gap-5 border-b border-ink/10 py-6 text-left last:border-0 last:pb-0 sm:flex-col sm:items-center sm:border-0 sm:px-2 sm:py-0 sm:text-center"
             >
               {/* Icon medallion — ring rotates gently, fills gold on hover */}
               <span className="relative grid h-[58px] w-[58px] flex-none place-items-center sm:mb-6 sm:h-[74px] sm:w-[74px]">

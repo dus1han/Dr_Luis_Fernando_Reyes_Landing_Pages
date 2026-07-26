@@ -22,6 +22,7 @@ const OUT = path.resolve(__dirname, "../public/buccal-fat-removal");
 const GEN = path.resolve(__dirname, "../lib/generated");
 
 const SOURCES = {
+  hero: "hero.png",
   heroPair: "ChatGPT Image Jul 19, 2026, 08_19_23 PM.png",
   resultsGrid: "ChatGPT Image Jul 25, 2026, 04_05_19 PM.png",
   anatomy: "Untitled design (12).png",
@@ -134,6 +135,22 @@ async function knockOutBackground(inputBuffer) {
 // ------------------------------------------------------------------
 await fs.mkdir(OUT, { recursive: true });
 await fs.mkdir(GEN, { recursive: true });
+
+console.log("\nHero background");
+/**
+ * The hero photograph, used as a full-bleed background behind the
+ * headline. One asset serves both layouts — `object-position` moves the
+ * crop rather than shipping two files, which would double the bytes on
+ * the page's LCP element.
+ *
+ * Quality is a notch below the gallery images: it always sits behind a
+ * scrim, so the detail is never read directly, and this is the one image
+ * that blocks first paint.
+ */
+await emit(
+  "hero-bg.jpg",
+  sharp(src("hero")).resize({ width: 1000, withoutEnlargement: true })
+);
 
 console.log("\nHero before/after — splitting composite at the measured gutter");
 // 1536x1024 composite: gutter x766-769, "BEFORE"/"AFTER" labels end y68,

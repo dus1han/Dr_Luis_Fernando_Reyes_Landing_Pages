@@ -22,8 +22,13 @@ const TONES: Record<Tone, string> = {
 export const PADDING = {
   /** The page default. Every full band should use this unless it's short. */
   default: "py-[86px] sm:py-[100px]",
-  /** For bands with little content, where the default reads as a gap. */
-  tight: "py-[58px] sm:py-[68px]",
+  /**
+   * For bands with little content, where the default reads as a gap.
+   * Tighter on phones than the ratio suggests: 58px top and bottom put
+   * 116px between sections on a 390px screen, which reads as a hole
+   * rather than a break at that width.
+   */
+  tight: "py-[44px] sm:py-[68px]",
   none: "",
 } as const;
 

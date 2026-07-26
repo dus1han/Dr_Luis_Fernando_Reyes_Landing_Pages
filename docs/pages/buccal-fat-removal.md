@@ -13,25 +13,79 @@ For a wording change, that's the only file you need.
 
 ## At a glance
 
+Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
+
 | # | Section | File | `id` | Tone | Padding | Height @1440 |
 |---|---|---|---|---|---|---|
-| 1 | Hero | `sections/Hero.tsx` | `top` | gradient ivory→sand | 34 / 78 | 669 |
+| 1 | Hero | `sections/Hero.tsx` | `top` | ivory + photo | 70 / 0·28 | 669 |
 | 2 | Trust strip | `sections/Stats.tsx` | — | espresso | 0 | 152 |
-| 3 | Credentials | `sections/Assurance.tsx` | — | sand | 68 | 488 |
-| 4 | What is buccal fat | `sections/Procedure.tsx` | `procedure` | ivory | 68 | 727 |
-| 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 | 584 |
-| 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 | 901 |
-| 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 | 707 |
-| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 | 1247 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 | 1706 |
-| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 | 695 |
-| 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 | 1024 |
-| 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68 | 676 |
-| — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 68 | 547 |
+| 3 | Credentials | `sections/Assurance.tsx` | — | sand | 68 / 44 | 488 |
+| 4 | What is buccal fat | `sections/Procedure.tsx` | `procedure` | ivory | 68 / 44 | 727 |
+| 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 / 44 | 584 |
+| 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 901 |
+| 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
+| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1247 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
+| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 695 |
+| 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
+| 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
+| — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 44 / 30 | 547 |
 
-Every section from 3 to 12 is on the same 68px rhythm. Keep it that way —
-a section left on the old 100px puts 168px of dead space against its
+Every section from 3 to 12 is on the same rhythm. Keep it that way — a
+section left on the old 100px puts 168px of dead space against its
 neighbour, which reads as a gap rather than a break.
+
+### The rhythm is not one number
+
+`PADDING.tight` is `py-[44px] sm:py-[68px]` — **68px on desktop, 44px on
+phones**, and the two are not a ratio of each other.
+
+68 top and bottom puts 136px between sections. On a 1440px canvas that's
+a breath; on a 390px phone the same 136px is a third of the viewport and
+reads as a hole rather than a break. Mobile was on 58px and it was still
+too loose. 44 is the value where a phone boundary (85–108px of visual gap,
+measured ink-to-ink) sits in proportion to the content beside it.
+
+**Do not "simplify" this back to a single number.** Desktop is signed off
+at 68 and must not move; page height at 1440 is **10183px** and any change
+there is a regression.
+
+#### The hero is the one exception: 28px, not 44
+
+It's the only band that ends on a full-width button pair, and a button is
+not a line of text. It already carries 17px of its own padding, and the
+secondary button's hairline border is a weak edge, so 44px below it read
+as a hole — especially against the 12px holding the two buttons together
+and the 28px above them. At 28 the pair is framed evenly.
+
+That makes hero→trust-strip the tightest boundary on the page (69px) and
+that is correct: the hard ivory→espresso tone change marks it. Padding
+only has to do that work where both sides share a tone.
+
+Trailing space under a **button** always needs less than under text.
+Apply the same reasoning if another band ends on a CTA.
+
+### Trailing padding under a divider that isn't drawn
+
+Two mobile bands lost measurable dead space to the same bug, and it will
+recur wherever a list uses hairline dividers:
+
+- `Assurance.tsx` — rows are `border-b … py-6 last:border-0`
+- `Anatomy.tsx` — steps are `border-b … last:border-0`, button `py-3`
+
+The last row drops its divider but **keeps its bottom padding**. That
+padding is no longer separating two rows from each other; it just stacks
+onto the section's own padding. Assurance was carrying 24px of it and
+Anatomy 12px, so those two boundaries measured 126px and 120px against a
+94px norm.
+
+Fixed with `last:pb-0` (Assurance) and `max-lg:last:[&>button]:pb-0`
+(Anatomy) — both scoped to the stacked layout only, because from `sm`/`lg`
+those items are grid columns with `py-0` and the trailing padding doesn't
+set the section height. Boundaries are now 102px and 108px.
+
+**If you add a hairline-divided list, add the `last:` padding reset with
+it.**
 
 ### Two rules that hold across the page
 
@@ -47,29 +101,62 @@ legitimately taller because of how much they hold.
 
 ## 1. Hero — `sections/Hero.tsx`
 
-Centred, text-only. **There is deliberately no image**: the LCP element
-is the headline itself, so nothing has to decode before first paint.
-This is the single biggest performance lever on the page and feeds
-directly into Google Ads Quality Score. Don't add a hero image without
-accepting that cost.
+Built around the photograph, framed differently at each breakpoint.
 
 - **Content:** `HERO` — `eyebrow`, `kicker`, `headline` (2 lines), `lede`, `primaryCta`, `secondaryCta`
-- **Background:** `components/lp/Aurora.tsx` — vertical light columns
+- **Image:** `hero-bg.jpg`, from `hero.png` (a 3:4 portrait)
 - **Animation:** headline rises out of a clipping mask on load; the gold
-  accent word carries a travelling sheen (`.accent-sheen` in `globals.css`)
+  accent word carries a travelling sheen (`.accent-sheen` in `globals.css`);
+  the photo drifts on scroll
 
-**To change the background feel:** edit the `COLUMNS` array in
-`Aurora.tsx`. Each entry is `{left, width, color, blur, from, to, drift,
-duration, delay}` — `width: 1` reads as a hairline, `40+` with blur reads
-as a soft band.
+### The two layouts
 
-> **Gotcha —** density across `left: 34%–66%` is deliberately thin.
-> That's the band directly behind the headline. Adding strong columns
-> there puts pattern behind the type.
+| | Photo | Copy |
+|---|---|---|
+| **Phones** | Top `40svh`, full bleed, bottom edge feathered to ivory | *Below* the photo, on flat ivory, **centred** like every other mobile section |
+| **Desktop** | Right 60%, feathered into the ivory at its left edge | Left, over the flat side |
 
-> **Gotcha —** cycles are 7–14s on purpose. Earlier versions used 60–110s
-> and were technically animating but practically static — nobody looks
-> at a hero for two minutes.
+One `<Image>` serves both — the container is repositioned per breakpoint
+rather than shipping two files, because this is the LCP element.
+
+> **Why the copy is stacked below the photo on phones, not over it.**
+> The copy block is ~500px tall in ~700px of viewport, so floating it
+> over the portrait always started it over her face. Making 12px gold
+> legible there needed a scrim heavy enough to bury the subject —
+> measured at 2.64:1 contrast even with a 74%-opaque scrim. Stacking
+> gives the face a clean half and the type a clean half. Don't "fix" this
+> by overlaying again.
+
+> **Why the desktop feather clears by 64%.** At 80% her face sat under a
+> ~25% wash and read as faded. The image column starts at `left-[40%]`
+> and the gradient is fully transparent by 64% of the viewport, so she is
+> never seen through a scrim.
+
+Scrims are **ivory, never dark** — the palette is ink-on-ivory, and
+darkening the photo to carry white text would fight every other section.
+
+### Performance
+
+Adding the photo made it the LCP element. Measured against a production
+build: **1176ms desktop / 884ms mobile**, at **41kb / 29kb** served —
+`next/image` delivers AVIF at the right width. It carries `priority` so
+it preloads, and `sizes` is honest about the rendered width so phones
+never fetch the 1000px original.
+
+`alt=""` is deliberate: it's a decorative background carrying nothing the
+copy doesn't already say. Empty alt is the correct marker — an audit that
+flags it as "missing alt" is wrong.
+
+### The CTA sits just below the fold on phones
+
+Primary CTA top lands at ~831px against an 844px viewport, so it crests
+the fold as a scroll cue. The **sticky bar threshold was lowered from
+620px to 340px** to compensate — a booking action is reachable the moment
+scrolling starts. If you make the photo taller, lower that threshold too.
+
+> `components/lp/Aurora.tsx` (the vertical light columns) is no longer
+> used here — the photograph is the visual interest now. The component is
+> still in the kit if a future page wants an image-free hero.
 
 ---
 
@@ -433,8 +520,12 @@ Three columns, vertically centred on each other:
   mark on two out-of-phase cycles, so it doesn't read as one throbbing
   blob. Always *behind*, never over: the wordmark is thin white type.
 
-Padding matches the page sections (`PADDING.tight`, 68px) rather than a
-bespoke footer value. Height went 690px → **547px**.
+Padding matches the page sections (`PADDING.tight` — 68px desktop, 44px
+mobile) rather than a bespoke footer value, but the top is taken one step
+down (44 / 30) because the booking band above is the same espresso-deep:
+there is no tone change marking the boundary, so a full pair of paddings
+between them read as one dead gap instead of two sections meeting. The
+divider inside `.shell` is what marks it. Height went 690px → **547px**.
 
 Bottom bar is a single centred line: `© <year> <doctor> | Designed and
 Developed by HolistiQ Digital`.
@@ -563,6 +654,50 @@ against `next start` come back clean.
 npm run build && npx next start -p 3100
 BASE=http://localhost:3100 node scratchpad/qa/audit.mjs
 ```
+
+**Kill the old server before restarting it.** If a previous `next start`
+still holds 3100, the new one fails to bind silently and the old build
+keeps serving. The HTML then references a CSS chunk the old build doesn't
+have, that request 404s, and the page renders completely unstyled — which
+looks like a catastrophic layout regression rather than a stale process.
+Confirm the stylesheet is actually being served before trusting any
+measurement:
+
+```bash
+CSS=$(curl -s http://localhost:3100/buccal-fat-removal \
+  | grep -oE '/_next/static/chunks/[^"]*\.css' | head -1)
+curl -s -o /dev/null -w "%{http_code} %{size_download}\n" "http://localhost:3100$CSS"
+```
+
+### Measuring spacing
+
+Two scripts, and they answer different questions:
+
+- `mobile-spacing.mjs` — computed padding and content-box slack per
+  section. Good for "is the rhythm uniform".
+- `tail-compare.mjs` — the *visual* gap, scanning screenshot rows for ink.
+  Good for "does this boundary look bigger than its neighbours".
+
+Element rects lie: anything inside `overflow-hidden`, and anything under a
+parallax or Ken Burns transform, still reports its **unclipped** box. That
+is why `surgeon` shows a negative top gap and several sections show a 20px
+bottom overflow — measurement artifacts, not defects. The ink scan is also
+unreliable on the gradient-backed bands (`surgeon`, `results`, `reviews`,
+`faq`, `book`); it only tells the truth on the flat ivory and sand ones.
+Confirm anything either script flags with a cropped screenshot before
+changing code.
+
+Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
+stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
+**108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
+height **16708px**.
+
+> **Uniform padding is not the same as even spacing.** Section 1 sat at
+> 44px like everything else and still looked loose, because what precedes
+> the padding differs: a 60px button with 17px of internal padding and a
+> hairline border leaves far more apparent space than a paragraph does.
+> The number to match across sections is the *visual* gap, not the CSS
+> value. Check with `tail-compare.mjs` and a crop, not the computed style.
 
 ---
 
