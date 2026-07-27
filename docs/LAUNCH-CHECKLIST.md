@@ -72,8 +72,11 @@ about outcomes are scrutinised.
 - [ ] Set `SITE.baseUrl` in `lib/site.ts` to that exact origin — it drives
       canonical URLs and Open Graph tags.
 - [ ] Confirm HTTPS and that `http://` redirects to `https://`.
-- [ ] Confirm `/` redirects to `/buccal-fat-removal` (configured in
-      `next.config.ts`).
+- [ ] Confirm `/` serves the index (`app/page.tsx`) and that every card on
+      it opens the right page. It used to 307 to `/buccal-fat-removal`;
+      that redirect has been removed.
+- [ ] Confirm the index is still `noindex, follow` and that each landing
+      page is still indexable.
 
 ---
 

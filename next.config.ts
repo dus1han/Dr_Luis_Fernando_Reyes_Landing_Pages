@@ -6,12 +6,12 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1600, 1920],
   },
-  async redirects() {
-    return [
-      // Root of the ads subdomain points at the first live campaign page.
-      { source: "/", destination: "/buccal-fat-removal", permanent: false },
-    ];
-  },
+  /*
+   * `/` used to 307 to /buccal-fat-removal, on the reasoning that the root
+   * of an ads subdomain had nowhere better to go. With more than one page
+   * that stopped being true — the redirect had to pick a favourite, and it
+   * hid the others. `app/page.tsx` now lists them from `lib/pages.ts`.
+   */
   async headers() {
     return [
       {
