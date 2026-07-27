@@ -24,7 +24,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 / 44 | 584 |
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
-| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1265 |
+| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1257 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 695 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10120px**; treat a change
+at 68 and must not move. Page height at 1440 is **10112px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -402,13 +402,26 @@ inside a 670px column, on one line; phones wrap it to two.
 
 **"Why patients travel" has no rule above it.** It used to — back when the
 only thing above it was a row of text pills. The ribbon now closes with
-its own hairline, so a second rule 88px below it read as two separators
-for one boundary. The spacing is unchanged: `mt-11 border-t pt-11` was
-88px, and `mt-[88px]` is the same 88px without the line.
+its own hairline, so a second rule below it read as two separators for one
+boundary.
 
 **If the ribbon is ever removed, put that rule back** — without either,
 the intro and the "why" block run together with nothing marking the
 change of subject.
+
+### The gaps either side of the ribbon must match
+
+Both are `mt-14`. They were 32px above and 88px below, which made the band
+look stuck to the paragraph above it and marooned from the heading below.
+
+The two numbers came from different places and nobody had compared them:
+32 was the pills' old `mt-8`, and 88 was the old `mt-11 + pt-11` that used
+to straddle a rule. Removing the rule left the 88 behind with nothing to
+justify it.
+
+Measured box-to-box the gaps read 56 above and 50 below, because the
+display heading carries ~6px of leading above its cap height. That is the
+right kind of imbalance — optically the two look equal.
 
 > **Gotcha — the section must NOT be `overflow-hidden`.** A clipped
 > ancestor silently disables `position: sticky` inside it, and the
@@ -849,7 +862,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16511px**.
+height **16503px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

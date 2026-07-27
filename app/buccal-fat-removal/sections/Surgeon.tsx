@@ -164,7 +164,11 @@ export function Surgeon() {
           <div
             role="group"
             aria-label="Training and professional affiliations"
-            className="mt-8 border-y border-champagne/14 py-6"
+            /* The space above and below this band has to match. It didn't:
+               32px sat between the intro and the top rule while 88px sat
+               between the bottom rule and the heading below, so the ribbon
+               looked stuck to the paragraph above it. Both are 56 now. */
+            className="mt-14 border-y border-champagne/14 py-6"
           >
           <RevealGroup
             step={0.09}
@@ -195,10 +199,10 @@ export function Surgeon() {
           {/* No rule on top of this block. It used to carry one, back when
               the only thing above it was a row of text pills. The
               affiliation ribbon now closes with its own hairline, so a
-              second rule 88px below it read as two separators for one
-              boundary. The spacing is unchanged — mt-11 + pt-11 was 88px
-              and this is the same 88px, just without the line. */}
-          <div className="mt-[88px]">
+              second rule below it read as two separators for one boundary.
+
+              56 to match the gap above the ribbon — see the note there. */}
+          <div className="mt-14">
             <MaskedHeading
               lines={[
                 <span key="a" className="text-white">
