@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.resolve(__dirname, "../../buccal-fat-removal/Images");
+const LOGO_SRC = path.resolve(__dirname, "../../buccal-fat-removal/uni logo");
 const OUT = path.resolve(__dirname, "../public/buccal-fat-removal");
 const GEN = path.resolve(__dirname, "../lib/generated");
 
@@ -166,6 +167,65 @@ await emit(
   "benefits-portrait.jpg",
   sharp(src("frontFacing")).resize({ width: 900, withoutEnlargement: true })
 );
+
+/*
+ * Affiliation logos for the surgeon band.
+ *
+ * All five arrive as dark line art on transparency, which would be
+ * invisible on espresso. Each is trimmed to its ink, recoloured to a flat
+ * champagne, and normalised to one height so the row reads as a set
+ * rather than five unrelated files.
+ *
+ * Recolouring institutional marks is the usual treatment for a monochrome
+ * accreditation ribbon — the alternative here is illegible. Only the RGB
+ * is replaced; the original alpha is kept, so antialiasing and every
+ * interior cut in the engraved seals survive.
+ *
+ * The source folder holds six files: IMG_3483 is a byte-identical copy of
+ * IMG_3478 and is deliberately not emitted.
+ */
+console.log("\nAffiliation logos — trimmed, tinted champagne for the dark band");
+{
+  const CHAMPAGNE = [0xed, 0xdf, 0xc6];
+  // 3x the tallest height any of these render at, so they stay crisp on
+  // retina without shipping the 2560px original.
+  const H = 144;
+
+  const LOGOS = [
+    ["affil-rosario.png", "IMG_3478.PNG"],
+    ["affil-emory.png", "IMG_3482.PNG"],
+    ["affil-uba.png", "IMG_3481.PNG"],
+    ["affil-asps.png", "IMG_3479.PNG"],
+    ["affil-filacp.png", "IMG_3480.PNG"],
+  ];
+
+  for (const [name, file] of LOGOS) {
+    const raw = await sharp(path.join(LOGO_SRC, file))
+      .ensureAlpha()
+      // Drop the transparent margin first: without it the logos normalise
+      // to the height of their padding rather than of their artwork, and
+      // the row comes out visually ragged.
+      .trim({ threshold: 1 })
+      .resize({ height: H, fit: "inside", withoutEnlargement: false })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    for (let i = 0; i < raw.data.length; i += 4) {
+      if (raw.data[i + 3] === 0) continue;
+      raw.data[i] = CHAMPAGNE[0];
+      raw.data[i + 1] = CHAMPAGNE[1];
+      raw.data[i + 2] = CHAMPAGNE[2];
+    }
+
+    await emit(
+      name,
+      sharp(raw.data, {
+        raw: { width: raw.info.width, height: raw.info.height, channels: 4 },
+      })
+    );
+  }
+}
 
 console.log("\nHero before/after — splitting composite at the measured gutter");
 // 1536x1024 composite: gutter x766-769, "BEFORE"/"AFTER" labels end y68,

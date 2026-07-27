@@ -149,17 +149,48 @@ export function Surgeon() {
             {SURGEON.intro}
           </Reveal>
 
-          <RevealGroup step={0.1} className="mt-7 flex flex-wrap gap-2.5">
-            {SURGEON.credentials.map((c) => (
-              <RevealItem
-                key={c}
-                as="span"
-                className="rounded-full border border-champagne/28 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.13em] text-champagne"
-              >
-                {c}
-              </RevealItem>
-            ))}
+          {/* Affiliation ribbon, in place of the three credential pills
+              that used to sit here. Those repeated the intro paragraph
+              directly above them word for word; these carry the same
+              claim with the institutions behind it.
+
+              Hairlines top and bottom rather than a filled band — it
+              matches the rule under this column and keeps the marks
+              sitting on the espresso rather than on a panel of their
+              own. */}
+          {/* The label lives on this wrapper, not on RevealGroup — its
+              props are typed to children/className/as/delay/step, so an
+              aria-* passed there wouldn't typecheck. */}
+          <div
+            role="group"
+            aria-label="Training and professional affiliations"
+            className="mt-8 border-y border-champagne/14 py-6"
+          >
+          <RevealGroup
+            step={0.09}
+            as="ul"
+            className="m-0 flex list-none flex-wrap items-center gap-x-7 gap-y-6 p-0"
+          >
+            {SURGEON.affiliations.map((a) => {
+              const logo = IMAGES[a.image as keyof typeof IMAGES];
+              return (
+                <RevealItem as="li" key={a.image}>
+                  <Image
+                    src={logo.src}
+                    alt={a.name}
+                    width={logo.width}
+                    height={logo.height}
+                    /* Height is fixed per logo and the width follows, so
+                       every mark is optically the same weight whatever
+                       its aspect ratio. */
+                    style={{ height: a.height, width: "auto" }}
+                    className="opacity-[0.78] transition-opacity duration-400 hover:opacity-100"
+                  />
+                </RevealItem>
+              );
+            })}
           </RevealGroup>
+          </div>
 
           <div className="mt-11 border-t border-champagne/16 pt-11">
             <MaskedHeading

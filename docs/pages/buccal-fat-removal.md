@@ -24,7 +24,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 / 44 | 584 |
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
-| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1247 |
+| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1266 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 695 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10102px**; treat a change
+at 68 and must not move. Page height at 1440 is **10121px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -352,13 +352,53 @@ Intro left, five-point checklist right, full-width CTA strip below.
 ## 8. Meet Dr. Luis — `sections/Surgeon.tsx`
 
 The one full-dark band. Portrait pinned left, his whole story right —
-intro, credentials, then "why patients travel".
+intro, affiliation ribbon, then "why patients travel".
 
-- **Content:** `SURGEON` — `eyebrow`, `headline`, `intro`, `credentials[]`,
-  `whyHeadline`, `why[]`, `pullQuote`, `pullQuoteMeta`
-- **Image:** `dr-portrait.jpg`
+- **Content:** `SURGEON` — `eyebrow`, `headline`, `intro`,
+  `affiliations[]`, `whyHeadline`, `why[]`, `pullQuote`, `pullQuoteMeta`
+- **Images:** `dr-portrait.jpg`; `affil-*.png` (five)
 - **Animation:** curtain reveal, 20s Ken Burns, offset gold frame that
   scales in, parallax drift
+
+### The affiliation ribbon
+
+Five institution marks — Universidad del Rosario, Emory, Universidad de
+Buenos Aires, the American Society of Plastic Surgeons, and FILACP — on
+hairlines top and bottom, sitting where three text pills used to.
+
+Those pills read "Double board certified", "19+ years international
+experience" and "Plastic, aesthetic & reconstructive". **All three were
+already in the intro paragraph immediately above them**, so they were
+repetition dressed as evidence. The marks make the same claim with
+something behind it.
+
+**The logos are recoloured, not used as supplied.** All five arrive as
+dark line art on transparency and would be invisible on espresso, so
+`prepare-images.mjs` trims each to its ink, replaces the RGB with a flat
+champagne, and normalises them to 144px tall. Only the RGB changes — the
+original alpha is kept, so antialiasing and every interior cut in the
+engraved seals survive. Monochrome is the usual treatment for an
+accreditation ribbon; here it's also the only legible option.
+
+> Trimming has to happen **before** the resize. Without it each logo
+> normalises to the height of its transparent padding rather than of its
+> artwork, and the row comes out visually ragged even though every file
+> is nominally the same height.
+
+> The source folder holds six files. `IMG_3483.PNG` is a byte-identical
+> copy of `IMG_3478.PNG` (verified by checksum) and is deliberately not
+> emitted.
+
+**Heights are per-logo in `content.ts`, and that is deliberate.** Four of
+the five are horizontal lockups, but the ASPS mark is stacked — matching
+its height to theirs shrinks its wordmark to nothing. The values balance
+them by eye, not by the numbers. At 1440 the row comes to 520px of logo
+inside a 670px column, on one line; phones wrap it to two.
+
+> The `aria-label` sits on a wrapper `<div role="group">`, not on
+> `RevealGroup`. That component's props are typed to
+> children/className/as/delay/step, so an `aria-*` passed to it would not
+> typecheck.
 
 > **Gotcha — the section must NOT be `overflow-hidden`.** A clipped
 > ancestor silently disables `position: sticky` inside it, and the
@@ -799,7 +839,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16481px**.
+height **16512px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

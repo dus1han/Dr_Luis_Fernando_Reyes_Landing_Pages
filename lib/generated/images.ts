@@ -16,6 +16,36 @@ export const IMAGES = {
     "height": 1125,
     "blurDataURL": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASoUABkAPwl4slMrpySiqAqpcCEJQBOmZfgy3bymgSurTBJEFJozYwgX/AAA/o0vM/InaPyTlCW9+CKUTSg/swCqjD56+KDL4a6cR8Cde48FBJzp4h4IsqP4Gp+ljWfrIGpxRAAA"
   },
+  "affil-rosario.png": {
+    "src": "/buccal-fat-removal/affil-rosario.png",
+    "width": 373,
+    "height": 144,
+    "blurDataURL": "data:image/webp;base64,UklGRrwAAABXRUJQVlA4WAoAAAAQAAAAEwAABwAAQUxQSGYAAAANgBzbtqpon/tljGv+UTF3CODLvQe6k4iI2B3Pi/l5/QwESAbFqrfV1JgKGwTSssmklWhUCZJgN41TdG1EuMoI2ZthnNQ2IQdWgUU3zkZNZdEEVIEeVrgIJ00D/r9k05DRhpNAlilWUDggMAAAADADAJ0BKhQACAA/CXCvT6umJCIwCAFwIQllAKj0LQdv6wAA/u4nDk/SCxneMjSwAA=="
+  },
+  "affil-emory.png": {
+    "src": "/buccal-fat-removal/affil-emory.png",
+    "width": 502,
+    "height": 144,
+    "blurDataURL": "data:image/webp;base64,UklGRrQAAABXRUJQVlA4WAoAAAAQAAAAEwAABQAAQUxQSF4AAAABuTJE9D80jiNJcpQTCPvw3wmtNTjRGFAxbyb6vTEGYEDEBOTiyc3VRfsPRqXeHVW0s98KKGsCshSBHsJeSuUHS0hhSRuJBJLtImzgoErxFQqTGeGEo7l0C0syIBsAVlA4IDAAAADwAgCdASoUAAYAPwlwr0+rpiQjMAgBcCEJZQC06C0kAAD+7ipZ+Tq15OlkOeAAAAA="
+  },
+  "affil-uba.png": {
+    "src": "/buccal-fat-removal/affil-uba.png",
+    "width": 335,
+    "height": 144,
+    "blurDataURL": "data:image/webp;base64,UklGRuYAAABXRUJQVlA4WAoAAAAQAAAAEwAACAAAQUxQSIkAAAANuS5E9D80cBxJcuTgNAGa/P//6GotvlGDda9QFNYWiv4Kt8ePmIC4+m6vHtx49uXCpSMAn14hG6lrH3bWP75IDpBwqxmKSH+7VwegEEEvT10DoSKrTQbNcZjMhqmJUOokjsd/sUFjBQYhpk3nQW/SQk4AmQio86SJLVOH4FATCI6D+QSmLQFmDABWUDggNgAAAPACAJ0BKhQACQA/CW6uT6umJDCwCAIQIQljAKwALSQAAP7uNkJggq6uIw0E6F9+r61pJCAAAA=="
+  },
+  "affil-asps.png": {
+    "src": "/buccal-fat-removal/affil-asps.png",
+    "width": 196,
+    "height": 144,
+    "blurDataURL": "data:image/webp;base64,UklGRkgBAABXRUJQVlA4WAoAAAAQAAAAEwAADgAAQUxQSMYAAAANuQpE9D80cBxJcuQcNV3l8f/f01rLR1Rj3S30uVcoCmvQAK0T4xIREzABk8CaTX3dsyd88ejWDfdtWwgAG3znzLHfC2PtOXJoFwMACGZA8io8DLA/MGz1jtW9cC9+QMLqBeLBLF0FAGlwSoNSa0EJgANDKQIiW4L4JDXtyoCdMD4yV6npDjJWjZABAoo7TfWHTEkg8UWSs/9RKlaVbLNDUs3GuTX0odJJpFBd1WJFdiSAiCsqolc5kwnDyNYMk+xVGQ6bSAJWUDggXAAAAJADAJ0BKhQADwA/CW6uT6umJCIwCAFwIQlmAJ0ygARnDDqt+GAA/u4yPC+LtpK4ABKEAwcmy/hYuWCvUkHZEFmw27IEFgSITmDRCHkwZmyV3qXS0LV/+DkxAAAA"
+  },
+  "affil-filacp.png": {
+    "src": "/buccal-fat-removal/affil-filacp.png",
+    "width": 539,
+    "height": 144,
+    "blurDataURL": "data:image/webp;base64,UklGRroAAABXRUJQVlA4WAoAAAAQAAAAEwAABAAAQUxQSFsAAAAFuTJE9D/AoJEkRTPzLOFlvVuyxdg2IiYghqPX7mYNVH41vHaXV61Tk8Wr9Kv9IFIq/T6rKEBgFyuF/RAmH7wKEcAHuw8+DxRKAhGLMBHYoXdZXaxUA8QkJGAiAFZQOCA4AAAAMAMAnQEqFAAFAD8Jbq5Pq6YkIjAIAXAhCWUAnQAtB8cGQAD+7icLSHY7EomvDS72qMDYA6CgAAA="
+  },
   "hero-before.jpg": {
     "src": "/buccal-fat-removal/hero-before.jpg",
     "width": 766,

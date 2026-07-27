@@ -172,10 +172,29 @@ export const SURGEON = {
   headline: ["Meet", "Dr. Luis"] as const,
   intro:
     "Inspired by the renowned artistry of Colombian aesthetics, Dr. Luis is a Double Board Certified Plastic, Aesthetic and Reconstructive Surgeon with over 19 years of international experience. His personalised approach combines surgical precision with artistic vision to create naturally refined facial contours that enhance your features.",
-  credentials: [
-    "Double board certified",
-    "19+ years international experience",
-    "Plastic, aesthetic & reconstructive",
+  /**
+   * The logo ribbon that replaced three text pills reading "Double board
+   * certified", "19+ years international experience" and "Plastic,
+   * aesthetic & reconstructive". All three were already stated in the
+   * intro paragraph directly above them, so they were repetition; the
+   * marks say the same thing with evidence behind it.
+   *
+   * `height` is the rendered height in px and is per-logo on purpose.
+   * A single height across all five doesn't work: four are horizontal
+   * lockups but the ASPS mark is stacked, so matching its height to
+   * theirs shrinks its wordmark to nothing. These values balance them by
+   * eye, not by the numbers.
+   */
+  affiliations: [
+    { image: "affil-rosario.png", name: "Universidad del Rosario", height: 38 },
+    { image: "affil-emory.png", name: "Emory University", height: 36 },
+    { image: "affil-uba.png", name: "Universidad de Buenos Aires", height: 38 },
+    { image: "affil-asps.png", name: "American Society of Plastic Surgeons", height: 54 },
+    {
+      image: "affil-filacp.png",
+      name: "Federación Ibero Latinoamericana de Cirugía Plástica",
+      height: 36,
+    },
   ],
   whyHeadline: ["Why patients", "travel to Dr. Luis"] as const,
   pullQuote: "Natural harmony over dramatic change.",
