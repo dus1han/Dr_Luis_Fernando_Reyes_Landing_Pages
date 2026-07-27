@@ -22,7 +22,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 3 | Credentials | `sections/Assurance.tsx` | — | sand | 68 / 44 | 488 |
 | 4 | What is buccal fat | `sections/Procedure.tsx` | `procedure` | ivory | 68 / 44 | 727 |
 | 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 / 44 | 584 |
-| 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 901 |
+| 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 1246 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1247 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
@@ -47,8 +47,10 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move; page height at 1440 is **10183px** and any change
-there is a regression.
+at 68 and must not move. Page height at 1440 is **10527px**; treat a change
+there as a regression unless a section was deliberately restructured — the
+benefits portrait moved it from 10183 to 10527 by taking those cards from
+three columns to two.
 
 #### The hero is the one exception: 28px, not 44
 
@@ -155,8 +157,9 @@ the fold as a scroll cue. The **sticky bar threshold was lowered from
 scrolling starts. If you make the photo taller, lower that threshold too.
 
 > `components/lp/Aurora.tsx` (the vertical light columns) is no longer
-> used here — the photograph is the visual interest now. The component is
-> still in the kit if a future page wants an image-free hero.
+> used here — the photograph is the visual interest now. It found a home
+> on the root index instead, where its columns sit on espresso-deep; see
+> `docs/pages/index.md`.
 
 ---
 
@@ -246,14 +249,59 @@ throw on the new index.
 
 ## 6. Benefits — `sections/Benefits.tsx`
 
-Six cards, three columns.
+A portrait beside six cards, two columns.
 
 - **Content:** `BENEFITS.items` — `{icon, title, body}`
+- **Image:** `benefits-portrait.jpg`, from `frontfacing.png` (4:5)
 - **Animation:** staggered entry; pointer tilt with a gold glow following
   the cursor (`components/lp/TiltCard.tsx`)
 
 **To add a benefit:** add to `BENEFITS.items` and add the icon path to the
-`ICONS` map in `Benefits.tsx`. Six fills two rows of three; seven orphans.
+`ICONS` map in `Benefits.tsx`. Six fills three rows of two; seven orphans.
+
+### Why the photograph is front-facing
+
+The hero portrait is a three-quarter view, which cannot show what this
+section claims. Cheekbone and jawline symmetry only reads head-on.
+
+The cards dropped from three columns to two to make room, which also gave
+them the width their titles wanted — several were wrapping to three lines
+at a third of the shell.
+
+### It fills the column; it isn't sticky
+
+First attempt pinned it sticky at its natural 4:5. That left ~330px of bare
+ivory beneath it, and because it stuck to the top of the viewport that gap
+was *on screen the whole way down the section* rather than scrolling out of
+sight. From `lg` it is now `absolute inset-0` in its grid cell, so it runs
+the exact height of the six cards.
+
+The cost is a tighter crop — 484×902 is 1:1.94 against a 4:5 source, so
+about a third of the width goes. The face survives comfortably: scaled to
+cover it is ~334px inside a 484px window, and what's lost is backdrop and
+shoulder.
+
+> **No `items-start` on that grid.** It sizes each cell to its own content,
+> which would collapse the photo column to zero — the cell only has an
+> absolutely-positioned child. Default `stretch` is what gives it height.
+> This is the same trap the surgeon section hit.
+
+### The stacked crop is 5:4, and that number matters
+
+It started as a 16:10 band, which looked fine and **cropped the chin
+away** — losing half of what the copy beside it claims. 5:4 is the widest
+crop that still holds hairline to jaw.
+
+`object-position` is `50% 42%` while stacked and `50% 24%` from `lg`. The
+42% puts the window over hairline-to-jaw instead of centring it on the
+eyes. From `lg` the column is taller than the source is wide, so cover uses
+the full height and the vertical value stops mattering — only the
+horizontal 50% does.
+
+> **`alt=""`, deliberately.** This is reference photography, not a patient
+> record. Describing it as a result would be a claim the clinic hasn't
+> made — the copy beside it carries the meaning. Same treatment as the
+> hero.
 
 > **Gotcha —** the tilt is mouse-only. On touch it renders as a plain div
 > with no listeners — a tilt firing on tap reads as a glitch.
@@ -478,7 +526,7 @@ anyone who keeps scrolling.
 Two things to know if you touch this:
 
 - **It's a no-op from `lg`.** Both children are `order: 0` there and the
-  columns sit exactly as before. Desktop height is 10183px either way.
+  columns sit exactly as before. It did not move the desktop height.
 - **DOM order stays copy-then-form**, so on phones the visual order and
   the reading order differ. Acceptable here — the copy holds no focusable
   elements, so tab order is unaffected, and both sequences are coherent
@@ -723,7 +771,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16708px**.
+height **17027px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

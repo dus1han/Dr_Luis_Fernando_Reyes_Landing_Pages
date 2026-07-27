@@ -1,11 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { Eyebrow } from "@/components/lp/Eyebrow";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
-import { RevealGroup, RevealItem } from "@/components/lp/Reveal";
+import { Reveal, RevealGroup, RevealItem } from "@/components/lp/Reveal";
 import { Section, SectionHead } from "@/components/lp/Section";
 import { TiltCard } from "@/components/lp/TiltCard";
+import { IMAGES } from "@/lib/generated/images";
 import { BENEFITS } from "../content";
+
+const portrait = IMAGES["benefits-portrait.jpg"];
 
 const ICONS: Record<string, React.ReactNode> = {
   contour: (
@@ -61,10 +65,80 @@ export function Benefits() {
           />
         </SectionHead>
 
-        <RevealGroup
-          step={0.08}
-          className="grid gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        {/* Portrait beside the cards rather than above them.
+
+            Front-facing on purpose: this section is describing cheekbone
+            and jawline definition, and the hero's three-quarter view
+            can't show it. The cards drop from three columns to two to
+            make room — which also gives them the width their titles
+            wanted, since several were wrapping to three lines at a third
+            of the shell.
+
+            No `items-start` on this grid — the photo column is sized by
+            the card column beside it, and `items-start` would collapse it
+            to its own content instead. */}
+        <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:gap-10">
+          {/* From lg the photograph is pulled out of flow and pinned to
+              the cell, so it runs the exact height of the six cards. It
+              was sticky at its natural 4:5 first, which left ~330px of
+              bare ivory under it — and because it stuck to the top of the
+              viewport, that gap was on screen the whole way down the
+              section rather than hidden by the scroll.
+
+              Filling the column costs a tighter crop: at 484x940 this is
+              1:1.94 against a 4:5 source, so about a third of the width
+              goes. The face survives it comfortably — scaled to cover,
+              it's ~334px inside a 484px window — and what's lost is
+              backdrop and shoulder. */}
+          <Reveal className="relative">
+            {/* Offset hairline, like a matted print. Desktop only — at
+                phone widths it just crowds the shell edge. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -bottom-3.5 -left-3.5 hidden h-full w-full rounded-[3px] border border-gold/30 lg:block"
+            />
+
+            {/* 5:4 while stacked. A 4:5 portrait is far too tall to sit
+                above a phone's card stack, but the 16:10 band this started
+                as cropped the chin away — and the jawline is half of what
+                the copy beside it is claiming. 5:4 is the widest crop that
+                still holds hairline to jaw. */}
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[3px] lg:absolute lg:inset-0 lg:aspect-auto">
+              <Image
+                src={portrait.src}
+                /* Decorative. This is reference photography, not a patient
+                   record, so it must not be described as a result — the
+                   copy beside it carries the meaning. */
+                alt=""
+                aria-hidden
+                fill
+                sizes="(max-width: 1023px) 100vw, 500px"
+                placeholder="blur"
+                blurDataURL={portrait.blurDataURL}
+                /* 42% while stacked puts the crop window over hairline-to-
+                   jaw rather than centring it on the eyes. From lg the
+                   column is taller than the source is wide, so cover uses
+                   the full height and the vertical value stops mattering —
+                   only the horizontal 50% does. */
+                className="object-cover object-[50%_42%] lg:object-[50%_24%]"
+              />
+
+              {/* Warm wash pinned to the lower edge, so the photograph
+                  settles into the ivory instead of ending on a line. */}
+              <div
+                aria-hidden
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent 62%," +
+                    " rgb(242 235 225 / 0.28) 85%," +
+                    " rgb(242 235 225 / 0.7) 100%)",
+                }}
+              />
+            </div>
+          </Reveal>
+
+          <RevealGroup step={0.08} className="grid gap-6 sm:grid-cols-2">
           {BENEFITS.items.map((b) => (
             <RevealItem key={b.title} className="h-full">
               <TiltCard className="group h-full overflow-hidden rounded-[3px] border border-ink/12 bg-sand/45 transition-[background-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-ivory hover:shadow-[0_28px_50px_-34px_rgb(35_27_22/0.45)]">
@@ -97,7 +171,8 @@ export function Benefits() {
               </TiltCard>
             </RevealItem>
           ))}
-        </RevealGroup>
+          </RevealGroup>
+        </div>
       </div>
     </Section>
   );

@@ -23,6 +23,7 @@ const GEN = path.resolve(__dirname, "../lib/generated");
 
 const SOURCES = {
   hero: "hero.png",
+  frontFacing: "frontfacing.png",
   heroPair: "ChatGPT Image Jul 19, 2026, 08_19_23 PM.png",
   resultsGrid: "ChatGPT Image Jul 25, 2026, 04_05_19 PM.png",
   anatomy: "Untitled design (12).png",
@@ -150,6 +151,20 @@ console.log("\nHero background");
 await emit(
   "hero-bg.jpg",
   sharp(src("hero")).resize({ width: 1000, withoutEnlargement: true })
+);
+
+/*
+ * Benefits portrait — front-facing, so it shows the cheekbone and jawline
+ * definition the section is describing. A 4:5 source; the page crops it
+ * per breakpoint rather than shipping two files.
+ *
+ * 900px wide covers the ~456px column it renders into at 2x. It sits well
+ * below the fold and is lazy by default, so it costs nothing at first
+ * paint — unlike the hero, which is why that one is capped tighter.
+ */
+await emit(
+  "benefits-portrait.jpg",
+  sharp(src("frontFacing")).resize({ width: 900, withoutEnlargement: true })
 );
 
 console.log("\nHero before/after — splitting composite at the measured gutter");

@@ -10,6 +10,12 @@ export const IMAGES = {
     "height": 1333,
     "blurDataURL": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwBQCdASoUABsAPwl2tFKrpyUiqAqpcCEJYwCdMsdBRl6nCtdb8FnHhQbdrNFJp1XAAAD8XSOozSmk8JdUkdLX5lqmW78AaHJIdmSsEkatSa8wozjeYnKMFCtuYknHfMa5SARKuaIJwhzlTwkuq6h0qAAAAA=="
   },
+  "benefits-portrait.jpg": {
+    "src": "/buccal-fat-removal/benefits-portrait.jpg",
+    "width": 900,
+    "height": 1125,
+    "blurDataURL": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASoUABkAPwl4slMrpySiqAqpcCEJQBOmZfgy3bymgSurTBJEFJozYwgX/AAA/o0vM/InaPyTlCW9+CKUTSg/swCqjD56+KDL4a6cR8Cde48FBJzp4h4IsqP4Gp+ljWfrIGpxRAAA"
+  },
   "hero-before.jpg": {
     "src": "/buccal-fat-removal/hero-before.jpg",
     "width": 766,
