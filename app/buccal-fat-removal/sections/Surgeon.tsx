@@ -192,7 +192,13 @@ export function Surgeon() {
           </RevealGroup>
           </div>
 
-          <div className="mt-11 border-t border-champagne/16 pt-11">
+          {/* No rule on top of this block. It used to carry one, back when
+              the only thing above it was a row of text pills. The
+              affiliation ribbon now closes with its own hairline, so a
+              second rule 88px below it read as two separators for one
+              boundary. The spacing is unchanged — mt-11 + pt-11 was 88px
+              and this is the same 88px, just without the line. */}
+          <div className="mt-[88px]">
             <MaskedHeading
               lines={[
                 <span key="a" className="text-white">

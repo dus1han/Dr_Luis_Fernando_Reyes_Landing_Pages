@@ -98,7 +98,7 @@ public/buccal-fat-removal/      the generated assets
 | Adjust a colour | `app/globals.css` → `@theme` |
 | Retune an animation | `lib/motion.ts` |
 | Add a section | new file in `sections/`, then add to `page.tsx` |
-| Add a new campaign page | copy the `buccal-fat-removal/` folder, swap `content.ts` |
+| Add a new campaign page | copy the `buccal-fat-removal/` folder, swap `content.ts`, add an entry to `lib/pages.ts` |
 
 ---
 
@@ -139,14 +139,14 @@ animates, and the gotchas. This table is only a map.
 | # | Section | In one line |
 |---|---|---|
 | — | Nav | Clinic logo lockup; transparent over hero → frosted ivory on scroll |
-| 1 | Hero | Centred, image-free, vertical light columns behind the type |
+| 1 | Hero | Built around the portrait — full-bleed top on phones, feathered right 60% on desktop. The LCP element |
 | 2 | Trust strip | Four numbers, counting up |
 | 3 | Credentials | Four trust marks whose icons draw on, then idle |
 | 4 | What is buccal fat | Explanation beside the theatre photo |
 | 5 | How it's performed | Self-playing stepper; a gold locator travels the illustration |
-| 6 | Benefits | Six cards with pointer tilt |
+| 6 | Benefits | Front-facing portrait beside six cards with pointer tilt; sized to fit one screen |
 | 7 | Am I a candidate | Checklist with self-drawing ticks, full-width CTA strip |
-| 8 | Meet Dr. Luis | The one full-dark band; portrait pinned while his story scrolls |
+| 8 | Meet Dr. Luis | The one full-dark band; portrait pinned while his story scrolls, with a champagne affiliation ribbon |
 | 9 | Before & after | Drag-to-compare slider plus six pairs |
 | 10 | Reviews | Auto-scrolling marquee past three reviews |
 | 11 | FAQ | Single-open accordion, all collapsed on arrival |
@@ -162,9 +162,11 @@ itself honour the preference, which the CSS override alone cannot do.
 
 ## The image pipeline
 
-Source artwork lives outside this app, in
-`../buccal-fat-removal/Images/`. Three of the six files are composites
-that the page needs as separate pieces, so `npm run prepare-images`
+Source artwork lives outside this app, in two folders:
+`../buccal-fat-removal/Images/` for photography and the clinic logo, and
+`../buccal-fat-removal/uni logo/` for the affiliation marks. Several of
+the photography files are composites that the page needs as separate
+pieces, and none of them are web-sized, so `npm run prepare-images`
 derives everything:
 
 | Output | Derived from |
@@ -173,6 +175,9 @@ derives everything:
 | `result-1…6.jpg` | The 4×3 results grid, cut into six before/after pairs on the measured separators |
 | `anatomy.webp` | The medical illustration, trimmed of its white margins with the studio background flood-filled to transparent from the borders inward (interior whites — tissue detail — are preserved). 679 kB PNG → 42 kB WebP |
 | `dr-portrait.jpg` | The full-length studio shot, cropped to a 4:5 portrait around head, shoulders and hands |
+| `hero-bg.jpg` | The hero portrait, capped at 1000px. Tighter than the others because it is the LCP element |
+| `benefits-portrait.jpg` | The front-facing portrait for the benefits band, at 900px. Below the fold and lazy, so it can afford more width than the hero |
+| `affil-*.png` (five) | The affiliation marks. Each is trimmed to its ink, recoloured to a flat champagne and normalised to 144px tall. They arrive as dark line art on transparency and would be invisible on the espresso band; only the RGB is replaced, so the original alpha keeps the antialiasing and the interior cuts in the engraved seals. **Trim before resize** — otherwise each normalises to the height of its transparent padding rather than its artwork, and the row comes out ragged. `IMG_3483.PNG` duplicates `IMG_3478.PNG` byte for byte and is not emitted |
 | `dr-surgery.jpg`, `logo-white.png` | Resized and re-encoded |
 | `app/icon.png` | The favicon — just the logo's circular monogram, in ink on transparent. Its crop box was found by scanning the source for horizontal bands of opaque pixels. At 16px a full lockup is an illegible smear |
 | `logo-ink.png` | The supplied logo is white on transparent, so it is invisible on the ivory nav. This variant keeps the alpha channel as a mask and repaints every visible pixel in `ink` — same artwork, usable on light surfaces. The nav uses it; the dark footer keeps the white original |
@@ -265,7 +270,8 @@ dropped.
 2. Rewrite `content.ts` — it holds every word on the page.
 3. Adjust `page.tsx`: title, description, JSON-LD `MedicalProcedure`.
 4. Add the new artwork to `scripts/prepare-images.mjs` and re-run it.
-5. Drop or swap any section that doesn't apply.
+5. Add the page to `lib/pages.ts` so the root index lists it.
+6. Drop or swap any section that doesn't apply.
 
 The shared kit in `components/lp/`, the palette, the motion vocabulary and
 the entire form + tracking stack carry over untouched.
