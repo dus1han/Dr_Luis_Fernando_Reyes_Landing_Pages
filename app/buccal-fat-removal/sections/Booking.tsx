@@ -70,7 +70,17 @@ export function Booking() {
         </div>
 
         {/* ---------- the form ---------- */}
-        <Reveal delay={0.1}>
+        {/* order-first on phones: every "Book a consultation" on the page
+            points at #book, and with the copy leading, that landed people
+            on the pitch with the form somewhere below the fold — they had
+            to scroll again after clicking a button that promised a form.
+            The card opens with its own "Request your consultation" heading
+            and standfirst, so it reads fine without the section head above
+            it, and the section copy still follows as reinforcement.
+
+            No-op from lg, where both children are order-0 and the two
+            columns sit side by side exactly as before. */}
+        <Reveal delay={0.1} className="order-first lg:order-none">
           <LeadForm pageSlug={SLUG} />
         </Reveal>
       </div>

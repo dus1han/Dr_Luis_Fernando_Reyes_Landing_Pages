@@ -450,12 +450,45 @@ required) and Next's RSC payload. Only two are visible.
 |---|---|
 | Eyebrow, headline, the lead line in italic champagne, two paragraphs | The form card |
 
+On phones this stacks **form first, copy second** — see below.
+
 The two columns are tuned to land level: **512 vs 540px**, with
 `items-center` splitting the 28px remainder. If you change the headline
 size or the copy length, re-check that — the balance is deliberate, not
 incidental. The closing headline is also the largest on the page
 (`clamp(34px, 5.2vw, 58px)`), which is both the right emphasis for a
 final CTA and what makes the left column reach the form's height.
+
+#### On phones the form comes first
+
+`order-first lg:order-none` on the form's `<Reveal>`.
+
+All five CTAs on the page point at `#book` — hero, nav, sticky bar,
+candidate, results. With the copy leading the stack, that anchor landed
+people on the pitch with the form below the fold: they'd tapped a button
+that said "Book a consultation" and still had to scroll to find a form.
+Now the card lands whole in the viewport — **top 129px, bottom 691px of
+844**, all three fields and the submit button visible without scrolling.
+
+It works because the card is self-contained: it opens with its own
+"Request your consultation" heading and standfirst, so it doesn't need
+the section head above it. The section copy follows as reinforcement for
+anyone who keeps scrolling.
+
+Two things to know if you touch this:
+
+- **It's a no-op from `lg`.** Both children are `order: 0` there and the
+  columns sit exactly as before. Desktop height is 10183px either way.
+- **DOM order stays copy-then-form**, so on phones the visual order and
+  the reading order differ. Acceptable here — the copy holds no focusable
+  elements, so tab order is unaffected, and both sequences are coherent
+  (context then action, or action then context). Don't extend the trick
+  to a case where the reordered block contains links or inputs.
+
+> The sticky bar stays up over this section. It doesn't overlap the card
+> (bar starts at 754px, card ends at 691px), but it is offering a button
+> that does nothing once you're here. Hiding it when `#book` enters the
+> viewport is a reasonable improvement; it hasn't been made.
 
 > **Three blocks were removed from this section, in order:** a three-item
 > assurances list, then a "what happens next" step rail, then an "Or speak
