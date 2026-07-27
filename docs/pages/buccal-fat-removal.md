@@ -22,7 +22,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 3 | Credentials | `sections/Assurance.tsx` | — | sand | 68 / 44 | 488 |
 | 4 | What is buccal fat | `sections/Procedure.tsx` | `procedure` | ivory | 68 / 44 | 727 |
 | 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 / 44 | 584 |
-| 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 1246 |
+| 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1247 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
@@ -47,10 +47,8 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10527px**; treat a change
-there as a regression unless a section was deliberately restructured — the
-benefits portrait moved it from 10183 to 10527 by taking those cards from
-three columns to two.
+at 68 and must not move. Page height at 1440 is **10102px**; treat a change
+there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
 
@@ -249,7 +247,8 @@ throw on the new index.
 
 ## 6. Benefits — `sections/Benefits.tsx`
 
-A portrait beside six cards, two columns.
+A portrait and six cards in **one grid**: four columns, the photo spanning
+both rows on the left.
 
 - **Content:** `BENEFITS.items` — `{icon, title, body}`
 - **Image:** `benefits-portrait.jpg`, from `frontfacing.png` (4:5)
@@ -257,34 +256,63 @@ A portrait beside six cards, two columns.
   the cursor (`components/lp/TiltCard.tsx`)
 
 **To add a benefit:** add to `BENEFITS.items` and add the icon path to the
-`ICONS` map in `Benefits.tsx`. Six fills three rows of two; seven orphans.
+`ICONS` map in `Benefits.tsx`. Six fills two rows of three beside the
+photo; **seven breaks the layout** — it starts a third row and the section
+stops fitting a screen. If a seventh is genuinely needed, cut one.
+
+### The one rule that decides this section's shape
+
+**The photograph and every card have to be on screen together.** That is
+the constraint everything else was fitted around, and it is worth knowing
+before changing anything here.
+
+Two earlier versions failed it:
+
+| Version | Height @1440 | Why it failed |
+|---|---|---|
+| Photo sticky at 4:5, cards 2 cols | 1246 | ~330px of bare ivory under the photo, and because it stuck to the viewport top that gap was on screen the whole way down |
+| Photo filling the column, cards 2 cols | 1246 | No dead space, but three card rows meant the top of the photo and the last card were never visible at once |
+| **Photo spanning 2 rows, cards 3 cols** | **820** | Fits a 900px viewport under the 73px nav |
+
+Three rows of cards is the thing that breaks it. Keep it at two.
 
 ### Why the photograph is front-facing
 
 The hero portrait is a three-quarter view, which cannot show what this
 section claims. Cheekbone and jawline symmetry only reads head-on.
 
-The cards dropped from three columns to two to make room, which also gave
-them the width their titles wanted — several were wrapping to three lines
-at a third of the shell.
+### What fitting a screen cost
 
-### It fills the column; it isn't sticky
+Card width. Three columns beside the photo is 256px against the 364px they
+had before the photo arrived, so padding and type came down with it —
+`p-[18px]`, 17px titles, 14px body. Those numbers are sized to the column,
+not chosen for their own sake; widen the column and they can go back up.
 
-First attempt pinned it sticky at its natural 4:5. That left ~330px of bare
-ivory beneath it, and because it stuck to the top of the viewport that gap
-was *on screen the whole way down the section* rather than scrolling out of
-sight. From `lg` it is now `absolute inset-0` in its grid cell, so it runs
-the exact height of the six cards.
+The section head is **inlined rather than `<SectionHead>`**, because its
+54px bottom margin is 24px more than this band can spare. Passing `mb-*`
+through `SectionHead`'s `className` would have sat at equal specificity
+with the built-in one — a coin flip decided by stylesheet order. Inlining
+is the honest way to take a different value.
 
-The cost is a tighter crop — 484×902 is 1:1.94 against a 4:5 source, so
-about a third of the width goes. The face survives comfortably: scaled to
-cover it is ~334px inside a 484px window, and what's lost is backdrop and
-shoulder.
+Mobile came out *shorter* than before the photo existed: 1757px against
+2012px, because the compaction more than paid for the image.
+
+### How the photo is sized
+
+Its cell is `lg:col-span-1 lg:row-span-2`; the div inside is
+`lg:absolute lg:inset-0`. So the photo is sized by the two card rows, never
+the other way round — 387×501 at 1440, which is 1:1.29 against a 4:5
+source and barely a crop at all.
 
 > **No `items-start` on that grid.** It sizes each cell to its own content,
-> which would collapse the photo column to zero — the cell only has an
+> which would collapse the photo cell to zero — it only has an
 > absolutely-positioned child. Default `stretch` is what gives it height.
 > This is the same trap the surgeon section hit.
+
+> **The cards are direct children of that grid**, not nested in their own.
+> They have to be, for the photo's `row-span` to place them around it.
+> That's why they use `Reveal` with a per-index delay instead of
+> `RevealGroup`/`RevealItem` — nesting them would break the placement.
 
 ### The stacked crop is 5:4, and that number matters
 
@@ -771,7 +799,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **17027px**.
+height **16481px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

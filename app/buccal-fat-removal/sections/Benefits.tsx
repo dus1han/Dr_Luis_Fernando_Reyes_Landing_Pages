@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { Eyebrow } from "@/components/lp/Eyebrow";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
-import { Reveal, RevealGroup, RevealItem } from "@/components/lp/Reveal";
-import { Section, SectionHead } from "@/components/lp/Section";
+import { Reveal } from "@/components/lp/Reveal";
+import { Section } from "@/components/lp/Section";
 import { TiltCard } from "@/components/lp/TiltCard";
 import { IMAGES } from "@/lib/generated/images";
 import { BENEFITS } from "../content";
@@ -52,7 +52,13 @@ export function Benefits() {
   return (
     <Section id="benefits" tone="ivory" padding="tight">
       <div className="shell">
-        <SectionHead>
+        {/* Not <SectionHead>: its 54px bottom margin is 24px more than
+            this band can spare once the photograph is in the row, and
+            passing `mb-*` through its className would sit at equal
+            specificity with the built-in one — a coin flip decided by
+            stylesheet order, not attribute order. Inlining is the honest
+            way to take a different value. */}
+        <div className="mx-auto mb-[30px] max-w-[64ch] text-center">
           <Eyebrow center>{BENEFITS.eyebrow}</Eyebrow>
           <MaskedHeading
             lines={[
@@ -63,34 +69,35 @@ export function Benefits() {
             ]}
             className="font-display text-[clamp(32px,4.4vw,46px)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
           />
-        </SectionHead>
+        </div>
 
-        {/* Portrait beside the cards rather than above them.
+        {/* One grid holds the photograph and all six cards.
 
             Front-facing on purpose: this section is describing cheekbone
             and jawline definition, and the hero's three-quarter view
-            can't show it. The cards drop from three columns to two to
-            make room — which also gives them the width their titles
-            wanted, since several were wrapping to three lines at a third
-            of the shell.
+            can't show it.
 
-            No `items-start` on this grid — the photo column is sized by
-            the card column beside it, and `items-start` would collapse it
-            to its own content instead. */}
-        <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:gap-10">
-          {/* From lg the photograph is pulled out of flow and pinned to
-              the cell, so it runs the exact height of the six cards. It
-              was sticky at its natural 4:5 first, which left ~330px of
-              bare ivory under it — and because it stuck to the top of the
-              viewport, that gap was on screen the whole way down the
-              section rather than hidden by the scroll.
+            The shape is driven by a single rule — **the photograph and
+            every card have to be on screen together**. That rules out
+            three rows of cards: at 1440x900 it made the band 1246px and
+            you could never see the top of the photo and the last card at
+            once. Four columns with the photo spanning both rows gets the
+            whole thing to ~830px, inside a 900px viewport.
 
-              Filling the column costs a tighter crop: at 484x940 this is
-              1:1.94 against a 4:5 source, so about a third of the width
-              goes. The face survives it comfortably — scaled to cover,
-              it's ~334px inside a 484px window — and what's lost is
-              backdrop and shoulder. */}
-          <Reveal className="relative">
+            The cost is card width. Three columns of cards at 237px is
+            narrower than the 364px they had before the photo arrived, so
+            the type came down with it. That's the trade: everything
+            visible at once, or roomier cards you have to scroll between.
+
+            No `items-start` here — the photo cell is sized by the two
+            card rows beside it, and `items-start` would collapse it to
+            its own content instead. */}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-5">
+          {/* Spans the full width while stacked, then becomes the left
+              column across both card rows. The inner div is absolute so
+              it fills whatever height those rows come to — the photo is
+              sized by the cards, never the other way round. */}
+          <Reveal className="relative sm:col-span-2 lg:col-span-1 lg:row-span-2">
             {/* Offset hairline, like a matted print. Desktop only — at
                 phone widths it just crowds the shell edge. */}
             <span
@@ -138,40 +145,47 @@ export function Benefits() {
             </div>
           </Reveal>
 
-          <RevealGroup step={0.08} className="grid gap-6 sm:grid-cols-2">
-          {BENEFITS.items.map((b) => (
-            <RevealItem key={b.title} className="h-full">
+          {/* Cards are siblings of the photograph, not nested in their own
+              grid — they have to be direct children for the photo's
+              row-span to place them around it. `Reveal` with a per-index
+              delay gives the same stagger `RevealGroup` did. */}
+          {BENEFITS.items.map((b, i) => (
+            <Reveal key={b.title} delay={0.05 * i} className="h-full">
               <TiltCard className="group h-full overflow-hidden rounded-[3px] border border-ink/12 bg-sand/45 transition-[background-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-ivory hover:shadow-[0_28px_50px_-34px_rgb(35_27_22/0.45)]">
-              <article className="relative h-full p-7">
-                {/* Gold rule draws across the top edge on hover. */}
-                <span
-                  aria-hidden
-                  className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-linear-to-r from-gold to-gold-light transition-transform duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100"
-                />
-
-                <span className="mb-5 grid h-11 w-11 place-items-center rounded-full border border-gold/30 text-gold transition-[background-color,color,border-color] duration-400 group-hover:border-gold group-hover:bg-gold group-hover:text-white">
-                  <svg
-                    width="21"
-                    height="21"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
+                {/* Compact on purpose. Two rows of these set the height of
+                    the whole band, and the band has to fit a screen — so
+                    padding and type are sized down to what a 237px column
+                    actually needs rather than what looked generous at
+                    364px. */}
+                <article className="relative h-full p-[18px]">
+                  {/* Gold rule draws across the top edge on hover. */}
+                  <span
                     aria-hidden
-                  >
-                    {ICONS[b.icon]}
-                  </svg>
-                </span>
+                    className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-linear-to-r from-gold to-gold-light transition-transform duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100"
+                  />
 
-                <h3 className="mb-3.5 font-display text-[20px] leading-[1.3] text-ink">
-                  {b.title}
-                </h3>
-                <p className="m-0 text-[15.5px] leading-[1.7] text-body">{b.body}</p>
-              </article>
+                  <span className="mb-3.5 grid h-9 w-9 place-items-center rounded-full border border-gold/30 text-gold transition-[background-color,color,border-color] duration-400 group-hover:border-gold group-hover:bg-gold group-hover:text-white">
+                    <svg
+                      width="17"
+                      height="17"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      aria-hidden
+                    >
+                      {ICONS[b.icon]}
+                    </svg>
+                  </span>
+
+                  <h3 className="mb-2.5 font-display text-[17px] leading-[1.3] text-ink">
+                    {b.title}
+                  </h3>
+                  <p className="m-0 text-[14px] leading-[1.56] text-body">{b.body}</p>
+                </article>
               </TiltCard>
-            </RevealItem>
+            </Reveal>
           ))}
-          </RevealGroup>
         </div>
       </div>
     </Section>
