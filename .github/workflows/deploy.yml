@@ -178,7 +178,10 @@ jobs:
                  fi
                  echo
                  echo 'Create it, then re-run this workflow from the Actions tab:'
-                 echo '  sudo mkdir -p <path> && sudo chown -R deploy:deploy <path>'
+                 echo '  sudo mkdir -p <path>'
+                 # The deploy username is a secret, so printing it here comes
+                 # out as *** and reads like a redaction bug. Describe it.
+                 echo '  sudo chown -R <the deploy user>:<same> <path>'
                  echo '  then write .env with IMAGE, CONTAINER_NAME and SITE_PORT'
                  exit 1
                fi

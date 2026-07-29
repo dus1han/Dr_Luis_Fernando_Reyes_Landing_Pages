@@ -39,6 +39,24 @@ fi
 cd "$SITE_PATH" || fail "cannot enter $SITE_PATH"
 [ -f .env ] || fail "no .env in $SITE_PATH — compose has no IMAGE, CONTAINER_NAME or SITE_PORT."
 
+# An EMPTY .env passes `-f`, and that is not theoretical — a heredoc
+# interrupted mid-paste leaves exactly that, because `tee` truncates the file
+# the moment it opens. Compose then fails on an unset variable, several steps
+# later, naming neither this file nor the missing key. Check the contents.
+missing=""
+for key in IMAGE CONTAINER_NAME SITE_PORT; do
+  grep -q "^${key}=." .env || missing="$missing $key"
+done
+if [ -n "$missing" ]; then
+  echo "Current .env:"
+  sed 's/^/    /' .env
+  echo
+  echo "Write it with a single command rather than a heredoc — an interrupted"
+  echo "paste truncates the file:"
+  echo "  printf 'IMAGE=...\\nCONTAINER_NAME=...\\nSITE_PORT=...\\n' > $SITE_PATH/.env"
+  fail "missing or empty in .env:$missing"
+fi
+
 # A stale SITE_URL in .env is worse than none: it reads as authoritative while
 # having no effect whatsoever, because the origin is baked in at build time (see
 # lib/site-url.ts). Strip it so there is exactly one place the hostname lives —
@@ -49,6 +67,43 @@ if grep -q '^SITE_URL=' .env 2>/dev/null; then
   chmod 644 "$tmp"
   mv "$tmp" .env
   echo "==> removed inert SITE_URL from .env (it is a build arg, not a runtime value)"
+fi
+
+# --- how the port is published --------------------------------------------
+#
+# The SITE_URL repository variable is the signal for "a domain exists".
+#
+#   unset  -> no hostname, so Caddy has nothing to obtain a certificate for and
+#             nothing to proxy. Bind 0.0.0.0 so the site can be reached on the
+#             server's IP, which is the only way to see it at all.
+#   set    -> a domain is configured. Bind 127.0.0.1 so the port is private and
+#             Caddy is the only public listener, holding TLS in one place.
+#
+# Managed here rather than left to whoever edits .env, because the dangerous
+# direction is the one you forget: a BIND_ADDR left behind after DNS goes live
+# keeps a plaintext copy of the site exposed next to the HTTPS one, serving the
+# same consultation form. This closes it automatically on the deploy that first
+# sees a SITE_URL.
+set_env_key() {
+  tmp=$(mktemp "$PWD/.env.XXXXXX")
+  grep -v "^$1=" .env > "$tmp"
+  [ -n "${2:-}" ] && echo "$1=$2" >> "$tmp"
+  chmod 644 "$tmp"
+  mv "$tmp" .env
+}
+
+if [ -z "$SITE_URL" ]; then
+  if ! grep -q '^BIND_ADDR=0.0.0.0' .env; then
+    set_env_key BIND_ADDR 0.0.0.0
+    echo "==> no SITE_URL variable set; publishing on 0.0.0.0 so the site is reachable by IP"
+  fi
+  echo "::warning::Serving on the public IP over plain HTTP — no certificate."
+  echo "    Anything typed into the consultation form crosses the network in the clear."
+  echo "    Fine for review; set the SITE_URL variable and point DNS before running ads."
+  echo "    If a firewall is active the port also has to be open: sudo ufw allow <port>/tcp"
+elif grep -q '^BIND_ADDR=' .env; then
+  set_env_key BIND_ADDR ""
+  echo "==> SITE_URL is set, so removed BIND_ADDR — the port is private again and Caddy fronts it"
 fi
 
 # Report what the image was actually built with, so a wrong hostname shows up

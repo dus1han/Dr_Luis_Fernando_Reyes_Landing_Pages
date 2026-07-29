@@ -99,6 +99,20 @@ EOF
 > [§1](#1--the-two-build-time-values). `deploy/remote-deploy.sh` strips it from
 > this file on every deploy, because a line that reads as authoritative and
 > does nothing is worse than no line at all.
+>
+> **No `BIND_ADDR` either** — the same script sets or removes it based on
+> whether the `SITE_URL` variable exists. See [§3](#before-dns-exists--this-is-automatic).
+
+**Write it with one command, not a heredoc.** An interrupted paste leaves the
+file empty, because `tee` truncates it the moment it opens — and an empty
+`.env` passes a `[ -f ]` test, so the failure surfaces later as a compose error
+about an unset variable. The deploy now checks the three keys are actually
+present and names the missing ones, but the simplest fix is not to create the
+problem:
+
+```bash
+sudo -u deploy bash -c 'printf "IMAGE=ghcr.io/dus1han/dr_luis_fernando_reyes_landing_pages:latest\nCONTAINER_NAME=dr-luis-landing-pages\nSITE_PORT=3102\n" > /opt/sites/dr-luis-landing-pages/.env'
+```
 
 ### The port register
 
@@ -172,13 +186,29 @@ every site on the server down.
 > 2–4 are routes in one app on one port. They do not get a block, a port or a
 > container each — see [§4](#4--another-page-is-not-another-deployment).
 
-### Before DNS exists
+### Before DNS exists — this is automatic
 
-`BIND_ADDR=0.0.0.0` in `.env` publishes the port directly so the site can be
-previewed over plain HTTP. **No certificate**, so anything typed into the
-consultation form crosses the network in the clear — fine for review, not for a
-live campaign. Delete the line once DNS is live (it reverts to `127.0.0.1`) and
-`docker compose up -d`.
+**You do not set `BIND_ADDR` by hand.** `deploy/remote-deploy.sh` manages it,
+using the `SITE_URL` repository variable as the signal for "a domain exists":
+
+| `SITE_URL` variable | Binding | Why |
+|---|---|---|
+| **unset** | `0.0.0.0` — reachable on the server's IP | There is no hostname, so Caddy has nothing to get a certificate for and nothing to proxy. Exposing the port is the only way to see the site at all |
+| **set** | `127.0.0.1` — private | A domain is configured, so Caddy fronts it and holds TLS in one place |
+
+Setting the variable and redeploying **closes the public port on its own**.
+That direction is the one that matters: a `BIND_ADDR` left behind after DNS goes
+live keeps a plaintext copy of the site running beside the HTTPS one, serving
+the same consultation form. Automating it means nobody has to remember.
+
+⚠️ While the port is public it is **plain HTTP with no certificate**. Anything
+typed into the form crosses the network in the clear. Fine for showing the
+clinic a draft; not for a live campaign. The deploy log prints this warning on
+every run that exposes it.
+
+If a firewall is active the port also has to be open — `sudo ufw status`, and
+`sudo ufw allow <port>/tcp` if it is. The script cannot check this for you: the
+`deploy` user has no sudo.
 
 ---
 
@@ -263,6 +293,8 @@ Revert to `:latest` once the next good build ships.
 | Symptom | Cause |
 |---|---|
 | **`scp: dest open "***/docker-compose.yml": No such file or directory`** | The site directory does not exist on the server. `***` is the masked `VPS_SITE_PATH`. Create it and the `.env` — [§2](#2--the-env-file-on-the-vps) — then re-run from the Actions tab; no new commit needed. A preflight step now catches this before the `scp` and prints what *does* exist under `/opt/sites` |
+| **`missing or empty in .env: …`** | The file exists but a key is absent or has no value. Usually a heredoc interrupted mid-paste — `tee` truncated it. Rewrite with the single-command form in [§2](#2--the-env-file-on-the-vps) |
+| **Public IP on the site port does not answer** | By design once `SITE_URL` is set: the port binds to `127.0.0.1` and only Caddy is public. If `SITE_URL` is unset it binds `0.0.0.0`, and then it is either the container being down (`docker compose ps`) or a firewall (`sudo ufw status`) |
 | **502 from Caddy** | Container down or on a different port. `docker compose ps`, then `curl -I http://127.0.0.1:<port>/` |
 | **Certificate never issues** | DNS not pointing at the server, or Cloudflare proxy is orange |
 | **Canonical tag shows the wrong domain** | `SITE_URL` was set on the server only. It is baked at build time — set the repository variable and rebuild |
