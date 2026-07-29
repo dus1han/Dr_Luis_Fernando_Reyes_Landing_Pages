@@ -262,6 +262,7 @@ Revert to `:latest` once the next good build ships.
 
 | Symptom | Cause |
 |---|---|
+| **`scp: dest open "***/docker-compose.yml": No such file or directory`** | The site directory does not exist on the server. `***` is the masked `VPS_SITE_PATH`. Create it and the `.env` — [§2](#2--the-env-file-on-the-vps) — then re-run from the Actions tab; no new commit needed. A preflight step now catches this before the `scp` and prints what *does* exist under `/opt/sites` |
 | **502 from Caddy** | Container down or on a different port. `docker compose ps`, then `curl -I http://127.0.0.1:<port>/` |
 | **Certificate never issues** | DNS not pointing at the server, or Cloudflare proxy is orange |
 | **Canonical tag shows the wrong domain** | `SITE_URL` was set on the server only. It is baked at build time — set the repository variable and rebuild |

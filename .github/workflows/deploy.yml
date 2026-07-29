@@ -156,6 +156,39 @@ jobs:
           chmod 600 ~/.ssh/id_deploy
           ssh-keyscan -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
+          # Preflight, before the scp.
+          #
+          # remote-deploy.sh already checks for the site directory and prints
+          # what does exist under /opt/sites — but it runs AFTER the scp below,
+          # so a missing directory surfaced as a bare
+          #   scp: dest open "***/docker-compose.yml": No such file or directory
+          # with the path masked, because VPS_SITE_PATH is a secret. That names
+          # neither the cause nor the fix. This runs the same check first.
+          ssh -i ~/.ssh/id_deploy -p "$VPS_PORT" \
+              -o StrictHostKeyChecking=accept-new \
+              -o ConnectTimeout=20 \
+              "$VPS_USER@$VPS_HOST" \
+              "if [ ! -d '$SITE_PATH' ]; then
+                 echo '::error::Site directory does not exist on the server.'
+                 echo 'VPS_SITE_PATH points at a path that is not there. Directories under /opt/sites:'
+                 if [ -d /opt/sites ]; then
+                   ls -1 /opt/sites | sed 's|^|  /opt/sites/|'
+                 else
+                   echo '  (/opt/sites does not exist at all)'
+                 fi
+                 echo
+                 echo 'Create it, then re-run this workflow from the Actions tab:'
+                 echo '  sudo mkdir -p <path> && sudo chown -R deploy:deploy <path>'
+                 echo '  then write .env with IMAGE, CONTAINER_NAME and SITE_PORT'
+                 exit 1
+               fi
+               if [ ! -f '$SITE_PATH/.env' ]; then
+                 echo '::error::No .env in the site directory.'
+                 echo 'compose has no IMAGE, CONTAINER_NAME or SITE_PORT to read.'
+                 exit 1
+               fi
+               echo 'preflight ok'"
+
           # Ship the compose file with every deploy.
           #
           # Without this the server keeps whatever copy was placed there by hand
