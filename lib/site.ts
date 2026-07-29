@@ -64,8 +64,17 @@ export const SITE = {
   /** Shown beside the address. Leave empty to hide the row. */
   openingHours: "" as string,
 
-  /** Update once the ads subdomain is live — used for canonical + OG URLs. */
-  baseUrl: "https://lp.drluisfernandoreyes.com",
+  /*
+   * There is deliberately no `baseUrl` here any more.
+   *
+   * The public origin is now `ORIGIN` in `lib/site-url.ts`, read from the
+   * SITE_URL environment variable at runtime. A constant in this file is
+   * baked into the bundle, so moving the site to its real hostname meant a
+   * rebuild and redeploy; an env var means editing `.env` on the server and
+   * restarting the container.
+   *
+   * `ORIGIN` is server-only — see the note in that file.
+   */
 } as const;
 
 /**

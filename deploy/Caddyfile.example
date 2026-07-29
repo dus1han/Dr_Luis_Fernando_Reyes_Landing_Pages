@@ -1,0 +1,50 @@
+# /opt/sites/caddy/Caddyfile
+#
+# REFERENCE ONLY. The live Caddyfile is server-wide, not per repository — it
+# already exists on the VPS and holds a block for every site. Do not copy this
+# file over it; append the block below to what is already there.
+#
+# ONE Caddy instance fronts every site on the VPS. It is the only thing
+# listening on 80/443; each app sits privately on 127.0.0.1:<port>.
+#
+# Caddy obtains and renews Let's Encrypt certificates automatically. There is
+# no certbot, no cron job, and no renewal to forget — the only requirement is
+# that the domain's A record already points at this server before Caddy starts,
+# because the certificate challenge is what proves you control it.
+
+{
+    # Let's Encrypt uses this for expiry warnings. Use a real address.
+    email admin@drluisfernandoreyes.com
+}
+
+# --- This project -----------------------------------------------------------
+# One block serves every landing page in this repo. /buccal-fat-removal and
+# whatever pages 2-4 turn out to be are routes in one app on one port — they
+# do NOT get a block each.
+lp.drluisfernandoreyes.com {
+    reverse_proxy 127.0.0.1:3102
+
+    encode gzip zstd
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options    "nosniff"
+        Referrer-Policy           "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/dr-luis.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}
+
+# Apply changes without dropping a request on the other sites:
+#
+#   cd /opt/sites/caddy
+#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+#
+# Reload, not restart. Caddy validates the config before swapping it in, so a
+# typo fails loudly instead of taking every site on the server down.

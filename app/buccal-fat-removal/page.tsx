@@ -4,6 +4,7 @@ import { Nav } from "@/components/lp/Nav";
 import { ScrollProgress } from "@/components/lp/ScrollProgress";
 import { StickyCTA } from "@/components/lp/StickyCTA";
 import { MAPS, SITE } from "@/lib/site";
+import { ORIGIN } from "@/lib/site-url";
 import { FAQ, NAV_LINKS, SLUG } from "./content";
 import { Anatomy } from "./sections/Anatomy";
 import { Assurance } from "./sections/Assurance";
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     type: "website",
     title: TITLE,
     description: DESCRIPTION,
-    url: `${SITE.baseUrl}/${SLUG}`,
+    url: `${ORIGIN}/${SLUG}`,
     siteName: SITE.doctor,
     locale: "en_AE",
     images: [
@@ -52,12 +53,12 @@ function StructuredData() {
     "@graph": [
       {
         "@type": "Physician",
-        "@id": `${SITE.baseUrl}/#physician`,
+        "@id": `${ORIGIN}/#physician`,
         name: SITE.doctor,
         medicalSpecialty: "PlasticSurgery",
         telephone: SITE.phoneDisplay,
         email: SITE.email,
-        url: SITE.baseUrl,
+        url: ORIGIN,
         sameAs: [SITE.instagram, SITE.facebook],
         address: {
           "@type": "PostalAddress",
@@ -93,7 +94,7 @@ function StructuredData() {
           "The buccal fat pad is accessed through a small incision inside the mouth under local anaesthetic, and a precise amount of fat is removed to reveal cheekbone and jawline definition. No incisions are made on the outside of the face.",
         followup:
           "Most patients return to normal activities within about a week, with mild early swelling that settles during healing.",
-        performer: { "@id": `${SITE.baseUrl}/#physician` },
+        performer: { "@id": `${ORIGIN}/#physician` },
       },
       {
         "@type": "FAQPage",

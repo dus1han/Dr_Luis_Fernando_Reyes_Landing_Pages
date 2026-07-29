@@ -1,0 +1,57 @@
+# One stack per site. Copy this file into /opt/sites/<site>/ on the VPS
+# alongside a .env holding SITE_PORT, IMAGE and CONTAINER_NAME.
+#
+# For this project that is /opt/sites/dr-luis-landing-pages.
+#
+# The published port defaults to 127.0.0.1: the container is reachable from the
+# host (so Caddy can proxy to it, and you can curl it while debugging) but NOT
+# from the internet. Only Caddy listens publicly, which means one place holds
+# TLS and one place is exposed. That is the end state you want.
+#
+# BIND_ADDR exists for the window before a domain points at the server. With no
+# A record Caddy cannot complete an ACME challenge, so there is no HTTPS to
+# proxy through and the only way to see the site is to hit the port directly:
+# set BIND_ADDR=0.0.0.0 in .env. This serves plain HTTP with no certificate —
+# fine for a preview link, not for traffic. Once DNS is live, delete the line
+# from .env (it reverts to 127.0.0.1) and re-run `docker compose up -d`.
+
+services:
+  web:
+    image: ${IMAGE}
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+
+    # host:<bind>:<unique port>  ->  container:3000
+    # Every site on this VPS gets its own SITE_PORT; the container is always
+    # 3000 internally, so nothing inside the image needs to know about it.
+    ports:
+      - '${BIND_ADDR:-127.0.0.1}:${SITE_PORT}:3000'
+
+    environment:
+      NODE_ENV: production
+      # Runtime-only values go here. NEXT_PUBLIC_* must NOT — those are baked
+      # into the bundle at build time and are set as build args instead.
+      TZ: Asia/Dubai
+
+      # SITE_URL is deliberately absent. The public origin is compiled into the
+      # statically prerendered canonical tags, Open Graph URLs and JSON-LD at
+      # build time, so setting it here would look authoritative and do nothing.
+      # It is a Docker build arg, fed by the SITE_URL repository variable, and
+      # `deploy/remote-deploy.sh` strips it from .env if anyone adds it back.
+
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'

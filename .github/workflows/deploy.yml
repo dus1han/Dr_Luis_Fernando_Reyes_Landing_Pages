@@ -1,0 +1,187 @@
+name: Build and deploy
+
+# Builds a Docker image on GitHub's runners, pushes it to GitHub Container
+# Registry, then tells the VPS to pull and restart. The VPS never compiles
+# anything — a 2GB droplet will happily serve this app but will struggle to
+# build it, and a failed build on the server means downtime.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you redeploy from the Actions tab without a commit
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set the GTM ID ONCE as a repository variable and every future build
+      # picks it up automatically — pushing code never changes or clears it.
+      #
+      # A missing ID does NOT stop the deploy. The site is fully functional
+      # without GTM: the container script renders nothing at all, so there are
+      # no requests, no errors and no console noise.
+      #
+      # It still warrants a warning, because the failure mode is silent. The
+      # value is compiled into the bundle, so a build without it produces a site
+      # that looks completely correct and simply never fires a conversion — and
+      # you find out from an empty Google Ads report weeks later. The annotation
+      # below puts that on the run summary where someone will see it.
+      - name: Check analytics configuration
+        run: |
+          if [ -z "${{ vars.NEXT_PUBLIC_GTM_ID }}" ]; then
+            echo "::warning::NEXT_PUBLIC_GTM_ID is not set — deploying without Google Tag Manager."
+            echo ""
+            echo "The site will work normally but will have NO conversion tracking."
+            echo ""
+            echo "To enable it, set the variable once at:"
+            echo "  Settings → Secrets and variables → Actions → Variables → New repository variable"
+            echo "  Name: NEXT_PUBLIC_GTM_ID   Value: GTM-XXXXXXX"
+            echo ""
+            echo "Then re-run this workflow — the ID is baked in at build time,"
+            echo "so setting the variable alone changes nothing until a rebuild."
+          else
+            echo "✓ GTM container: ${{ vars.NEXT_PUBLIC_GTM_ID }}"
+          fi
+
+          # The origin is baked into the prerendered HTML by this build, so
+          # print which one, on the run summary, where it can be checked
+          # against the domain the site is actually served from.
+          if [ -z "${{ vars.SITE_URL }}" ]; then
+            echo "· SITE_URL not set — baking the default https://lp.drluisfernandoreyes.com"
+            echo "  Set the SITE_URL variable if the site is served from anywhere else;"
+            echo "  canonical tags and JSON-LD are written at build time and a wrong"
+            echo "  origin will not show up by looking at the page."
+          else
+            echo "✓ Origin: ${{ vars.SITE_URL }}"
+          fi
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # `latest` is what compose pulls; the SHA tag is what you roll back to.
+          tags: |
+            type=raw,value=latest
+            type=sha,format=long
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # NEXT_PUBLIC_* are compiled into the bundle, so they must be build
+          # args. Changing this value requires a rebuild, not a restart.
+          #
+          # SITE_URL is here rather than only in compose because the campaign
+          # pages are statically prerendered — canonical tags, og:url and the
+          # JSON-LD are written into HTML during this build. Passing it at
+          # runtime alone leaves that markup pointing at the wrong origin, and
+          # a wrong canonical is silent: the page looks perfect and Google
+          # indexes somewhere else.
+          #
+          # Unset falls back to the default in lib/site-url.ts.
+          build-args: |
+            NEXT_PUBLIC_GTM_ID=${{ vars.NEXT_PUBLIC_GTM_ID }}
+            SITE_URL=${{ vars.SITE_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+
+  deploy:
+    name: Deploy to VPS
+    needs: build
+    runs-on: ubuntu-latest
+
+    # Plain ssh rather than a marketplace action. The action this replaced
+    # downloads a binary at run time and, when its own setup failed, exited 1
+    # having printed nothing at all — no command echo, no stderr, nothing to act
+    # on. Three runs burned on a silent exit code. `ssh` is already installed on
+    # the runner, streams stdout and stderr verbatim, and is one fewer
+    # third-party dependency sitting in the deploy path.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull and restart over SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT || 22 }}
+          SITE_PATH: ${{ secrets.VPS_SITE_PATH }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          # A variable, not a secret — it is the site's own public address.
+          # Keeping it here rather than on the server means the hostname is
+          # version-controlled and auditable, and changing it is a re-run.
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          set -euo pipefail
+
+          for v in SSH_KEY VPS_HOST VPS_USER SITE_PATH; do
+            if [ -z "${!v}" ]; then
+              echo "::error::Required secret is empty: ${v/SSH_KEY/VPS_SSH_KEY}"
+              exit 1
+            fi
+          done
+
+          mkdir -p ~/.ssh
+          # printf, not echo: the key must keep its trailing newline or OpenSSH
+          # rejects it as malformed.
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Ship the compose file with every deploy.
+          #
+          # Without this the server keeps whatever copy was placed there by hand
+          # on day one, and every later change to docker-compose.yml — a new
+          # environment variable, a changed port binding, a healthcheck tweak —
+          # is silently ignored. The deploy still goes green, because pulling a
+          # new image and restarting genuinely succeeds; the change simply never
+          # arrives. That is a bad failure to own, so the file is treated as
+          # deployable artefact rather than server state.
+          #
+          # .env is NOT shipped: it holds this server's port and hostname, which
+          # are deliberately per-installation and not in the repository.
+          scp -i ~/.ssh/id_deploy -P "$VPS_PORT" \
+              -o StrictHostKeyChecking=accept-new \
+              docker-compose.yml "$VPS_USER@$VPS_HOST:$SITE_PATH/docker-compose.yml"
+
+          # The remote script is piped in as stdin, so it never passes through a
+          # shell-quoting layer. Its inputs are prepended as assignments escaped
+          # with printf %q, which is safe for any value.
+          {
+            printf 'SITE_PATH=%q\n'     "$SITE_PATH"
+            printf 'GHCR_USERNAME=%q\n' "$GHCR_USERNAME"
+            printf 'GHCR_PAT=%q\n'      "$GHCR_PAT"
+            printf 'SITE_URL=%q\n'      "$SITE_URL"
+            cat deploy/remote-deploy.sh
+          } | ssh -i ~/.ssh/id_deploy -p "$VPS_PORT" \
+                  -o StrictHostKeyChecking=accept-new \
+                  -o ConnectTimeout=20 \
+                  "$VPS_USER@$VPS_HOST" 'bash -s'

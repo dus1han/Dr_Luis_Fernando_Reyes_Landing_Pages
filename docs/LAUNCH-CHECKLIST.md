@@ -67,11 +67,21 @@ about outcomes are scrutinised.
 
 ## 3. Domain and hosting
 
-- [ ] Point the ads subdomain (e.g. `lp.drluisfernandoreyes.com`) at the
-      deployment.
-- [ ] Set `SITE.baseUrl` in `lib/site.ts` to that exact origin — it drives
-      canonical URLs and Open Graph tags.
+- [ ] Point the ads subdomain (e.g. `lp.drluisfernandoreyes.com`) at the VPS
+      with an A record — **before** reloading Caddy, or the certificate
+      request fails. See [deployment.md](deployment.md).
+- [ ] Create `/opt/sites/dr-luis-landing-pages/.env` — `IMAGE`,
+      `CONTAINER_NAME` and `SITE_PORT=3102`. Not `SITE_URL`; that is a build
+      arg and the deploy script strips it from this file.
+- [ ] Set the `SITE_URL` Actions **variable** to that exact origin, then
+      rebuild. It drives canonical URLs, Open Graph and the JSON-LD, and it
+      is baked in at **build** time — setting it on the server and
+      restarting does nothing.
+- [ ] Add the Caddy block and `caddy reload` (not restart — a restart drops
+      requests on every other site).
 - [ ] Confirm HTTPS and that `http://` redirects to `https://`.
+- [ ] Remove `BIND_ADDR=0.0.0.0` from `.env` if it was set for previewing —
+      it publishes the port with no certificate.
 - [ ] Confirm `/` serves the index (`app/page.tsx`) and that every card on
       it opens the right page. It used to 307 to `/buccal-fat-removal`;
       that redirect has been removed.

@@ -4,6 +4,7 @@ import Script from "next/script";
 import { MotionProvider } from "@/components/lp/MotionProvider";
 import { ANALYTICS, analyticsEnabled } from "@/lib/analytics";
 import { SITE } from "@/lib/site";
+import { ORIGIN } from "@/lib/site-url";
 import "./globals.css";
 
 /**
@@ -26,7 +27,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.baseUrl),
+  metadataBase: new URL(ORIGIN),
   title: {
     default: `${SITE.doctor} — ${SITE.practice}, ${SITE.city}`,
     template: `%s | ${SITE.doctorShort}`,

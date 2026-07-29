@@ -15,6 +15,7 @@ everything page 1 established.
 |---|---|
 | **[docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md)** | **Section-by-section reference for the live page** — what each section does, which content keys it reads, what animates, and the gotchas that will bite you if you change it. Start here for any edit. |
 | [docs/pages/index.md](docs/pages/index.md) | The root index at `/` — how to add a page to it, why it's `noindex`, and the body-padding trap any page without a sticky bar will hit |
+| [docs/deployment.md](docs/deployment.md) | VPS, Docker and GitHub Actions — the site directory, the two build-time variables, and why editing them on the server does nothing |
 | [docs/LAUNCH-CHECKLIST.md](docs/LAUNCH-CHECKLIST.md) | Ordered pre-launch steps: content sign-off, DHA approval, lead delivery, tracking, QA |
 | This file | Architecture, design system, image pipeline, conventions |
 
@@ -27,6 +28,9 @@ npm install
 npm run dev            # http://localhost:3000/buccal-fat-removal
 npm run build && npm start
 npm run prepare-images # only after changing source artwork
+
+# Deployment is a push to main — see docs/deployment.md
+docker build -t lp . && docker run --rm -p 3000:3000 lp   # build the deploy image locally
 ```
 
 Requires Node 20+. No environment variables are needed to run locally.
@@ -41,12 +45,16 @@ single file so none of them require touching page code.
 | # | What | Where | Notes |
 |---|---|---|---|
 | 1 | **Lead delivery** | `app/api/lead/route.ts` → `deliver()` | Validation, spam filtering and Google Ads attribution already work. Only the destination is missing — leads currently log to the server console. |
-| 2 | **Analytics IDs** | `lib/analytics.ts` → `ANALYTICS` | Fill in `GTM_ID` (recommended) and/or `GA4_ID` + `ADS_CONVERSION`. While empty, **no tag scripts load at all** — zero requests. |
+| 2 | **Analytics ID** | GitHub → Actions **variable** `NEXT_PUBLIC_GTM_ID` | Not a code change. `lib/analytics.ts` reads it; while empty, **no tag scripts load at all** — zero requests. It is compiled into the bundle, so setting it needs a **rebuild**, not a restart. See [docs/deployment.md](docs/deployment.md). |
 | 3 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Five of six carry `placeholder: true` — written for layout, not supplied by patients. Replace with consented feedback, then set `SHOW_PLACEHOLDER_REVIEWS = false` in `lib/site.ts` and they drop from the build entirely. |
 | 4 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
 
-Also update `SITE.baseUrl` in `lib/site.ts` once the ads subdomain is
-confirmed — it drives canonical URLs and Open Graph tags.
+Once the ads subdomain is confirmed, set the `SITE_URL` Actions **variable**
+to that exact origin and rebuild. It drives canonical URLs, Open Graph tags
+and the JSON-LD. There is no `SITE.baseUrl` any more — the origin lives in
+`lib/site-url.ts`, and because the campaign pages are prerendered it is baked
+in at **build** time. Setting it on the server and restarting does nothing;
+see [docs/deployment.md](docs/deployment.md).
 
 ### Optional toggle
 
@@ -79,7 +87,9 @@ components/lp/                  SHARED KIT — reused by every future page
   BeforeAfterSlider  LeadForm
 
 lib/
-  site.ts                       clinic constants (phone, email, socials, URL)
+  site.ts                       clinic constants (phone, email, socials, map)
+  site-url.ts                   the public origin — SERVER ONLY, baked at build
+  pages.ts                      the landing-page register the root index reads
   motion.ts                     shared easings + animation variants
   analytics.ts                  event layer + tag config
   validation.ts                 Zod schema shared by client and server
@@ -87,6 +97,11 @@ lib/
 
 scripts/prepare-images.mjs      source artwork → optimised page assets
 public/buccal-fat-removal/      the generated assets
+
+Dockerfile                      standalone image, three stages
+docker-compose.yml              shipped to the VPS on every deploy
+deploy/                         remote-deploy.sh + Caddy reference
+.github/workflows/deploy.yml    build → GHCR → ssh → pull → restart
 ```
 
 ### Where to change things
