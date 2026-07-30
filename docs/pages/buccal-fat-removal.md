@@ -26,7 +26,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
-| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 1059 |
+| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 751 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
 | — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 44 / 30 | 547 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10470px**; treat a change
+at 68 and must not move. Page height at 1440 is **10162px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -534,19 +534,36 @@ marketing in Dubai. The risk is the testimonials themselves, not their
 wording, so this section needs the same approval pass as the rest of the
 copy before it runs traffic.
 
-### Card heights are ragged on purpose
+### Small cards, clamped, with Read more
 
-The real quotes run from 213 to 676 characters. With the flex default the
-longest set every card to 716px and the shortest carried ~500px of empty
-ivory, which reads as a mistake. Both marquee rows are `items-start` so
-each card takes its natural height — 352 to 716px at 1440.
+The real quotes run 213 to 676 characters, so the length problem had to be
+solved rather than absorbed. Two attempts before this one:
 
-**Do not "tidy" this back to equal heights** unless the quotes are of
-comparable length. Ragged bottoms in a scrolling row read as a wall of
-reviews; a half-empty card does not.
+| Approach | Result |
+|---|---|
+| Flex default (stretch) | Longest quote set every card to 716px; shortest carried ~500px of empty ivory |
+| `items-start`, natural heights | No dead space, but cards ranged 352–716px and the section hit 1059px |
+| **Clamp to 6 lines + `min-height` + Read more** | **352–407px, section 751px** |
 
-The section went 695px → **1059px** because of the length of these quotes.
-That is content-driven, not a spacing regression.
+The clamp gives uniform small cards; the `min-height` is what makes the
+short ones match rather than sitting undersized. `items-start` stays,
+because it is what lets an expanded card grow **on its own** instead of
+dragging every sibling to its height.
+
+**Whether "Read more" appears is measured, not counted.** The same string
+wraps to a different number of lines at 330px and 370px, so a character
+threshold would put the control on cards with nothing hidden behind them.
+A `ResizeObserver` compares `scrollHeight` to `clientHeight`; the result is
+**latched**, because an expanded paragraph no longer overflows and
+re-measuring would remove the control needed to collapse it again.
+
+The 213-character review correctly has no button.
+
+> **The duplicate marquee copy is `inert`.** The cards now contain a
+> button, and `aria-hidden` alone would leave focusable controls in the
+> duplicate — reachable by Tab, invisible to assistive tech. `inert`
+> removes both. Any future interactive element inside a card inherits this
+> for free; anything added *outside* `Card` needs it considered again.
 
 ### The marquee
 
@@ -950,7 +967,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16913px**.
+height **16520px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

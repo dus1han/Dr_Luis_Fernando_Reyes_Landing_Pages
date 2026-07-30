@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Eyebrow } from "@/components/lp/Eyebrow";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/lp/Reveal";
@@ -55,7 +56,39 @@ function Stars() {
   );
 }
 
+/** Six lines at 16px/1.75 — the height every collapsed card is held to. */
+const CLAMP_LINES = 6;
+const CLAMP_HEIGHT = 16 * 1.75 * CLAMP_LINES;
+
 function Card({ review }: { review: ReviewItem }) {
+  const [expanded, setExpanded] = useState(false);
+  const quoteRef = useRef<HTMLParagraphElement>(null);
+  const [canExpand, setCanExpand] = useState(false);
+
+  /*
+   * Whether this quote is actually longer than the clamp, measured rather
+   * than guessed from a character count — the same string wraps to a
+   * different number of lines at 330px and 370px, so a count would show
+   * "Read more" on a card with nothing hidden behind it.
+   *
+   * Latched: once true it stays true, because an expanded paragraph no
+   * longer overflows and re-measuring would remove the control needed to
+   * collapse it again.
+   */
+  useEffect(() => {
+    const el = quoteRef.current;
+    if (!el || canExpand) return;
+
+    const measure = () => {
+      if (el.scrollHeight > el.clientHeight + 1) setCanExpand(true);
+    };
+    measure();
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [canExpand]);
+
   return (
     <figure className="relative m-0 flex h-full flex-col rounded-[3px] border border-ink/12 bg-ivory p-7">
       <span
@@ -66,7 +99,38 @@ function Card({ review }: { review: ReviewItem }) {
       </span>
       <Stars />
       <blockquote className="m-0 flex-1">
-        <p className="m-0 text-[16px] leading-[1.75] text-body">{review.quote}</p>
+        {/*
+          `min-height` on the collapsed state, not just a clamp: it holds
+          every card to the same size whether its quote is 213 characters or
+          676, which is what keeps the row reading as a set. Expanding one
+          card grows only that card — the row is `items-start`.
+        */}
+        <p
+          ref={quoteRef}
+          className="m-0 overflow-hidden text-[16px] leading-[1.75] text-body"
+          style={
+            expanded
+              ? undefined
+              : {
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: CLAMP_LINES,
+                  minHeight: CLAMP_HEIGHT,
+                }
+          }
+        >
+          {review.quote}
+        </p>
+
+        {canExpand && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="mt-2 cursor-pointer border-0 bg-transparent p-0 text-[13px] font-semibold text-gold underline underline-offset-2 transition-colors duration-300 hover:text-ink"
+          >
+            {expanded ? "Show less" : "Read more"}
+          </button>
+        )}
       </blockquote>
       <figcaption className="mt-6 border-t border-ink/12 pt-4">
         <span className="block font-display text-[17px] font-semibold text-ink">
@@ -110,15 +174,26 @@ function Marquee({ items }: { items: ReviewItem[] }) {
         className="animate-marquee flex w-max items-start gap-5 group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused] motion-reduce:animate-none"
         style={{ ["--marquee-duration" as string]: `${duration}s` }}
       >
-        {/* items-start on both rows so each card takes its natural height.
-            The real reviews range from 213 to 676 characters, and with the
-            default stretch the longest one set every card to 716px — the
-            shortest then carried ~500px of empty ivory. Ragged bottoms in a
-            scrolling row read as a wall of reviews; a half-empty card reads
-            as a mistake. Do not "tidy" this back to equal heights unless
-            the quotes are of comparable length. */}
+        {/* items-start, with the uniform size coming from the quote's own
+            min-height rather than from stretching.
+
+            The real reviews run 213 to 676 characters. Stretching made the
+            longest set every card to 716px and left the shortest carrying
+            ~500px of empty ivory. Clamping to six lines with a matching
+            min-height gives the same tidy row at a third of the height, and
+            `items-start` is what lets one expanded card grow on its own
+            instead of dragging its neighbours with it. */}
         {[0, 1].map((copy) => (
-          <div key={copy} className="flex items-start gap-5" aria-hidden={copy === 1}>
+          <div
+            key={copy}
+            className="flex items-start gap-5"
+            aria-hidden={copy === 1}
+            /* The cards now contain a button. Without inert, the duplicate
+               copy puts focusable controls inside an aria-hidden subtree —
+               reachable by Tab, invisible to assistive tech. inert removes
+               both in one attribute. */
+            inert={copy === 1}
+          >
             {items.map((r, i) => (
               <div key={i} className="w-[330px] flex-none sm:w-[370px]">
                 <Card review={r} />
