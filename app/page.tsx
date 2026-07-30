@@ -9,10 +9,17 @@ import { Reveal } from "@/components/lp/Reveal";
 import { TiltCard } from "@/components/lp/TiltCard";
 import { IMAGES } from "@/lib/generated/images";
 import { PAGES, type LandingPage } from "@/lib/pages";
+import { INDEXABLE } from "@/lib/site-url";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Landing pages",
+  /*
+   * No `title` on purpose. This page sits at the same level as the root
+   * layout, so it takes that layout's `default` — "Dr. Luis Fernando Reyes" —
+   * rather than running through the `%s | …` template. Setting one here would
+   * produce a bare, unbranded tab, which is what it used to do ("Landing
+   * pages"): the one page with no clinic name in its tab was the hub.
+   */
   description: `Campaign landing pages for ${SITE.doctor}, ${SITE.practice} in ${SITE.city}.`,
   /**
    * noindex, follow.
@@ -23,9 +30,13 @@ export const metadata: Metadata = {
    * campaign points at `/<slug>` directly. `follow` is kept so crawlers
    * still reach the landing pages through it.
    *
-   * Flip to `index: true` only if this subdomain is ever meant to rank.
+   * `follow` tracks INDEXABLE: on a preview build there is nothing here a
+   * crawler should follow either, and letting it walk through to the landing
+   * pages is how a temporary address gets discovered in the first place.
+   *
+   * Flip `index` to true only if this subdomain is ever meant to rank.
    */
-  robots: { index: false, follow: true },
+  robots: { index: false, follow: INDEXABLE },
   alternates: { canonical: "/" },
 };
 

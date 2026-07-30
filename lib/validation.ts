@@ -42,8 +42,19 @@ export const leadSchema = z.object({
   /** Milliseconds the user spent on the form; sub-second means a bot. */
   elapsedMs: z.number().int().nonnegative().optional(),
 
-  /** Google Ads attribution, captured from the URL on mount. */
+  /**
+   * Google Ads click IDs, captured from the landing URL and kept for 90
+   * days — see `lib/click-id.ts`.
+   *
+   * Three separate fields rather than one, because they are not
+   * interchangeable downstream: `gclid` is the classic click ID, while
+   * `wbraid` and `gbraid` are what Google substitutes on iOS when ATT
+   * prevents the usual join. Collapsing them into one column loses the
+   * information an offline-conversion import needs to match correctly.
+   */
   gclid: z.string().max(200).optional(),
+  wbraid: z.string().max(200).optional(),
+  gbraid: z.string().max(200).optional(),
   utm: z.record(z.string(), z.string().max(200)).optional(),
   page: z.string().max(120).optional(),
 });

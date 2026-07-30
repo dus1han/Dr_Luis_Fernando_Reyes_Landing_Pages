@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare-images": "node scripts/prepare-images.mjs"
+    "prepare-images": "node scripts/prepare-images.mjs",
+    "verify:conversion": "node scripts/verify-conversion.mjs"
   },
   "dependencies": {
     "motion": "^12.42.2",

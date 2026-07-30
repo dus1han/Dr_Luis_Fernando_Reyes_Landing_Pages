@@ -54,6 +54,64 @@ export type TrackEvent =
 
 type Payload = Record<string, string | number | boolean | undefined>;
 
+/* ────────────────────────────────────────────────────────────────────
+ * The conversion contract
+ *
+ * The site announces "a lead was submitted". GTM decides who hears about
+ * it. Nothing below names a tracking product, a slug or a domain, so it
+ * copies between projects unchanged — and adding GA4, Meta Pixel or
+ * TikTok later needs no code change and no deploy.
+ * ──────────────────────────────────────────────────────────────────── */
+
+/** The one event a conversion action should be built on. */
+export const LEAD_EVENT = "generate_lead";
+
+/**
+ * Set on submit, read and cleared once on the thank-you page.
+ *
+ * `sessionStorage`, not the URL: a query parameter survives sharing and
+ * bookmarking, so `?submitted=1` forwarded to a colleague reports a
+ * conversion that never happened. Google's bidding optimises toward
+ * whatever it is told, so a false positive actively spends the clinic's
+ * budget in the wrong direction. Inflated counts are worse than none.
+ */
+export const LEAD_FLAG = "reyes:lead-submitted";
+
+/** Where the click ID is parked between landing and submitting. */
+export const CLICK_ID_KEY = "reyes:click-id";
+
+/**
+ * `gclid` is the classic Google Ads click ID. `wbraid` and `gbraid` are
+ * what Google substitutes on iOS when ATT prevents the usual join —
+ * miss them and a large share of mobile traffic arrives unattributable.
+ */
+export const CLICK_ID_PARAMS = ["gclid", "wbraid", "gbraid"] as const;
+export type ClickIdParam = (typeof CLICK_ID_PARAMS)[number];
+
+/** 90 days — the longest Google Ads click-through conversion window. */
+export const CLICK_ID_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+
+export type StoredClickId = {
+  param: ClickIdParam;
+  value: string;
+  /** Epoch ms. Past this the record is treated as absent. */
+  expires: number;
+};
+
+/**
+ * Push a raw object onto the dataLayer.
+ *
+ * Separate from `track()` below because a conversion is not an
+ * interaction: it carries its own field names, which are the contract
+ * GTM tags are built against, and it must not pick up that helper's
+ * GA4/Ads side effects.
+ */
+export function pushDataLayer(payload: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(payload);
+}
+
 declare global {
   interface Window {
     dataLayer?: unknown[];

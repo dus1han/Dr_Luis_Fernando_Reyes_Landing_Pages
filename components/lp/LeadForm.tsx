@@ -1,10 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { EASE_OUT_SOFT } from "@/lib/motion";
 import { leadSchema, toFieldErrors, type FieldErrors } from "@/lib/validation";
-import { track } from "@/lib/analytics";
+import { LEAD_FLAG, track } from "@/lib/analytics";
+import { readClickId } from "@/lib/click-id";
 import { SITE } from "@/lib/site";
 import { Button } from "./Button";
 
@@ -66,21 +66,39 @@ function Field({
  */
 export function LeadForm({ pageSlug }: { pageSlug: string }) {
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  /* No "sent" state: success is a navigation, not a render. The button
+     stays disabled on "sending" while the browser tears the page down. */
+  const [status, setStatus] = useState<"idle" | "sending" | "failed">("idle");
   const [started, setStarted] = useState(false);
 
   const mountedAt = useRef(Date.now());
-  const attribution = useRef<{ gclid?: string; utm?: Record<string, string> }>({});
+  const attribution = useRef<Record<string, unknown>>({});
 
-  /** Capture Google Ads click id + UTMs so leads stay attributable. */
+  /**
+   * Attribution for the submission.
+   *
+   * The click ID comes from the **store**, not from this page's URL. It is
+   * captured on arrival by `<ClickIdCapture>` in the root layout and kept for
+   * 90 days, so someone who lands on an ad, leaves, and returns days later to
+   * enquire still submits attributably — reading `window.location` here would
+   * lose exactly those considered conversions.
+   *
+   * UTMs stay URL-scoped: they describe this visit, and a stale campaign tag
+   * attached to a later direct visit would be worse than none.
+   */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const utm: Record<string, string> = {};
     params.forEach((v, k) => {
       if (k.startsWith("utm_")) utm[k] = v.slice(0, 200);
     });
+
+    const clickId = readClickId();
+
     attribution.current = {
-      gclid: params.get("gclid") ?? params.get("gbraid") ?? undefined,
+      // Keyed by which parameter it arrived as: gclid, wbraid and gbraid are
+      // not interchangeable to an offline-conversion import.
+      ...(clickId ? { [clickId.param]: clickId.value } : {}),
       utm: Object.keys(utm).length ? utm : undefined,
     };
   }, []);
@@ -126,8 +144,29 @@ export function LeadForm({ pageSlug }: { pageSlug: string }) {
         body: JSON.stringify(parsed.data),
       });
       if (!res.ok) throw new Error(String(res.status));
-      setStatus("sent");
+
       track("form_submit", { label: pageSlug });
+
+      /*
+       * Flag first, then navigate. The thank-you page reads this once,
+       * clears it, and only then reports the conversion — so a refresh, a
+       * back-navigation or a shared link fires nothing.
+       *
+       * `assign`, not a client-side router push: a full navigation
+       * guarantees a clean document and a single unambiguous page view for
+       * the tag to observe. That matters the day someone switches the
+       * conversion action to a URL rule and expects it to work.
+       */
+      try {
+        window.sessionStorage.setItem(LEAD_FLAG, "1");
+      } catch {
+        // Storage blocked. Still navigate — the visitor gets their
+        // confirmation; only the conversion report is lost, which is the
+        // right way round.
+      }
+      window.location.assign(`/${pageSlug}/thank-you`);
+      // Status stays "sending" so the button remains disabled while the
+      // browser tears this page down.
     } catch {
       setStatus("failed");
       track("form_error", { label: "network" });
@@ -166,162 +205,109 @@ export function LeadForm({ pageSlug }: { pageSlug: string }) {
       />
 
       <div className="relative rounded-[3px] bg-ivory p-[26px] sm:p-[30px]">
-      <AnimatePresence mode="wait" initial={false}>
-        {status === "sent" ? (
-          <motion.div
-            key="thanks"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE_OUT_SOFT }}
-            className="py-6 text-center"
-            role="status"
-          >
-            <motion.svg
-              width="52"
-              height="52"
-              viewBox="0 0 52 52"
-              fill="none"
-              className="mx-auto mb-5"
-              aria-hidden
-            >
-              <circle cx="26" cy="26" r="24" stroke="var(--color-gold)" strokeWidth="1.5" opacity="0.35" />
-              <motion.path
-                d="M16 26.5 23 33.5 36 20"
-                stroke="var(--color-gold)"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.6, delay: 0.15, ease: EASE_OUT_SOFT }}
+      {/* No success branch here any more. Submitting navigates to
+          /<slug>/thank-you, which is a real page load — a modal gave a
+          URL-based conversion rule nothing to hang on, no shareable
+          confirmation, and nothing to screenshot for the clinic. */}
+        <h3 className="mb-1 font-display text-[23px] leading-[1.25] text-ink sm:text-[26px]">
+          Request your consultation
+        </h3>
+        <p className="mb-5 text-[14px] leading-[1.55] text-muted">
+          Three details is all it takes. The clinic will call you back to
+          arrange a time that suits you.
+        </p>
+
+        <form onSubmit={handleSubmit} onInput={onFirstInput} noValidate>
+          {/* Bot trap — off-screen, never focusable, must stay empty. */}
+          <div aria-hidden className="absolute left-[-9999px] h-px w-px overflow-hidden">
+            <label htmlFor="company">Company</label>
+            <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+          </div>
+
+          <Field label="Full name" htmlFor="name" error={errors.name}>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              placeholder="Your name"
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
+              className={inputBase}
+            />
+          </Field>
+
+          <Field label="Phone" htmlFor="phone" error={errors.phone}>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="+971 __ ___ ____"
+              aria-invalid={!!errors.phone}
+              aria-describedby={errors.phone ? "phone-error" : undefined}
+              className={inputBase}
+            />
+          </Field>
+
+          <Field label="Email" htmlFor="email" error={errors.email}>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              className={inputBase}
+            />
+          </Field>
+
+          <div className="mb-4 mt-3.5">
+            {/* The input is nested, so the association is implicit —
+                adding htmlFor as well double-associates it and can
+                toggle the box twice on a single click. */}
+            <label className="flex items-start gap-2.5 text-[13.5px] leading-[1.55] text-body">
+              <input
+                id="consent"
+                name="consent"
+                type="checkbox"
+                className="mt-[3px] h-[18px] w-[18px] flex-none accent-gold"
+                aria-invalid={!!errors.consent}
+                aria-describedby={errors.consent ? "consent-error" : undefined}
               />
-            </motion.svg>
-            <h3 className="mb-3 font-display text-[27px] text-ink">Request received</h3>
-            <p className="m-0 text-[15.5px] text-body">
-              Thank you. A member of {SITE.doctorShort}&rsquo;s team will call you
-              on the number you provided to arrange your consultation.
-            </p>
-            <p className="m-0 mt-4 text-[14px] text-muted">
-              Prefer to speak now?{" "}
-              <a
-                href={SITE.whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => track("whatsapp_click", { label: "post_submit" })}
-                className="font-medium text-gold underline underline-offset-2"
-              >
-                Message us on WhatsApp
-              </a>
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="form"
-            initial={false}
-            exit={{ opacity: 0, y: -10, transition: { duration: 0.25 } }}
-          >
-            <h3 className="mb-1 font-display text-[23px] leading-[1.25] text-ink sm:text-[26px]">
-              Request your consultation
-            </h3>
-            <p className="mb-5 text-[14px] leading-[1.55] text-muted">
-              Three details is all it takes. The clinic will call you back to
-              arrange a time that suits you.
-            </p>
-
-            <form onSubmit={handleSubmit} onInput={onFirstInput} noValidate>
-              {/* Bot trap — off-screen, never focusable, must stay empty. */}
-              <div aria-hidden className="absolute left-[-9999px] h-px w-px overflow-hidden">
-                <label htmlFor="company">Company</label>
-                <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
-              </div>
-
-              <Field label="Full name" htmlFor="name" error={errors.name}>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  placeholder="Your name"
-                  aria-invalid={!!errors.name}
-                  aria-describedby={errors.name ? "name-error" : undefined}
-                  className={inputBase}
-                />
-              </Field>
-
-              <Field label="Phone" htmlFor="phone" error={errors.phone}>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  placeholder="+971 __ ___ ____"
-                  aria-invalid={!!errors.phone}
-                  aria-describedby={errors.phone ? "phone-error" : undefined}
-                  className={inputBase}
-                />
-              </Field>
-
-              <Field label="Email" htmlFor="email" error={errors.email}>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  aria-invalid={!!errors.email}
-                  aria-describedby={errors.email ? "email-error" : undefined}
-                  className={inputBase}
-                />
-              </Field>
-
-              <div className="mb-4 mt-3.5">
-                {/* The input is nested, so the association is implicit —
-                    adding htmlFor as well double-associates it and can
-                    toggle the box twice on a single click. */}
-                <label className="flex items-start gap-2.5 text-[13.5px] leading-[1.55] text-body">
-                  <input
-                    id="consent"
-                    name="consent"
-                    type="checkbox"
-                    className="mt-[3px] h-[18px] w-[18px] flex-none accent-gold"
-                    aria-invalid={!!errors.consent}
-                    aria-describedby={errors.consent ? "consent-error" : undefined}
-                  />
-                  <span>
-                    I agree to be contacted by the clinic about my consultation
-                    request.
-                  </span>
-                </label>
-                {errors.consent && (
-                  <p id="consent-error" role="alert" className="m-0 mt-1.5 text-[13px] font-medium text-danger">
-                    {errors.consent}
-                  </p>
-                )}
-              </div>
-
-              <Button type="submit" size="block" disabled={status === "sending"}>
-                {status === "sending" ? "Sending…" : "Request my consultation"}
-              </Button>
-
-              {status === "failed" && (
-                <p role="alert" className="m-0 mt-3 text-center text-[13.5px] font-medium text-danger">
-                  Something went wrong sending your request. Please{" "}
-                  <a href={SITE.phoneHref} className="underline underline-offset-2">
-                    call {SITE.phoneDisplay}
-                  </a>{" "}
-                  or try again.
-                </p>
-              )}
-
-              <p className="m-0 mt-3 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-muted">
-                Private &amp; confidential &middot; No obligation
+              <span>
+                I agree to be contacted by the clinic about my consultation
+                request.
+              </span>
+            </label>
+            {errors.consent && (
+              <p id="consent-error" role="alert" className="m-0 mt-1.5 text-[13px] font-medium text-danger">
+                {errors.consent}
               </p>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            )}
+          </div>
+
+          <Button type="submit" size="block" disabled={status === "sending"}>
+            {status === "sending" ? "Sending…" : "Request my consultation"}
+          </Button>
+
+          {status === "failed" && (
+            <p role="alert" className="m-0 mt-3 text-center text-[13.5px] font-medium text-danger">
+              Something went wrong sending your request. Please{" "}
+              <a href={SITE.phoneHref} className="underline underline-offset-2">
+                call {SITE.phoneDisplay}
+              </a>{" "}
+              or try again.
+            </p>
+          )}
+
+          <p className="m-0 mt-3 text-center text-[12px] font-medium uppercase tracking-[0.08em] text-muted">
+            Private &amp; confidential &middot; No obligation
+          </p>
+        </form>
       </div>
     </div>
   );

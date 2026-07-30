@@ -19,7 +19,21 @@ import { Reviews } from "./sections/Reviews";
 import { Stats } from "./sections/Stats";
 import { Surgeon } from "./sections/Surgeon";
 
-const TITLE = "Buccal Fat Removal in Dubai | Sharper Cheekbones & Jawline";
+/*
+ * The tab title. The root layout appends " | Dr. Luis Fernando Reyes", so this
+ * has to stay short — the previous value carried its own "| Sharper Cheekbones
+ * & Jawline" and came out at 74 characters, well past what a tab shows or what
+ * Google keeps in a result.
+ */
+const TITLE = "Buccal Fat Removal in Dubai";
+
+/*
+ * Kept longer than the tab title, and deliberately not the same string.
+ * A shared link or an OG preview has room for the benefit, and that is where
+ * it earns a click — unlike a tab, which truncates it away.
+ */
+const SHARE_TITLE = "Buccal Fat Removal in Dubai | Sharper Cheekbones & Jawline";
+
 const DESCRIPTION =
   "Buccal fat removal by Dr. Luis Fernando Reyes — double board certified plastic surgeon with 19+ years of international experience. Sharper cheekbones, a defined jawline, no scarring on the face. Book a consultation in Dubai.";
 
@@ -29,7 +43,7 @@ export const metadata: Metadata = {
   alternates: { canonical: `/${SLUG}` },
   openGraph: {
     type: "website",
-    title: TITLE,
+    title: SHARE_TITLE,
     description: DESCRIPTION,
     url: `${ORIGIN}/${SLUG}`,
     siteName: SITE.doctor,
@@ -43,7 +57,7 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
+  twitter: { card: "summary_large_image", title: SHARE_TITLE, description: DESCRIPTION },
 };
 
 /** Structured data — richer Google results and clearer entity signals. */

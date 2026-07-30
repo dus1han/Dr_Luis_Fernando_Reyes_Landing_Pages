@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import Script from "next/script";
+import { ClickIdCapture } from "@/components/analytics/ClickIdCapture";
 import { MotionProvider } from "@/components/lp/MotionProvider";
 import { ANALYTICS, analyticsEnabled } from "@/lib/analytics";
 import { SITE } from "@/lib/site";
-import { ORIGIN } from "@/lib/site-url";
+import { INDEXABLE, ORIGIN } from "@/lib/site-url";
 import "./globals.css";
 
 /**
@@ -28,11 +29,28 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL(ORIGIN),
+  /*
+   * `default` is what the root page shows, because a page at the same level
+   * as this layout takes the default rather than the template. So `/` is
+   * exactly "Dr. Luis Fernando Reyes" — the suffix is not appended to it.
+   *
+   * The full name, not `doctorShort`. A tab reading "… | Dr. Luis" is a
+   * first-name-only credit on a surgeon's ad landing page; the surname is the
+   * part someone recognises or searches for later.
+   */
   title: {
-    default: `${SITE.doctor} — ${SITE.practice}, ${SITE.city}`,
-    template: `%s | ${SITE.doctorShort}`,
+    default: SITE.doctor,
+    template: `%s | ${SITE.doctor}`,
   },
-  robots: { index: true, follow: true },
+  /*
+   * Belt and braces with robots.txt. A URL that is disallowed there can
+   * still be *listed* in results if Google finds it linked elsewhere — it
+   * just will not be fetched. The meta tag is what actually keeps it out.
+   *
+   * Derived from the origin, so a preview build cannot be indexed no matter
+   * what anyone forgets. See INDEXABLE in lib/site-url.ts.
+   */
+  robots: { index: INDEXABLE, follow: INDEXABLE },
 };
 
 export const viewport: Viewport = {
@@ -47,6 +65,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${poppins.variable}`}>
       <body>
+        {/* Captures the Google Ads click ID on arrival, on every route.
+            It only exists in the URL the visitor landed on, and it cannot be
+            recovered later — see lib/click-id.ts. */}
+        <ClickIdCapture />
+
         <MotionProvider>{children}</MotionProvider>
 
         {/* Nothing loads until an ID is filled in — see lib/analytics.ts */}
