@@ -107,11 +107,18 @@ function Marquee({ items }: { items: ReviewItem[] }) {
       }}
     >
       <div
-        className="animate-marquee flex w-max gap-5 group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused] motion-reduce:animate-none"
+        className="animate-marquee flex w-max items-start gap-5 group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused] motion-reduce:animate-none"
         style={{ ["--marquee-duration" as string]: `${duration}s` }}
       >
+        {/* items-start on both rows so each card takes its natural height.
+            The real reviews range from 213 to 676 characters, and with the
+            default stretch the longest one set every card to 716px — the
+            shortest then carried ~500px of empty ivory. Ragged bottoms in a
+            scrolling row read as a wall of reviews; a half-empty card reads
+            as a mistake. Do not "tidy" this back to equal heights unless
+            the quotes are of comparable length. */}
         {[0, 1].map((copy) => (
-          <div key={copy} className="flex gap-5" aria-hidden={copy === 1}>
+          <div key={copy} className="flex items-start gap-5" aria-hidden={copy === 1}>
             {items.map((r, i) => (
               <div key={i} className="w-[330px] flex-none sm:w-[370px]">
                 <Card review={r} />

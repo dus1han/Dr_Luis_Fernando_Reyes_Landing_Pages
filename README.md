@@ -48,7 +48,7 @@ single file so none of them require touching page code.
 |---|---|---|---|
 | 1 | **Lead delivery** | `app/api/lead/route.ts` → `deliver()` | Validation, spam filtering and Google Ads attribution already work. Only the destination is missing — leads currently log to the server console. |
 | 2 | **Analytics ID** | GitHub → Actions **variable** `NEXT_PUBLIC_GTM_ID` | Not a code change. While empty, **no tag scripts load at all** — zero requests. Compiled into the bundle, so setting it needs a **rebuild**, not a restart. See [docs/ads-readiness.md](docs/ads-readiness.md). |
-| 3 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Five of six carry `placeholder: true` — written for layout, not supplied by patients. Replace with consented feedback, then set `SHOW_PLACEHOLDER_REVIEWS = false` in `lib/site.ts` and they drop from the build entirely. |
+| 3 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
 | 4 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
 
 Once the ads subdomain is confirmed, set the `SITE_URL` Actions **variable**

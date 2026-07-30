@@ -26,7 +26,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
-| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 695 |
+| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 1059 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
 | — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 44 / 30 | 547 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10106px**; treat a change
+at 68 and must not move. Page height at 1440 is **10470px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -494,7 +494,7 @@ Drag-to-compare slider paired with a reading guide, then six pairs.
 
 ## 10. Reviews — `sections/Reviews.tsx`
 
-- **Content:** `REVIEWS.items` — `{quote, name, meta, placeholder?}`
+- **Content:** `REVIEWS.items` — `{quote, name, meta, placeholder?}` (5 real reviews; no placeholders remain)
 - **Switch:** `SHOW_PLACEHOLDER_REVIEWS` in `lib/site.ts`
 
 ### Layout switches on the count
@@ -507,8 +507,46 @@ Drag-to-compare slider paired with a reading guide, then six pairs.
 | **4+** | **auto-scrolling marquee** |
 | 0 | section returns `null` and disappears |
 
-Threshold is `MARQUEE_FROM` in the section file. There are currently 6
+Threshold is `MARQUEE_FROM` in the section file. There are currently 5
 entries, so the marquee is live.
+
+### These are real reviews now, and they carry two problems
+
+All six written-for-layout entries were replaced with genuine patient
+reviews supplied by the clinic, and `SHOW_PLACEHOLDER_REVIEWS` is `false`.
+They are reproduced **verbatim, including their typos** — "Juno start" and
+"from the begging to end" read as transcription slips, but editing a quote
+attributed to a real person misrepresents them. Fix at source or not at
+all. Names are the reviewers' own platform handles.
+
+**1 · None of them is about buccal fat removal, and none is from Dubai.**
+They describe body contouring at the Colombian practice — gluteal
+biopolymer removal, liposculpture with augmentation — and two name
+"Majestic" rather than the Dubai clinic. `meta` states each actual
+procedure, because labelling them "Buccal fat removal" would be a
+fabricated claim on a medical page. The honesty is what makes the mismatch
+visible: someone researching a facial procedure reads five testimonials
+about bodies. **Facial-surgery reviews would convert better and carry less
+risk.**
+
+**2 · DHA advertising rules restrict patient testimonials** in healthcare
+marketing in Dubai. The risk is the testimonials themselves, not their
+wording, so this section needs the same approval pass as the rest of the
+copy before it runs traffic.
+
+### Card heights are ragged on purpose
+
+The real quotes run from 213 to 676 characters. With the flex default the
+longest set every card to 716px and the shortest carried ~500px of empty
+ivory, which reads as a mistake. Both marquee rows are `items-start` so
+each card takes its natural height — 352 to 716px at 1440.
+
+**Do not "tidy" this back to equal heights** unless the quotes are of
+comparable length. Ragged bottoms in a scrolling row read as a wall of
+reviews; a half-empty card does not.
+
+The section went 695px → **1059px** because of the length of these quotes.
+That is content-driven, not a spacing regression.
 
 ### The marquee
 
@@ -894,7 +932,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16493px**.
+height **16913px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

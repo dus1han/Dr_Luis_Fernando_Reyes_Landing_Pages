@@ -127,13 +127,15 @@ export const SHOW_RESULTS_DISCLAIMER = true;
 /**
  * Renders reviews marked `placeholder: true` in content.ts.
  *
- * ON while the page is being built and reviewed, so the section reads as
- * finished. **Set to false before running paid traffic** — placeholder
- * reviews are written for layout, not supplied by patients, and shipping
- * them as testimonials is a Google Ads policy violation and a regulatory
- * risk under DHA advertising rules.
+ * **OFF, and there are no placeholders left to render.** All six
+ * written-for-layout entries were replaced with genuine patient reviews
+ * supplied by the clinic, so the flag has nothing to gate — it is kept
+ * only so a future page can use the same mechanism while it is being
+ * built.
  *
- * With it off, only genuine entries render and the grid adapts to how
- * many there are. The build logs a warning while it is on.
+ * Leave it false. Shipping written-for-layout copy as testimonials is a
+ * Google Ads policy violation and a regulatory risk under DHA advertising
+ * rules; the build logs a warning if it is ever switched back on with
+ * placeholders present.
  */
-export const SHOW_PLACEHOLDER_REVIEWS = true;
+export const SHOW_PLACEHOLDER_REVIEWS = false;

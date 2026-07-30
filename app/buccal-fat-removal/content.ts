@@ -234,64 +234,63 @@ export const REVIEWS = {
   eyebrow: "Patient stories",
   headline: ["In their", "own words"] as const,
   /**
-   * `placeholder: true` marks an entry as written-for-layout, not a real
-   * consented patient review.
+   * Five genuine patient reviews, supplied by the clinic and reproduced
+   * VERBATIM — including their typos. Editing a patient`s words changes a
+   * quote attributed to a real person, so the two that read as
+   * transcription slips ("Juno start", "from the begging to end") are left
+   * exactly as written. Correct them at source or not at all.
    *
-   * Whether placeholders render is controlled by SHOW_PLACEHOLDER_REVIEWS
-   * in lib/site.ts. It is currently ON so the section looks complete
-   * while the page is being built and reviewed.
+   * Names are the reviewers` own handles from the platform they were left
+   * on. Inventing tidier initials would misattribute them.
    *
-   * ── BEFORE PAID TRAFFIC ─────────────────────────────────────────────
-   * Replace these with genuine, consented feedback and delete the flag,
-   * then set SHOW_PLACEHOLDER_REVIEWS to false. Fabricated testimonials
-   * on a medical ad are a Google Ads policy violation and a regulatory
-   * risk under DHA advertising rules.
+   * ── READ THIS BEFORE THE PAGE GOES LIVE ─────────────────────────────
+   * NONE of these describe buccal fat removal, and none were performed in
+   * Dubai. They are body-contouring reviews from the Colombian practice —
+   * gluteal biopolymer removal, liposculpture with augmentation — and two
+   * name "Majestic" rather than the Dubai clinic. `meta` states the actual
+   * procedure for each, because labelling them "Buccal fat removal" would
+   * be a fabricated claim on a medical page.
+   *
+   * That honesty is what makes the mismatch visible to a visitor: someone
+   * researching a facial procedure reads five testimonials about bodies.
+   * Facial-surgery reviews would convert better and carry less risk.
+   *
+   * Separately: DHA advertising rules restrict patient testimonials in
+   * healthcare marketing in Dubai. Get this section through the same
+   * approval as the rest of the copy before running traffic on it — the
+   * risk is the testimonials themselves, not just their wording.
    * ────────────────────────────────────────────────────────────────────
-   *
-   * Only the first entry came from the clinic; the source document
-   * supplied that same review three times.
    */
   items: [
     {
       quote:
-        "I am very happy with the results. The doctor explained everything at the consultation, and the results came exactly as expected. I will come again.",
-      name: "Margo",
-      meta: "Buccal fat removal",
+        "I had a very good experience with the doctors. I felt 100% confident with my procedure when I had my first surgery with them, and I felt the same confidence when I chose them again for this gluteal biopolymer removal procedure. I would recommend them without hesitation; they are the best.",
+      name: "Philosophical968460",
+      meta: "Gluteal biopolymer removal",
     },
     {
       quote:
-        "I'd been tucking my chin in every photo for years. Six weeks on, my cheekbones actually show and nobody can tell I had anything done — they just keep asking if I've lost weight.",
-      name: "S. A.",
-      meta: "Buccal fat removal · Dubai",
-      placeholder: true,
+        "It was a wonderful experience, great human quality, beautiful results, I loved it. I recommend him, excellent surgeon, always available to clarify any doubts The attention of all the staff in general is excellent.",
+      name: "Courageous739392",
+      meta: "Patient review",
     },
     {
       quote:
-        "What sold me was the consultation. Dr. Luis checked whether it was really buccal fat before talking about anything else, and told me exactly what it would and wouldn't change. No pressure at all.",
-      name: "Nadia K.",
-      meta: "Buccal fat removal",
-      placeholder: true,
+        "Dr Luis Fernando Reyes is a life changing surgeon. He completely changed my life and gave me the Juno start I needed on my fitness journey. If you are looking for a highly professional, extremely talented, safe and trustworthy dr, look no further. Dr Luis’ work is the closest thing to magic on this earth. The results I experienced were above and beyond my expectations. I came home with a brand new body and my confidence restored. Dr Luis and his entire team made my trip to Colombia comfortable and seamless. If I had to do it, I would do it all over again with dr Luis because I know 100% I am in good hands. I cannot thank dr Luis enough, I am grateful for him everyday.",
+      name: "Kap5645",
+      meta: "Body contouring · Colombia",
     },
     {
       quote:
-        "Back at my desk in four days and on a client call the following week with a bit of swelling still. The team checked in twice during that first week without me having to ask.",
-      name: "R. M.",
-      meta: "Buccal fat removal · DIFC",
-      placeholder: true,
+        "My experience with Dr. Reyes was terrific!!! His team is top-notch, his facility is high end and his sculpting skills are advanced. My body healed quickly and my results are exactly what I wanted. Everything is proportionate to my size. I had a liposculpture surgery with augmentation to hips and butt. Dr. Reyes listened to everything I wanted - he went above and beyond! I look like a Barbie doll! I only trust the Majestic team with my body! Thank you Dr. for giving me the body of my dreams.",
+      name: "Laluna2016",
+      meta: "Liposculpture with hip & gluteal augmentation",
     },
     {
       quote:
-        "I'd looked at fillers to sharpen my jaw and kept putting it off because of the upkeep. Doing this once instead was the right call — the profile change is exactly what I wanted.",
-      name: "Layla H.",
-      meta: "Buccal fat removal",
-      placeholder: true,
-    },
-    {
-      quote:
-        "Very natural result. My face is slimmer but it still looks like me, which was the part I was most worried about going in.",
-      name: "J. T.",
-      meta: "Buccal fat removal",
-      placeholder: true,
+        "Words are not enough to thank you for the life change! I had the best experience from the begging to end. Dr. Reyes and the whole team make you feel so comfortable, they’re always there to answer every single question and are very reachable through the phone. Their professionalism and knowledge will make you have the results you have always wanted. They do give the extra mile in everything, and really care about you as patient. Also, they have a beautiful and classy office. I will always recommend Majestic and Dr. Reyes",
+      name: "losman1",
+      meta: "Patient review",
     },
   ] as ReviewItem[],
 };
