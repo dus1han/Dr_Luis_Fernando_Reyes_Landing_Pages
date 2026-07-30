@@ -173,7 +173,7 @@ export function Surgeon() {
           <RevealGroup
             step={0.09}
             as="ul"
-            className="m-0 flex list-none flex-wrap items-center gap-x-7 gap-y-6 p-0"
+            className="m-0 flex list-none flex-wrap items-center gap-x-6 gap-y-6 p-0"
           >
             {SURGEON.affiliations.map((a) => {
               const logo = IMAGES[a.image as keyof typeof IMAGES];

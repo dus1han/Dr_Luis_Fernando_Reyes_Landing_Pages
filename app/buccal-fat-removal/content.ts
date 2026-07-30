@@ -180,20 +180,29 @@ export const SURGEON = {
    * marks say the same thing with evidence behind it.
    *
    * `height` is the rendered height in px and is per-logo on purpose.
-   * A single height across all five doesn't work: four are horizontal
-   * lockups but the ASPS mark is stacked, so matching its height to
-   * theirs shrinks its wordmark to nothing. These values balance them by
-   * eye, not by the numbers.
+   * A single height across all six doesn't work: four are horizontal
+   * lockups, while ASPS is stacked and AASMA is a circular badge — match
+   * either of those to the wordmarks' height and their type shrinks to
+   * nothing. These values balance them by eye, not by the numbers.
+   *
+   * They also have to keep the row on ONE line at 1440, where the column
+   * is 670px. Six logos plus five gaps is tight; adding a seventh means
+   * either shrinking everything again or accepting that it wraps.
    */
   affiliations: [
-    { image: "affil-rosario.png", name: "Universidad del Rosario", height: 38 },
-    { image: "affil-emory.png", name: "Emory University", height: 36 },
-    { image: "affil-uba.png", name: "Universidad de Buenos Aires", height: 38 },
-    { image: "affil-asps.png", name: "American Society of Plastic Surgeons", height: 54 },
+    { image: "affil-rosario.png", name: "Universidad del Rosario", height: 34 },
+    { image: "affil-emory.png", name: "Emory University", height: 32 },
+    { image: "affil-uba.png", name: "Universidad de Buenos Aires", height: 34 },
+    { image: "affil-asps.png", name: "American Society of Plastic Surgeons", height: 48 },
+    {
+      image: "affil-aasma.png",
+      name: "Arab Association of Surgical and Medical Aesthetics",
+      height: 48,
+    },
     {
       image: "affil-filacp.png",
       name: "Federación Ibero Latinoamericana de Cirugía Plástica",
-      height: 36,
+      height: 32,
     },
   ],
   whyHeadline: ["Why patients", "travel to Dr. Luis"] as const,

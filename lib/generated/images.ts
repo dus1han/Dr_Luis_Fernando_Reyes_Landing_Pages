@@ -46,6 +46,12 @@ export const IMAGES = {
     "height": 144,
     "blurDataURL": "data:image/webp;base64,UklGRroAAABXRUJQVlA4WAoAAAAQAAAAEwAABAAAQUxQSFsAAAAFuTJE9D/AoJEkRTPzLOFlvVuyxdg2IiYghqPX7mYNVH41vHaXV61Tk8Wr9Kv9IFIq/T6rKEBgFyuF/RAmH7wKEcAHuw8+DxRKAhGLMBHYoXdZXaxUA8QkJGAiAFZQOCA4AAAAMAMAnQEqFAAFAD8Jbq5Pq6YkIjAIAXAhCWUAnQAtB8cGQAD+7icLSHY7EomvDS72qMDYA6CgAAA="
   },
+  "affil-aasma.png": {
+    "src": "/buccal-fat-removal/affil-aasma.png",
+    "width": 141,
+    "height": 144,
+    "blurDataURL": "data:image/webp;base64,UklGRvQBAABXRUJQVlA4WAoAAAAQAAAAEwAAEwAAQUxQSGYBAAANuTJE9D9EUgMAbmsnvfee7L9Y7733rHHoVw0gbg/wm5iIBoi4xYXEjpg/D+DP6w0QD2CuDKCU4/EANheKmIDYFw46whx12HefvfPSG+8hHGOM2E8dQPBF8cIH4YxDjjvpozxbQfVNEOqTtsUnBkZme9pX7VtARq1UxV29ZZ1WyJx1xcprhTqhyq/cdI48pc5zW9jYqeNZlM/EO3pns0tz2bf1eVONo3nqocmJzTw3FyCtVHIqZVSjtGalSshsaK6tXN1DNrVhM5c4CCLQviXTFRdRSiltEYmASiefgpndAApgzictlNIEsKJh1iB59ELrwDjHKnnN4wU0p7c60JACMqqtMYgoWXDcYtIwR6S2YjBGjbJhjFtEKgSV2/s62Ymf0+DKNoMipJz/DSWX9kfe7J2LW3MJfXpk+GVguVspopsat+VR5/+2HHqJNeY22qahLb0SqLS9XQGikKsoTBcQSNa+2wIAVlA4IGgAAADwAwCdASoUABQAPwlysE+rpySiMAgBcCEJTK3KOaJxs+0jB8sO+K0AAP7uKMShOFmZX+diMdPkQxB8Q6N5lz2ho3bEWBOU6Nq2m2M/Mjg1djHPrr+ed4bdxbcaMLMEsypfFEYzzLMAAA=="
+  },
   "hero-before.jpg": {
     "src": "/buccal-fat-removal/hero-before.jpg",
     "width": 766,

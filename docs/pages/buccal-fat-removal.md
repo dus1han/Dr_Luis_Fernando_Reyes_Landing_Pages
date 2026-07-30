@@ -24,7 +24,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 5 | How it's performed | `sections/Anatomy.tsx` | — | sand | 68 / 44 | 584 |
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
-| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1257 |
+| 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 695 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10112px**; treat a change
+at 68 and must not move. Page height at 1440 is **10106px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -356,15 +356,16 @@ intro, affiliation ribbon, then "why patients travel".
 
 - **Content:** `SURGEON` — `eyebrow`, `headline`, `intro`,
   `affiliations[]`, `whyHeadline`, `why[]`, `pullQuote`, `pullQuoteMeta`
-- **Images:** `dr-portrait.jpg`; `affil-*.png` (five)
+- **Images:** `dr-portrait.jpg`; `affil-*.png` (six)
 - **Animation:** curtain reveal, 20s Ken Burns, offset gold frame that
   scales in, parallax drift
 
 ### The affiliation ribbon
 
-Five institution marks — Universidad del Rosario, Emory, Universidad de
-Buenos Aires, the American Society of Plastic Surgeons, and FILACP — on
-hairlines top and bottom, sitting where three text pills used to.
+Six institution marks — Universidad del Rosario, Emory, Universidad de
+Buenos Aires, the American Society of Plastic Surgeons, AASMA and FILACP —
+on hairlines top and bottom, sitting where three text pills used to.
+Universities first, then the societies.
 
 Those pills read "Double board certified", "19+ years international
 experience" and "Plastic, aesthetic & reconstructive". **All three were
@@ -372,13 +373,40 @@ already in the intro paragraph immediately above them**, so they were
 repetition dressed as evidence. The marks make the same claim with
 something behind it.
 
-**The logos are recoloured, not used as supplied.** All five arrive as
-dark line art on transparency and would be invisible on espresso, so
-`prepare-images.mjs` trims each to its ink, replaces the RGB with a flat
-champagne, and normalises them to 144px tall. Only the RGB changes — the
-original alpha is kept, so antialiasing and every interior cut in the
-engraved seals survive. Monochrome is the usual treatment for an
-accreditation ribbon; here it's also the only legible option.
+**The logos are recoloured, not used as supplied.** They arrive as line art
+that would be invisible on espresso, so `prepare-images.mjs` trims each to
+its ink, replaces the RGB with a flat champagne, and normalises them to
+144px tall. Only the RGB changes — the original alpha is kept, so
+antialiasing and every interior cut in the engraved seals survive.
+Monochrome is the usual treatment for an accreditation ribbon; here it's
+also the only legible option.
+
+#### One source has no alpha, and that needs a different path
+
+AASMA arrived as a WebP converted to PNG: **three channels, fully opaque,
+83% white**. Sent through the same path — "recolour everything that isn't
+transparent" — it would emit a solid champagne rectangle, because there is
+no transparency to skip.
+
+`onWhite: true` on that entry derives the alpha first, via
+`alpha = 255 - min(r, g, b)`: how far each pixel departs from white in *any*
+channel.
+
+> **Luminance would be wrong here.** The badge's ink is a saturated cyan
+> whose luminance is around 150, so `255 - luminance` renders it at 41%
+> opacity — visibly washed out beside the other five. The minimum channel
+> gives that same cyan an alpha of 242 while still resolving pure white to 0
+> and antialiased edges to a soft ramp.
+
+It has to run **before** the trim, or there is no transparency for the trim
+to find and it crops nothing.
+
+A pleasant side effect: the badge's rim lettering was darker than its ring,
+so it ends up knocked *out* of the champagne band rather than merging into
+it, and stays readable.
+
+**Check any new logo for an alpha channel before adding it.** A flattened
+source is not obvious from looking at it — it looks identical in a viewer.
 
 > Trimming has to happen **before** the resize. Without it each logo
 > normalises to the height of its transparent padding rather than of its
@@ -389,11 +417,15 @@ accreditation ribbon; here it's also the only legible option.
 > copy of `IMG_3478.PNG` (verified by checksum) and is deliberately not
 > emitted.
 
-**Heights are per-logo in `content.ts`, and that is deliberate.** Four of
-the five are horizontal lockups, but the ASPS mark is stacked — matching
-its height to theirs shrinks its wordmark to nothing. The values balance
-them by eye, not by the numbers. At 1440 the row comes to 520px of logo
-inside a 670px column, on one line; phones wrap it to two.
+**Heights are per-logo in `content.ts`, and that is deliberate.** Four are
+horizontal lockups; ASPS is stacked and AASMA is a circular badge, and
+matching either to the wordmarks' height shrinks its type to nothing. The
+values balance them by eye, not by the numbers.
+
+They also have to keep the row on **one line at 1440**, where the column is
+670px. Six logos come to 510px plus five 24px gaps — 630px, with 40px
+spare. Adding a seventh means shrinking everything again or accepting that
+it wraps. Phones wrap it to two rows regardless.
 
 > The `aria-label` sits on a wrapper `<div role="group">`, not on
 > `RevealGroup`. That component's props are typed to
@@ -862,7 +894,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16503px**.
+height **16493px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes
