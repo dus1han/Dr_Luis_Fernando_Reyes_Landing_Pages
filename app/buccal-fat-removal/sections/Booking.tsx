@@ -74,7 +74,7 @@ export function Booking() {
             points at #book, and with the copy leading, that landed people
             on the pitch with the form somewhere below the fold — they had
             to scroll again after clicking a button that promised a form.
-            The card opens with its own "Request your consultation" heading
+            The card opens with its own "Book your consultation" heading
             and standfirst, so it reads fine without the section head above
             it, and the section copy still follows as reinforcement.
 

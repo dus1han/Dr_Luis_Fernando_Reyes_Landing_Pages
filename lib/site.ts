@@ -151,21 +151,26 @@ export const MAPS = {
 /**
  * The "individual results vary" line under the results gallery.
  *
- * **Keep this on.** The gallery is no longer reference art — it is the
- * clinic's own before/after photography of real patients, which makes a
- * variance statement more necessary rather than less. The word
- * "illustrative" was dropped from the copy for the same reason.
+ * **Off at the clinic's request.** The copy still exists in
+ * `RESULTS.disclaimer`, so switching this back to `true` restores it
+ * without rewriting anything.
  *
- * ── STILL TO CONFIRM ────────────────────────────────────────────────
- * Written patient consent to publish. The images carry the clinic's
- * watermark and some are anonymised (eyes masked, or cropped below the
- * eyeline) while others show a fully identifiable face. That
- * inconsistency is worth resolving before paid traffic: DHA advertising
- * rules govern the use of patient imagery, and identifiable clinical
- * photographs need documented consent.
+ * ── WORTH RAISING AT DHA APPROVAL ───────────────────────────────────
+ * This page now shows the clinic's own before/after photography of real
+ * surgical patients with no qualifying statement beneath it. A
+ * results-vary line is the usual expectation on medical advertising and
+ * is cheap insurance; its absence is the kind of thing an approval pass
+ * asks about.
+ *
+ * Separately, written consent to publish is still unconfirmed. Some of
+ * the images are anonymised (eyes masked, or cropped below the eyeline)
+ * and others show a fully identifiable face — that inconsistency is
+ * worth resolving before paid traffic, since DHA rules govern the use of
+ * patient imagery and identifiable clinical photographs need documented
+ * consent.
  * ────────────────────────────────────────────────────────────────────
  */
-export const SHOW_RESULTS_DISCLAIMER = true;
+export const SHOW_RESULTS_DISCLAIMER = false;
 
 /**
  * Renders reviews marked `placeholder: true` in content.ts.

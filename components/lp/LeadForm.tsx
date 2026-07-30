@@ -210,7 +210,7 @@ export function LeadForm({ pageSlug }: { pageSlug: string }) {
           URL-based conversion rule nothing to hang on, no shareable
           confirmation, and nothing to screenshot for the clinic. */}
         <h3 className="mb-1 font-display text-[23px] leading-[1.25] text-ink sm:text-[26px]">
-          Request your consultation
+          Book your consultation
         </h3>
         <p className="mb-5 text-[14px] leading-[1.55] text-muted">
           Three details is all it takes. The clinic will call you back to
@@ -291,7 +291,7 @@ export function LeadForm({ pageSlug }: { pageSlug: string }) {
           </div>
 
           <Button type="submit" size="block" disabled={status === "sending"}>
-            {status === "sending" ? "Sending…" : "Request my consultation"}
+            {status === "sending" ? "Sending…" : "Book my consultation"}
           </Button>
 
           {status === "failed" && (

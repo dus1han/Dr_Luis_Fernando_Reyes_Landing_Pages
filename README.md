@@ -60,9 +60,11 @@ see [docs/deployment.md](docs/deployment.md).
 
 ### Optional toggle
 
-`SHOW_RESULTS_DISCLAIMER` in `lib/site.ts` controls the "photographs are
-illustrative" line under the results gallery. Keep it `true` while the
-gallery uses reference photography rather than consented clinical images.
+`SHOW_RESULTS_DISCLAIMER` in `lib/site.ts` controls the "individual results
+vary" line under the results gallery. It is **off** at the clinic's request.
+The copy still lives in `RESULTS.disclaimer`, so flipping the flag restores
+it. Worth raising at DHA approval — the gallery is the clinic's real
+before/after photography and now carries no qualifying statement.
 
 ---
 

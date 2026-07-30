@@ -25,7 +25,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1884 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1838 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 847 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10436px**; treat a change
+at 68 and must not move. Page height at 1440 is **10390px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -501,11 +501,17 @@ three-column grid holds one shape and comes out even, and the grid is
 > every card and is information the visitor needs when the layout varies
 > between neighbours.
 
-The word "illustrative" came out of `RESULTS.disclaimer` at the same time.
-It was accurate for reference art and is untrue of real clinical
-photography; a results disclaimer that misdescribes its own images is worth
-less than none. What remains is the part that still applies: results vary by
-anatomy.
+**The disclaimer is switched off** — `SHOW_RESULTS_DISCLAIMER = false` in
+`lib/site.ts`, at the clinic's request. The copy still exists in
+`RESULTS.disclaimer` (the word "illustrative" was removed from it when the
+gallery stopped being reference art), so flipping the flag restores it
+without rewriting anything.
+
+> **Raise this at DHA approval.** The page now shows real surgical
+> before/after photography with no qualifying statement beneath it. A
+> results-vary line is the usual expectation on medical advertising and is
+> cheap insurance; its absence is the kind of thing an approval pass asks
+> about.
 
 > **Consent is outstanding.** Some of these are anonymised — eyes masked, or
 > cropped below the eyeline — and others show a fully identifiable face.
@@ -1060,7 +1066,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **17141px**.
+height **17073px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes
