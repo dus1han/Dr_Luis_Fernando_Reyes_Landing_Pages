@@ -26,13 +26,67 @@ const heroAfter = IMAGES["hero-after.jpg"];
  * a stacked pair when the one beside it is side by side.
  */
 const PAIRS = [
-  { key: "ba-1.jpg", layout: "Before above · after below" },
-  { key: "ba-2.jpg", layout: "Before left · after right" },
-  { key: "ba-3.jpg", layout: "Before above · after below" },
-  { key: "ba-4.jpg", layout: "Before left · after right" },
-  { key: "ba-5.jpg", layout: "Before left · after right" },
-  { key: "ba-6.jpg", layout: "Before left · after right" },
+  { key: "ba-1.jpg", layout: "stacked" },
+  { key: "ba-2.jpg", layout: "side" },
+  { key: "ba-3.jpg", layout: "stacked" },
+  { key: "ba-4.jpg", layout: "side" },
+  { key: "ba-5.jpg", layout: "side" },
+  { key: "ba-6.jpg", layout: "side" },
 ] as const;
+
+/**
+ * Where each label sits, per arrangement.
+ *
+ * The labels are back **on** the photograph rather than in a caption strip
+ * under it. They were removed when these images arrived because the old
+ * markup pinned "After" to the right on every card, which is wrong for a
+ * stacked pair — but the fix was to place them correctly, not to give up and
+ * describe the layout in words underneath.
+ *
+ * A visitor reads "before / after" off the image in a glance. A line of
+ * small caps below the frame saying "BEFORE ABOVE · AFTER BELOW" is a
+ * sentence they have to parse and then map back onto the picture.
+ */
+const ARRANGEMENT = {
+  side: {
+    before: "left-3 top-3",
+    after: "right-3 top-3",
+    /** For the alt text, which still has to carry this in words. */
+    described: "before left, after right",
+  },
+  stacked: {
+    before: "left-3 top-3",
+    after: "bottom-3 left-3",
+    described: "before above, after below",
+  },
+} as const;
+
+/**
+ * Frosted pill. `backdrop-blur` is what makes one legible over skin tones,
+ * hair and background wall alike without a heavy slab of colour — the tint
+ * only has to nudge the contrast, not carry it.
+ */
+function Tag({
+  children,
+  position,
+  tone,
+}: {
+  children: React.ReactNode;
+  position: string;
+  tone: "before" | "after";
+}) {
+  return (
+    <span
+      className={`pointer-events-none absolute ${position} z-1 rounded-full px-3 py-[5px] text-[9.5px] font-semibold uppercase tracking-[0.16em] backdrop-blur-md ${
+        tone === "before"
+          ? "bg-espresso-deep/42 text-white/95 ring-1 ring-white/25"
+          : "bg-gold/85 text-white ring-1 ring-white/30"
+      }`}
+    >
+      {children}
+    </span>
+  );
+}
 
 export function Results() {
   return (
@@ -106,13 +160,19 @@ export function Results() {
         >
           {PAIRS.map(({ key, layout }) => {
             const img = IMAGES[key as keyof typeof IMAGES];
+            const place = ARRANGEMENT[layout];
             return (
               <RevealItem key={key}>
-                <figure className="group m-0 overflow-hidden rounded-[3px] bg-greige shadow-[0_20px_40px_-32px_rgb(35_27_22/0.5)]">
+                {/*
+                  No caption strip under the frame any more — the labels sit
+                  on the photograph where they are read, so a bar repeating
+                  the same thing in words was doing nothing but adding height.
+                */}
+                <figure className="group relative m-0 overflow-hidden rounded-[3px] bg-greige shadow-[0_20px_40px_-32px_rgb(35_27_22/0.5)] transition-[box-shadow] duration-500 ease-out-soft hover:shadow-[0_28px_54px_-30px_rgb(35_27_22/0.6)]">
                   <div className="relative overflow-hidden">
                     <Image
                       src={img.src}
-                      alt={`Buccal fat removal before and after — ${layout.toLowerCase()}`}
+                      alt={`Buccal fat removal before and after — ${place.described}`}
                       width={img.width}
                       height={img.height}
                       sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 31vw"
@@ -120,22 +180,17 @@ export function Results() {
                       blurDataURL={img.blurDataURL}
                       className="h-auto w-full transition-transform duration-700 ease-out-soft group-hover:scale-[1.035]"
                     />
-                    {/*
-                      No centre divider and no Before/After badges here any
-                      more. They were correct for the old reference art, which
-                      was uniformly side by side — on these they would be
-                      actively wrong, because two of the six are stacked and a
-                      badge reading "After" pinned to the right would sit on
-                      the right half of the *before* photograph.
 
-                      These cards carry the clinic's own watermark and their
-                      own composition. The caption below states the
-                      arrangement instead, which is true of every card.
-                    */}
+                    {/* Positioned per card. On a stacked pair "After" sits at
+                        the bottom, not the right — which is exactly what the
+                        old fixed markup got wrong. */}
+                    <Tag position={place.before} tone="before">
+                      Before
+                    </Tag>
+                    <Tag position={place.after} tone="after">
+                      After
+                    </Tag>
                   </div>
-                  <figcaption className="bg-sand px-4 py-3 text-[12px] font-medium uppercase tracking-[0.13em] text-muted">
-                    {layout}
-                  </figcaption>
                 </figure>
               </RevealItem>
             );

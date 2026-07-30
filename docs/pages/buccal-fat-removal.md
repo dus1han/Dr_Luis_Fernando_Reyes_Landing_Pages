@@ -25,7 +25,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1838 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1747 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 847 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10390px**; treat a change
+at 68 and must not move. Page height at 1440 is **10299px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -492,14 +492,32 @@ image exists to make. The page orders **squares first** so each row of the
 three-column grid holds one shape and comes out even, and the grid is
 `items-start` so nothing is stretched away from its own ratio.
 
-> **The centre divider and the Before/After badges were removed.** They were
-> right for the old art, which was uniformly side-by-side. On these they
-> would be **actively wrong**: two of the six are stacked, so a badge reading
-> "After" pinned to the right would sit on the right half of the *before*
-> photograph. The caption states the arrangement per card instead — "Before
-> above · after below" or "Before left · after right" — which is true of
-> every card and is information the visitor needs when the layout varies
-> between neighbours.
+> **The labels sit on the photograph, positioned per card.** They were
+> briefly removed when these images arrived, because the old markup pinned
+> "After" to the right on every card — which is wrong for a stacked pair,
+> where the right half is still the *before* photo. The fix was to place
+> them correctly, not to give up and describe the layout in words below the
+> frame.
+>
+> `ARRANGEMENT` in `Results.tsx` maps each layout to a position: side-by-side
+> puts "After" top-right, stacked puts it bottom-left. A visitor reads the
+> pair off the image in a glance; a strip of small caps saying "BEFORE ABOVE
+> · AFTER BELOW" is a sentence they have to parse and then map back onto the
+> picture. The caption strip is gone with it — it was only carrying that
+> sentence, and removing it took ~90px off the section.
+>
+> Verified rather than eyeballed: `verify-labels` logic in the QA pass reads
+> each tag's centre as a percentage of its own card, and asserts "After"
+> lands past 60% vertically on stacked cards and past 60% horizontally on
+> side-by-side ones.
+>
+> The pills are `backdrop-blur` with only a light tint. That is what makes
+> one legible over skin, hair and a pale studio wall alike — the colour
+> nudges contrast rather than carrying it, so no card needs a heavy slab.
+
+> **The bottom-row cards carry white bands** inside the source composition.
+> They are not a uniform border — `sharp.trim()` removes nothing — so they
+> cannot be cropped out safely and are left as the clinic composed them.
 
 **The disclaimer is switched off** — `SHOW_RESULTS_DISCLAIMER = false` in
 `lib/site.ts`, at the clinic's request. The copy still exists in
@@ -1066,7 +1084,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **17073px**.
+height **16801px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes
