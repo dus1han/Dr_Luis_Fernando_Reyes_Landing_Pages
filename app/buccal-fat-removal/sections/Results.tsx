@@ -11,19 +11,28 @@ import { IMAGES } from "@/lib/generated/images";
 import { SHOW_RESULTS_DISCLAIMER } from "@/lib/site";
 import { RESULTS } from "../content";
 
-const PAIRS = [1, 2, 3, 4, 5, 6].map((n) => IMAGES[`result-${n}.jpg` as keyof typeof IMAGES]);
-
 const heroBefore = IMAGES["hero-before.jpg"];
 const heroAfter = IMAGES["hero-after.jpg"];
 
-const CAPTIONS = [
-  "Female · frontal view",
-  "Male · frontal view",
-  "Female · frontal view",
-  "Female · frontal view",
-  "Female · profile view",
-  "Female · profile view",
-];
+/**
+ * The clinic's own before/after cards, used exactly as supplied.
+ *
+ * **Squares first, deliberately.** Three are 1:1 and three are 1.84:1, and
+ * ordering them by shape means each row of the three-column grid holds one
+ * shape and comes out even. Interleaving them gives ragged rows for nothing.
+ *
+ * The caption states the arrangement because it genuinely varies between
+ * cards, and a visitor cannot be expected to work out which half is which on
+ * a stacked pair when the one beside it is side by side.
+ */
+const PAIRS = [
+  { key: "ba-1.jpg", layout: "Before above · after below" },
+  { key: "ba-2.jpg", layout: "Before left · after right" },
+  { key: "ba-3.jpg", layout: "Before above · after below" },
+  { key: "ba-4.jpg", layout: "Before left · after right" },
+  { key: "ba-5.jpg", layout: "Before left · after right" },
+  { key: "ba-6.jpg", layout: "Before left · after right" },
+] as const;
 
 export function Results() {
   return (
@@ -85,39 +94,52 @@ export function Results() {
           </div>
         </div>
 
-        <RevealGroup step={0.07} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {PAIRS.map((img, i) => (
-            <RevealItem key={img.src}>
-              <figure className="group m-0 overflow-hidden rounded-[3px] bg-greige shadow-[0_20px_40px_-32px_rgb(35_27_22/0.5)]">
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={img.src}
-                    alt={`Buccal fat removal before and after — ${CAPTIONS[i].toLowerCase()}`}
-                    width={img.width}
-                    height={img.height}
-                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 31vw"
-                    placeholder="blur"
-                    blurDataURL={img.blurDataURL}
-                    className="h-auto w-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
-                  />
-                  {/* Centre divider reinforces which half is which. */}
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/55"
-                  />
-                  <span className="pointer-events-none absolute left-2.5 top-2.5 rounded-[2px] bg-espresso-deep/58 px-2 py-1 text-[9.5px] font-semibold uppercase tracking-[0.16em] text-white/92">
-                    Before
-                  </span>
-                  <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-[2px] bg-gold/85 px-2 py-1 text-[9.5px] font-semibold uppercase tracking-[0.16em] text-white">
-                    After
-                  </span>
-                </div>
-                <figcaption className="bg-sand px-4 py-3 text-[12px] font-medium uppercase tracking-[0.13em] text-muted">
-                  {CAPTIONS[i]}
-                </figcaption>
-              </figure>
-            </RevealItem>
-          ))}
+        {/*
+          `items-start` so a card is never stretched away from its own aspect
+          ratio. With squares ordered before the landscape pairs each row is
+          one shape anyway, but a future addition in a third shape then slots
+          in without distorting anything.
+        */}
+        <RevealGroup
+          step={0.07}
+          className="grid items-start gap-5 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {PAIRS.map(({ key, layout }) => {
+            const img = IMAGES[key as keyof typeof IMAGES];
+            return (
+              <RevealItem key={key}>
+                <figure className="group m-0 overflow-hidden rounded-[3px] bg-greige shadow-[0_20px_40px_-32px_rgb(35_27_22/0.5)]">
+                  <div className="relative overflow-hidden">
+                    <Image
+                      src={img.src}
+                      alt={`Buccal fat removal before and after — ${layout.toLowerCase()}`}
+                      width={img.width}
+                      height={img.height}
+                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 31vw"
+                      placeholder="blur"
+                      blurDataURL={img.blurDataURL}
+                      className="h-auto w-full transition-transform duration-700 ease-out-soft group-hover:scale-[1.035]"
+                    />
+                    {/*
+                      No centre divider and no Before/After badges here any
+                      more. They were correct for the old reference art, which
+                      was uniformly side by side — on these they would be
+                      actively wrong, because two of the six are stacked and a
+                      badge reading "After" pinned to the right would sit on
+                      the right half of the *before* photograph.
+
+                      These cards carry the clinic's own watermark and their
+                      own composition. The caption below states the
+                      arrangement instead, which is true of every card.
+                    */}
+                  </div>
+                  <figcaption className="bg-sand px-4 py-3 text-[12px] font-medium uppercase tracking-[0.13em] text-muted">
+                    {layout}
+                  </figcaption>
+                </figure>
+              </RevealItem>
+            );
+          })}
         </RevealGroup>
 
         <Reveal delay={0.12} className="mt-11 text-center">

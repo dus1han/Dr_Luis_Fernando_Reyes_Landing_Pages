@@ -149,9 +149,21 @@ export const MAPS = {
 } as const;
 
 /**
- * Before/after photography on this page is illustrative reference art,
- * not identified patient records. Set to false once consented clinical
- * photography replaces it.
+ * The "individual results vary" line under the results gallery.
+ *
+ * **Keep this on.** The gallery is no longer reference art — it is the
+ * clinic's own before/after photography of real patients, which makes a
+ * variance statement more necessary rather than less. The word
+ * "illustrative" was dropped from the copy for the same reason.
+ *
+ * ── STILL TO CONFIRM ────────────────────────────────────────────────
+ * Written patient consent to publish. The images carry the clinic's
+ * watermark and some are anonymised (eyes masked, or cropped below the
+ * eyeline) while others show a fully identifiable face. That
+ * inconsistency is worth resolving before paid traffic: DHA advertising
+ * rules govern the use of patient imagery, and identifiable clinical
+ * photographs need documented consent.
+ * ────────────────────────────────────────────────────────────────────
  */
 export const SHOW_RESULTS_DISCLAIMER = true;
 

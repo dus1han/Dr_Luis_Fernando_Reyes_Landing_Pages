@@ -88,11 +88,20 @@ function Card({
     return () => ro.disconnect();
   }, []);
 
+  // Hover lifts the card, warms its border to gold and deepens the shadow —
+  // the same vocabulary the index cards and the benefits grid already use, so
+  // the page has one idea of what "this is interactive" looks like.
+  //
+  // No `motion-reduce` variant needed: globals.css drops every transition to
+  // 0.001ms under `prefers-reduced-motion`, so these snap instead of moving.
   return (
-    <figure className="relative m-0 flex h-full flex-col rounded-[3px] border border-ink/12 bg-ivory p-7">
+    <figure className="group relative m-0 flex h-full flex-col rounded-[3px] border border-ink/12 bg-ivory p-7 transition-[translate,border-color,box-shadow] duration-500 ease-out-soft hover:-translate-y-1.5 hover:border-gold/40 hover:shadow-[0_26px_50px_-30px_rgb(35_27_22/0.45)]">
+      {/* The one flourish that belongs only to this card: the quotation mark
+          warms and grows a little, anchored to its own corner so it opens
+          outward rather than drifting across the text. */}
       <span
         aria-hidden
-        className="absolute right-6 top-4 font-display text-[56px] leading-none text-gold/16"
+        className="absolute right-6 top-4 origin-top-right font-display text-[56px] leading-none text-gold/16 transition-[color,scale] duration-500 ease-out-soft group-hover:scale-110 group-hover:text-gold/32"
       >
         &rdquo;
       </span>
@@ -302,7 +311,11 @@ function Carousel({
         tabIndex={0}
         role="group"
         aria-label="Patient reviews"
-        className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        /* pt-2 / pb-4 is headroom for the hover lift and its shadow. Setting
+           overflow-x also makes overflow-y computed `auto`, so without the
+           padding a lifted card is clipped at the top and the deepened shadow
+           can trip a vertical scrollbar. */
+        className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((r, i) => (
           <div

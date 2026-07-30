@@ -163,8 +163,17 @@ export const RESULTS = {
       body: "The line from cheekbone to chin sharpens — clearest in the profile views.",
     },
   ],
+  /*
+   * "Illustrative" was removed when the gallery stopped being reference art.
+   * These are the clinic's own before/after photographs, so calling them
+   * illustrative would now be untrue in the other direction — and a results
+   * disclaimer that misdescribes its own images is worth less than none.
+   *
+   * What is left is the part that still applies and is expected of a
+   * surgical page: results vary by anatomy.
+   */
   disclaimer:
-    "Photographs are illustrative of typical outcomes. Individual results vary and are determined by your own facial anatomy.",
+    "Individual results vary and are determined by your own facial anatomy.",
 };
 
 export const SURGEON = {

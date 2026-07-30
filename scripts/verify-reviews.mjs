@@ -9,7 +9,7 @@
  * no hover to pause it. Both are asserted so that cannot come back quietly.
  */
 import puppeteer from "puppeteer-core";
-const B=(process.argv[2] || "http://127.0.0.1:3000").replace(//+$/,"");
+const B=(process.argv[2] || "http://127.0.0.1:3000").replace(/\/+$/,"");
 const b=await puppeteer.launch({executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe",headless:"new",args:["--disable-gpu","--hide-scrollbars","--no-sandbox"]});
 const fail=[];
 const ok=(n,p,d="")=>{ if(!p) fail.push(n); console.log(`${p?"  PASS":"  FAIL"}  ${n}${d?` — ${d}`:""}`); };

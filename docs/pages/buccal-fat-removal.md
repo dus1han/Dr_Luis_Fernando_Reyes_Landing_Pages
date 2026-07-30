@@ -25,8 +25,8 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
-| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 827 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1884 |
+| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 847 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
 | — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 44 / 30 | 547 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10238px**; treat a change
+at 68 and must not move. Page height at 1440 is **10436px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -474,17 +474,44 @@ right kind of imbalance — optically the two look equal.
 Drag-to-compare slider paired with a reading guide, then six pairs.
 
 - **Content:** `RESULTS` — `eyebrow`, `headline`, `intro`, `lookFor[]`, `disclaimer`
-- **Images:** `hero-before.jpg` / `hero-after.jpg` (slider), `result-1…6.jpg` (grid)
+- **Images:** `hero-before.jpg` / `hero-after.jpg` (slider), `ba-1…6.jpg` (gallery)
 - **Animation:** slider auto-sweeps once on first view to teach the
   interaction, then yields to the user
 
-**To swap in real patient photos:** replace the sources and re-run
-`npm run prepare-images`. Then set `SHOW_RESULTS_DISCLAIMER = false` in
-`lib/site.ts` if the disclaimer no longer applies.
+### The gallery is the clinic's own photography now
 
-> **Gotcha —** the gallery is 3 columns because the source pairs are only
-> 696×360. At 2 columns they'd upscale on high-DPI screens. Higher-res
-> source art would allow a larger presentation.
+`ba-1…6.jpg` replaced `result-1…6.jpg`, which were cut out of a 4×3
+composite of reference art. That composite and its measured gutters are gone
+from the pipeline. The new files need no cutting — **each one is already a
+complete pair**, watermarked, and in some cases anonymised by the clinic.
+
+**Two shapes, both preserved rather than normalised:** three are 1080×1080
+and three are 700×380. Forcing one aspect with `object-cover` would crop
+half of a before or an after off the card, which destroys the comparison the
+image exists to make. The page orders **squares first** so each row of the
+three-column grid holds one shape and comes out even, and the grid is
+`items-start` so nothing is stretched away from its own ratio.
+
+> **The centre divider and the Before/After badges were removed.** They were
+> right for the old art, which was uniformly side-by-side. On these they
+> would be **actively wrong**: two of the six are stacked, so a badge reading
+> "After" pinned to the right would sit on the right half of the *before*
+> photograph. The caption states the arrangement per card instead — "Before
+> above · after below" or "Before left · after right" — which is true of
+> every card and is information the visitor needs when the layout varies
+> between neighbours.
+
+The word "illustrative" came out of `RESULTS.disclaimer` at the same time.
+It was accurate for reference art and is untrue of real clinical
+photography; a results disclaimer that misdescribes its own images is worth
+less than none. What remains is the part that still applies: results vary by
+anatomy.
+
+> **Consent is outstanding.** Some of these are anonymised — eyes masked, or
+> cropped below the eyeline — and others show a fully identifiable face.
+> That inconsistency is worth resolving before paid traffic: DHA advertising
+> rules govern patient imagery, and identifiable clinical photographs need
+> documented consent. Flagged in `lib/site.ts` and the launch checklist.
 
 > **Gotcha —** the slider is paired with the reading guide rather than
 > centred alone. At 500px in a 1220px shell it left ~360px empty either
@@ -533,6 +560,31 @@ risk.**
 marketing in Dubai. The risk is the testimonials themselves, not their
 wording, so this section needs the same approval pass as the rest of the
 copy before it runs traffic.
+
+### Hover, and a Tailwind v4 trap worth knowing
+
+Cards lift, warm their border to gold and deepen their shadow; the quotation
+mark grows and warms with them. Same vocabulary as the index cards and the
+benefits grid, so the page has one idea of what "interactive" looks like.
+
+> **`transition-[transform,…]` does nothing in Tailwind v4.** `-translate-y-*`
+> and `scale-*` now compile to the standalone `translate` and `scale` CSS
+> properties, not to `transform` — so a transition list naming `transform`
+> leaves the movement **snapping** while the colours beside it animate
+> smoothly. It looks like a broken tween and reads as jank.
+>
+> The lists are `transition-[translate,border-color,box-shadow]` and
+> `transition-[color,scale]`. Caught by reading computed style mid-hover: at
+> 120ms the card was at `translate: 0 -4.82px` and the mark at `scale: 1.08`,
+> which is what proves it is tweening rather than jumping. `getComputedStyle`
+> on `transform` reports `none` in both states and tells you nothing.
+
+The scroll container carries `pt-2 pb-4` as headroom. Setting `overflow-x`
+makes `overflow-y` compute to `auto`, so without it a lifted card is clipped
+at the top and the deeper shadow can trip a vertical scrollbar.
+
+No `motion-reduce` variants: `globals.css` drops every transition to 0.001ms
+under `prefers-reduced-motion`, so these snap instead of moving.
 
 ### The autoplay had to go
 
@@ -1008,7 +1060,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16596px**.
+height **17141px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

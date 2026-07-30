@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.resolve(__dirname, "../../buccal-fat-removal/Images");
 const LOGO_SRC = path.resolve(__dirname, "../../buccal-fat-removal/uni logo");
+const BA_SRC = path.resolve(__dirname, "../../buccal-fat-removal/Before after");
 const OUT = path.resolve(__dirname, "../public/buccal-fat-removal");
 const GEN = path.resolve(__dirname, "../lib/generated");
 
@@ -26,7 +27,8 @@ const SOURCES = {
   hero: "hero.png",
   frontFacing: "frontfacing.png",
   heroPair: "ChatGPT Image Jul 19, 2026, 08_19_23 PM.png",
-  resultsGrid: "ChatGPT Image Jul 25, 2026, 04_05_19 PM.png",
+  // The 4x3 results composite is gone: the gallery now uses the clinic's own
+  // before/after cards from ../Before after/, which need no cutting.
   anatomy: "Untitled design (12).png",
   portrait: "DRA-NICOLE-Y-DR-LUIS-FERNANDO-5-scaled.jpg",
   surgery: "IMG_9759-scaled.jpg",
@@ -275,23 +277,37 @@ await emit(
   sharp(src("heroPair")).extract({ left: 770, top: HERO.top, width: HERO.width, height: HERO.height })
 );
 
-console.log("\nResults gallery — 6 before/after pairs from the 4x3 grid");
-// 1402x1122 grid, gutters measured at x696-700 and y378-381 / y742-745.
-// Each pair keeps its own ">" arrow, so pairs stay self-explanatory.
-const PAIR_W = 696;
-const PAIR_H = 360;
-const PAIRS = [
-  { left: 0, top: 9 },
-  { left: 701, top: 9 },
-  { left: 0, top: 382 },
-  { left: 701, top: 382 },
-  { left: 0, top: 754 },
-  { left: 701, top: 754 },
+console.log("\nResults gallery — the clinic’s own before/after cards");
+/*
+ * These arrive already composed, watermarked and — where the clinic chose
+ * to — anonymised, so the pipeline only resizes them. No cutting, no
+ * cropping: each file IS one complete pair, and cropping one would destroy
+ * the comparison it exists to make.
+ *
+ * Two shapes on purpose, both preserved rather than normalised:
+ *   1080x1080  three pairs, before and after stacked or side by side
+ *   700x380    three pairs, side by side
+ *
+ * The page orders squares first so each row of the gallery grid holds one
+ * shape and comes out even. Forcing a single aspect with object-cover
+ * would crop half of a before or an after off the card.
+ *
+ * This replaced result-1..6.jpg, which were cut out of a 4x3 composite of
+ * reference art. That source and its measured gutters are gone.
+ */
+const BEFORE_AFTER = [
+  "Untitled design (12).png",
+  "Untitled design (13).png",
+  "Untitled design (14).png",
+  "Untitled design (15).png",
+  "Untitled design (16).png",
+  "Untitled design (17).png",
 ];
-for (const [i, p] of PAIRS.entries()) {
+for (const [i, file] of BEFORE_AFTER.entries()) {
   await emit(
-    `result-${i + 1}.jpg`,
-    sharp(src("resultsGrid")).extract({ ...p, width: PAIR_W, height: PAIR_H })
+    `ba-${i + 1}.jpg`,
+    // 1000px covers the ~380px card at 2x without shipping the 1.6MB PNG.
+    sharp(path.join(BA_SRC, file)).resize({ width: 1000, withoutEnlargement: true })
   );
 }
 

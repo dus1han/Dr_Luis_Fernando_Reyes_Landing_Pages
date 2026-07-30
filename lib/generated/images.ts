@@ -64,41 +64,41 @@ export const IMAGES = {
     "height": 860,
     "blurDataURL": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABwBQCdASoUABcAPwl2r1GrpyQiqA1RcCEJYwCxHoABSbgi9NAepMNSdTUDbNcS2B3sDd/AAP6NLjfiaF4CrHufJvpNfG27dzk6LpPqxVqMwaD/tdhLMt3WVuNSREB3kk0yXFq+rs0z7Y4qIBsvAAAA"
   },
-  "result-1.jpg": {
-    "src": "/buccal-fat-removal/result-1.jpg",
-    "width": 696,
-    "height": 360,
-    "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAAoALs2EwmEjq6uri4DMSxAE6ZQAJ4Ksq4eCRXYOgAD47CKLe2pKSrfSCE4DLQyFfNOcfN+NK9mHdTJ5skAA"
+  "ba-1.jpg": {
+    "src": "/buccal-fat-removal/ba-1.jpg",
+    "width": 1000,
+    "height": 1000,
+    "blurDataURL": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACQBACdASoUABQAPwl0sFGrpqSiqA1RcCEJYgCsM1XA41vn9tuvCgeTlBNxrYAA/tGqm2m18i+598qXvBmTmPjvQ17Y2Wc7oOBYTPef4d6GHry9+5VPtEJpS+/ijBsYq2aAE9Ek9EAI1iAA"
   },
-  "result-2.jpg": {
-    "src": "/buccal-fat-removal/result-2.jpg",
-    "width": 696,
-    "height": 360,
-    "blurDataURL": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADQAwCdASoUAAoAPwl2s0+rp6UiMAgBcCEJZgCdMoAI5WaTD18kBQAA/ryUJh2ZJtylsAhPSnz/yZzlpP0XYtS7XKpOHlt+Pd90pjk0AUtMSRN8GfJwAA=="
+  "ba-2.jpg": {
+    "src": "/buccal-fat-removal/ba-2.jpg",
+    "width": 1000,
+    "height": 1000,
+    "blurDataURL": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQBACdASoUABQAPwl6s1Orp6SiqAqpcCEJQBOmYwAzyalILWNkurRkuugyFVC40AD+pewR8/RO9r43xq9ba96ShFWB3Q1t3OouZJoRjYsOo/4/xgOpD86rYD4wdc1iEUsPYYMnXuWxmBhZRmRAAAAA"
   },
-  "result-3.jpg": {
-    "src": "/buccal-fat-removal/result-3.jpg",
-    "width": 696,
-    "height": 360,
-    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAQBACdASoUAAoAPwl0sFCrpySisAgBcCEJYgCdMoRwAB6hHGzdCJEwQAD+iK0OMJDJgk7ATUWXpJH30tgH4Logp+FG/XRvgXVQrutS0AA="
+  "ba-3.jpg": {
+    "src": "/buccal-fat-removal/ba-3.jpg",
+    "width": 1000,
+    "height": 1000,
+    "blurDataURL": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAQBQCdASoUABQAPwl0r1GrpqQiqA1RcCEJQBOmaYgrCIP+4hJenZxzUBXvFrrPTUoAAPwaUy0+sVWCZ1gEB7qEqmd+wTKvZ5tbVTofL7WbO+GZqvuSHlMgljahPpLOT//w00wStcrAAA=="
   },
-  "result-4.jpg": {
-    "src": "/buccal-fat-removal/result-4.jpg",
-    "width": 696,
-    "height": 360,
-    "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADQAwCdASoUAAoAPwlurk+rpiQiMAgBcCEJYgCdMoABywi1VcSD+AAA7+Fsu6Qjo0R9F8nwx5J4wDXIbt7gWzdoim+zyB0LAAA="
+  "ba-4.jpg": {
+    "src": "/buccal-fat-removal/ba-4.jpg",
+    "width": 700,
+    "height": 380,
+    "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAQBACdASoUAAsAPwlwsE+rpqSiMAgBcCEJQBOmUABNzMgaTeHrWi3gAAD+rR65Lgbr1vwF0uvVMGh9Prk74flpO2kBpFY5/MbO7WxmcY571VqwAAA="
   },
-  "result-5.jpg": {
-    "src": "/buccal-fat-removal/result-5.jpg",
-    "width": 696,
-    "height": 360,
-    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAwCdASoUAAoAPwlyr1ArpyQisAgBcCEJYgCdMoAB+/7h/oBbf8AA/tzV2jG4Oe1kki/XfYNRG3R7vLuoS8MtrmA38yUlu5MHS2AA"
+  "ba-5.jpg": {
+    "src": "/buccal-fat-removal/ba-5.jpg",
+    "width": 700,
+    "height": 380,
+    "blurDataURL": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAQBACdASoUAAsAPwlusFArpiSisAgBcCEJZgCdMoADSj7mrv9K83qHoAD+ZrloTkRrxKm4Pt1yHdk6Us4q1F3cAc+mHwPxJ2q87J11jLjQSUFnryupekt3YhDwTeAA"
   },
-  "result-6.jpg": {
-    "src": "/buccal-fat-removal/result-6.jpg",
-    "width": 696,
-    "height": 360,
-    "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAACQAwCdASoUAAoAPwlurk+rpiQiMAgBcCEJYgCdMoABxLPkz4QAAP6757X2AlRM7n4+0pTe8u6hLwyz83lPi7kqMU7R8ob6mAA="
+  "ba-6.jpg": {
+    "src": "/buccal-fat-removal/ba-6.jpg",
+    "width": 700,
+    "height": 380,
+    "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAAsAPwlwsFArpqSisAgBcCEJQBOgBDlDEdu1+8bMAAD+yN0ZG7YG2LPohqoEqalkzNk8NMlhUNKCa3ZXCQwA"
   },
   "anatomy.webp": {
     "src": "/buccal-fat-removal/anatomy.webp",
