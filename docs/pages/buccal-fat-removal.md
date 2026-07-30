@@ -26,7 +26,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1706 |
-| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 751 |
+| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 827 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
 | — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 44 / 30 | 547 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10162px**; treat a change
+at 68 and must not move. Page height at 1440 is **10238px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -504,10 +504,10 @@ Drag-to-compare slider paired with a reading guide, then six pairs.
 | 1 | single card, centred, max 560px |
 | 2 | two columns, centred, max 820px |
 | 3 | three columns, full width |
-| **4+** | **auto-scrolling marquee** |
+| **4+** | **carousel with prev/next** |
 | 0 | section returns `null` and disappears |
 
-Threshold is `MARQUEE_FROM` in the section file. There are currently 5
+Threshold is `CAROUSEL_FROM` in the section file. There are currently 5
 entries, so the marquee is live.
 
 ### These are real reviews now, and they carry two problems
@@ -533,6 +533,47 @@ risk.**
 marketing in Dubai. The risk is the testimonials themselves, not their
 wording, so this section needs the same approval pass as the rest of the
 copy before it runs traffic.
+
+### The autoplay had to go
+
+It was a continuous auto-scrolling marquee. **Anything that moves on its own
+turns every control inside it into a moving target**, and once the cards
+carried a "Read more" button it became effectively unclickable. Pausing on
+hover only ever helped a mouse — on a phone there is no hover, so the button
+could not reliably be tapped at all.
+
+It is now a carousel the visitor drives: native horizontal scrolling with
+`scroll-snap`, plus prev/next buttons. **Nothing moves unless someone asks
+it to.** Swipe, trackpad, shift-wheel and keyboard all work for free, and the
+arrows are `scrollBy` — nothing re-implements a scrollbar. The buttons
+disable at each end.
+
+`scripts/verify-reviews.mjs` asserts "does not auto-scroll" and clicks Read
+more at its real coordinates, so this cannot come back quietly.
+
+> The `animate-marquee` class and its `marquee-scroll` keyframes were deleted
+> from `globals.css`. Nothing referenced them any more.
+
+### The full quote opens in a native `<dialog>`
+
+Rather than expanding in place, which changed the card's height — the one
+thing an equal-height row cannot afford.
+
+`showModal()` is doing real work: focus is trapped inside, Esc closes, the
+rest of the page goes inert, and the backdrop is a styleable pseudo-element.
+Hand-rolling those is where accessible modals usually go wrong.
+
+Two things it does *not* give you, both handled:
+
+- **The page still scrolls behind it.** `showModal` makes the background
+  inert but does not lock scrolling; the body gets `overflow: hidden` while
+  open, restored on unmount.
+- **Backdrop clicks** land on the dialog element itself, so closing on
+  backdrop is `e.target === dialogRef.current`.
+
+The dialog is mounted only while open, so mount/unmount drives
+`showModal`/`close` and there is no second source of truth for whether it is
+up.
 
 ### Small cards, clamped, with Read more
 
@@ -967,7 +1008,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16520px**.
+height **16596px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes

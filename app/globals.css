@@ -211,15 +211,6 @@ img {
   }
 }
 
-@keyframes marquee-scroll {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
 @keyframes gold-sweep {
   from {
     background-position: 180% 0;
@@ -246,10 +237,6 @@ img {
 
 .animate-bloom {
   animation: bloom-drift 14s var(--ease-in-out-soft) infinite;
-}
-
-.animate-marquee {
-  animation: marquee-scroll var(--marquee-duration, 46s) linear infinite;
 }
 
 /* ============================================================

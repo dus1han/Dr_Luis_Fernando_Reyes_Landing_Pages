@@ -169,7 +169,7 @@ animates, and the gotchas. This table is only a map.
 | 7 | Am I a candidate | Checklist with self-drawing ticks, full-width CTA strip |
 | 8 | Meet Dr. Luis | The one full-dark band; portrait pinned while his story scrolls, with a champagne affiliation ribbon |
 | 9 | Before & after | Drag-to-compare slider plus six pairs |
-| 10 | Reviews | Auto-scrolling marquee past three reviews |
+| 10 | Reviews | Carousel with prev/next; Read more opens the full quote in a dialog |
 | 11 | FAQ | Single-open accordion, all collapsed on arrival |
 | 12 | Booking | The case left, three-field form right |
 | — | Footer | Logo, contact + socials, map |

@@ -10,7 +10,8 @@
     "lint": "next lint",
     "prepare-images": "node scripts/prepare-images.mjs",
     "verify:conversion": "node scripts/verify-conversion.mjs",
-    "verify:phones": "node scripts/verify-phones.mjs"
+    "verify:phones": "node scripts/verify-phones.mjs",
+    "verify:reviews": "node scripts/verify-reviews.mjs"
   },
   "dependencies": {
     "motion": "^12.42.2",

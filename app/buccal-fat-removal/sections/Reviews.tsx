@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Eyebrow } from "@/components/lp/Eyebrow";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/lp/Reveal";
@@ -20,8 +20,8 @@ const SHOWN: ReviewItem[] = SHOW_PLACEHOLDER_REVIEWS
   : REVIEWS.items.filter((r) => !r.placeholder);
 
 /** Past this, a static grid gets unwieldy and the row starts scrolling. */
-const MARQUEE_FROM = 4;
-const SCROLLS = SHOWN.length >= MARQUEE_FROM;
+const CAROUSEL_FROM = 4;
+const SCROLLS = SHOWN.length >= CAROUSEL_FROM;
 
 /** Columns for the static case, so a short list never orphans a gap. */
 const COLUMNS: Record<number, string> = {
@@ -56,38 +56,37 @@ function Stars() {
   );
 }
 
-/** Six lines at 16px/1.75 — the height every collapsed card is held to. */
+/** Six lines at 16px/1.75 — every card is held to this, so the row reads as a set. */
 const CLAMP_LINES = 6;
 const CLAMP_HEIGHT = 16 * 1.75 * CLAMP_LINES;
 
-function Card({ review }: { review: ReviewItem }) {
-  const [expanded, setExpanded] = useState(false);
+const CARD_GAP = 20; // gap-5
+
+function Card({
+  review,
+  onExpand,
+}: {
+  review: ReviewItem;
+  onExpand: (r: ReviewItem) => void;
+}) {
   const quoteRef = useRef<HTMLParagraphElement>(null);
-  const [canExpand, setCanExpand] = useState(false);
+  const [truncated, setTruncated] = useState(false);
 
   /*
    * Whether this quote is actually longer than the clamp, measured rather
    * than guessed from a character count — the same string wraps to a
    * different number of lines at 330px and 370px, so a count would show
    * "Read more" on a card with nothing hidden behind it.
-   *
-   * Latched: once true it stays true, because an expanded paragraph no
-   * longer overflows and re-measuring would remove the control needed to
-   * collapse it again.
    */
   useEffect(() => {
     const el = quoteRef.current;
-    if (!el || canExpand) return;
-
-    const measure = () => {
-      if (el.scrollHeight > el.clientHeight + 1) setCanExpand(true);
-    };
+    if (!el) return;
+    const measure = () => setTruncated(el.scrollHeight > el.clientHeight + 1);
     measure();
-
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [canExpand]);
+  }, []);
 
   return (
     <figure className="relative m-0 flex h-full flex-col rounded-[3px] border border-ink/12 bg-ivory p-7">
@@ -98,40 +97,39 @@ function Card({ review }: { review: ReviewItem }) {
         &rdquo;
       </span>
       <Stars />
+
       <blockquote className="m-0 flex-1">
-        {/*
-          `min-height` on the collapsed state, not just a clamp: it holds
-          every card to the same size whether its quote is 213 characters or
-          676, which is what keeps the row reading as a set. Expanding one
-          card grows only that card — the row is `items-start`.
-        */}
         <p
           ref={quoteRef}
           className="m-0 overflow-hidden text-[16px] leading-[1.75] text-body"
-          style={
-            expanded
-              ? undefined
-              : {
-                  display: "-webkit-box",
-                  WebkitBoxOrient: "vertical",
-                  WebkitLineClamp: CLAMP_LINES,
-                  minHeight: CLAMP_HEIGHT,
-                }
-          }
+          style={{
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: CLAMP_LINES,
+            minHeight: CLAMP_HEIGHT,
+          }}
         >
           {review.quote}
         </p>
 
-        {canExpand && (
+        {/*
+          Opens a dialog rather than expanding in place. Expanding changed
+          the card's height, which is the one thing this layout cannot
+          afford: the cards are a set, and one growing to twice the height
+          of its neighbours is what the equal-height clamp exists to stop.
+        */}
+        {truncated && (
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={() => onExpand(review)}
             className="mt-2 cursor-pointer border-0 bg-transparent p-0 text-[13px] font-semibold text-gold underline underline-offset-2 transition-colors duration-300 hover:text-ink"
           >
-            {expanded ? "Show less" : "Read more"}
+            Read more
+            <span className="sr-only"> from {review.name}</span>
           </button>
         )}
       </blockquote>
+
       <figcaption className="mt-6 border-t border-ink/12 pt-4">
         <span className="block font-display text-[17px] font-semibold text-ink">
           {review.name}
@@ -145,68 +143,205 @@ function Card({ review }: { review: ReviewItem }) {
 }
 
 /**
- * Continuous auto-scrolling row.
+ * The full quote, in a native <dialog>.
  *
- * The list is rendered twice and translated -50%, so the second copy is
- * exactly where the first started when the cycle restarts — that's what
- * makes the loop seamless. The duplicate is aria-hidden so screen
- * readers don't read every review twice.
- *
- * Pauses on hover and on keyboard focus. Under reduced motion the
- * animation is dropped and the row becomes a normal horizontal scroller,
- * so the content stays reachable either way.
+ * `showModal()` is doing real work here: focus is trapped inside, Esc
+ * closes, the rest of the page goes inert, and the backdrop is a styleable
+ * pseudo-element. Hand-rolling those is where accessible modals usually go
+ * wrong, and none of it is code we have to own.
  */
-function Marquee({ items }: { items: ReviewItem[] }) {
-  const duration = items.length * 9;
+function QuoteModal({
+  review,
+  onClose,
+}: {
+  review: ReviewItem;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (!dialog.open) dialog.showModal();
+
+    /*
+     * `showModal` makes the background inert but does NOT stop it
+     * scrolling — a wheel or a swipe still moves the page behind the
+     * dialog, which on a carousel reads as the content running away.
+     */
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
 
   return (
-    <div
-      className="group relative overflow-hidden motion-reduce:overflow-x-auto"
-      style={{
-        // Fades the cards out at both edges instead of hard-cutting them.
-        maskImage:
-          "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
-        WebkitMaskImage:
-          "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      // Clicking the backdrop lands on the dialog element itself, because
+      // the padding-free dialog is exactly its content box.
+      onClick={(e) => {
+        if (e.target === ref.current) ref.current?.close();
       }}
+      aria-labelledby={titleId}
+      className="m-auto w-[min(92vw,600px)] rounded-[3px] border border-ink/12 bg-ivory p-0 text-body backdrop:bg-ink/55 backdrop:backdrop-blur-[2px]"
     >
-      <div
-        className="animate-marquee flex w-max items-start gap-5 group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused] motion-reduce:animate-none"
-        style={{ ["--marquee-duration" as string]: `${duration}s` }}
-      >
-        {/* items-start, with the uniform size coming from the quote's own
-            min-height rather than from stretching.
+      <div className="p-7 sm:p-9">
+        <Stars />
 
-            The real reviews run 213 to 676 characters. Stretching made the
-            longest set every card to 716px and left the shortest carrying
-            ~500px of empty ivory. Clamping to six lines with a matching
-            min-height gives the same tidy row at a third of the height, and
-            `items-start` is what lets one expanded card grow on its own
-            instead of dragging its neighbours with it. */}
-        {[0, 1].map((copy) => (
-          <div
-            key={copy}
-            className="flex items-start gap-5"
-            aria-hidden={copy === 1}
-            /* The cards now contain a button. Without inert, the duplicate
-               copy puts focusable controls inside an aria-hidden subtree —
-               reachable by Tab, invisible to assistive tech. inert removes
-               both in one attribute. */
-            inert={copy === 1}
+        <blockquote className="m-0">
+          <p className="m-0 max-h-[52vh] overflow-y-auto text-[16.5px] leading-[1.8] text-body">
+            {review.quote}
+          </p>
+        </blockquote>
+
+        <div className="mt-7 border-t border-ink/12 pt-4">
+          <span
+            id={titleId}
+            className="block font-display text-[18px] font-semibold text-ink"
           >
-            {items.map((r, i) => (
-              <div key={i} className="w-[330px] flex-none sm:w-[370px]">
-                <Card review={r} />
-              </div>
-            ))}
+            {review.name}
+          </span>
+          <span className="mt-0.5 block text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
+            {review.meta}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => ref.current?.close()}
+          className="mt-7 inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-[2px] border-0 bg-gold px-6 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-white transition-colors duration-300 hover:bg-ink sm:w-auto"
+        >
+          Close
+        </button>
+      </div>
+    </dialog>
+  );
+}
+
+function Arrow({ dir }: { dir: "prev" | "next" }) {
+  return (
+    <svg width="17" height="12" viewBox="0 0 18 12" fill="none" aria-hidden>
+      <path
+        d={dir === "next" ? "M0 6h16M12.5 1 17 6l-4.5 5" : "M17 6H1M5.5 1 1 6l4.5 5"}
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * A carousel the visitor drives, not one that drives itself.
+ *
+ * This replaced a continuous auto-scrolling marquee. **The autoplay is what
+ * had to go**: anything that moves on its own turns every control inside it
+ * into a moving target, and the "Read more" button was effectively
+ * unclickable. Pausing on hover only ever helped a mouse — on a phone there
+ * is no hover, so the button could not reliably be tapped at all.
+ *
+ * Native scrolling with `scroll-snap` rather than a transform: swipe,
+ * trackpad, shift-wheel and keyboard all work for free, and the arrows are
+ * just `scrollBy`. Nothing here re-implements a scrollbar.
+ */
+function Carousel({
+  items,
+  onExpand,
+}: {
+  items: ReviewItem[];
+  onExpand: (r: ReviewItem) => void;
+}) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  const sync = useCallback(() => {
+    const el = scroller.current;
+    if (!el) return;
+    setAtStart(el.scrollLeft <= 1);
+    // -1 for sub-pixel widths, which otherwise leave "next" enabled at the
+    // end and make the control look broken.
+    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    sync();
+    const el = scroller.current;
+    if (!el) return;
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [sync]);
+
+  const step = (direction: 1 | -1) => {
+    const el = scroller.current;
+    if (!el) return;
+    // One card, measured — the width changes at `sm` and hardcoding it here
+    // would silently desync from the class that sets it.
+    const card = el.querySelector<HTMLElement>("[data-review-card]");
+    const by = (card?.offsetWidth ?? 340) + CARD_GAP;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({ left: by * direction, behavior: reduced ? "auto" : "smooth" });
+  };
+
+  const arrowClass =
+    "grid h-11 w-11 place-items-center rounded-full border border-ink/18 bg-ivory text-ink transition-[color,border-color,opacity] duration-300 hover:border-gold hover:text-gold disabled:cursor-default disabled:opacity-35 disabled:hover:border-ink/18 disabled:hover:text-ink";
+
+  return (
+    <div>
+      <div
+        ref={scroller}
+        onScroll={sync}
+        /* Focusable and labelled: a scrollable region that keyboard users
+           cannot reach is a scrollable region they cannot read. */
+        tabIndex={0}
+        role="group"
+        aria-label="Patient reviews"
+        className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {items.map((r, i) => (
+          <div
+            key={i}
+            data-review-card
+            className="w-[330px] flex-none snap-start sm:w-[370px]"
+          >
+            <Card review={r} onExpand={onExpand} />
           </div>
         ))}
+      </div>
+
+      <div className="mt-7 flex items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          disabled={atStart}
+          aria-label="Previous reviews"
+          className={arrowClass}
+        >
+          <Arrow dir="prev" />
+        </button>
+        <button
+          type="button"
+          onClick={() => step(1)}
+          disabled={atEnd}
+          aria-label="More reviews"
+          className={arrowClass}
+        >
+          <Arrow dir="next" />
+        </button>
       </div>
     </div>
   );
 }
 
 export function Reviews() {
+  const [expanded, setExpanded] = useState<ReviewItem | null>(null);
+
   if (!SHOWN.length) return null;
 
   return (
@@ -224,27 +359,29 @@ export function Reviews() {
             className="font-display text-[clamp(32px,4.4vw,46px)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
           />
         </SectionHead>
-      </div>
 
-      {/* Full-bleed, not inside .shell — the row has to run past the
-          content column for the edge fade to read as "more this way". */}
-      {SCROLLS ? (
-        <Reveal>
-          <Marquee items={SHOWN} />
-        </Reveal>
-      ) : (
-        <div className="shell">
+        {SCROLLS ? (
+          <Reveal>
+            <Carousel items={SHOWN} onExpand={setExpanded} />
+          </Reveal>
+        ) : (
           <RevealGroup
             step={0.1}
             className={`grid gap-5 ${COLUMNS[Math.min(SHOWN.length, 3)] ?? COLUMNS[3]}`}
           >
             {SHOWN.map((r, i) => (
               <RevealItem key={i} className="h-full">
-                <Card review={r} />
+                <Card review={r} onExpand={setExpanded} />
               </RevealItem>
             ))}
           </RevealGroup>
-        </div>
+        )}
+      </div>
+
+      {/* Mounted only while open, so mount/unmount drives showModal/close and
+          there is no second source of truth for whether the dialog is up. */}
+      {expanded && (
+        <QuoteModal review={expanded} onClose={() => setExpanded(null)} />
       )}
     </Section>
   );
