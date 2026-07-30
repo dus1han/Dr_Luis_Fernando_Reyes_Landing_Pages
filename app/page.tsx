@@ -279,10 +279,12 @@ export default function Index() {
             {SITE.doctor} &middot; {SITE.practice}
             <span className="mx-2 opacity-40">|</span>
             <a
-              href={SITE.phoneHref}
+              href={SITE.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-champagne no-underline transition-colors duration-300 hover:text-white"
             >
-              {SITE.phoneDisplay}
+              {SITE.contactDisplay}
             </a>
           </p>
         </div>

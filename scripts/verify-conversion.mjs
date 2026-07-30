@@ -49,17 +49,56 @@ async function recordDataLayer(page) {
 const leadEvents = (pushes) =>
   (pushes || []).filter((p) => p && p.event === LEAD_EVENT);
 
+/*
+ * A desktop viewport, set explicitly on every page.
+ *
+ * Puppeteer defaults to 800x600, which is below the `lg` breakpoint — so runs
+ * were silently exercising the mobile layout, sticky CTA bar and all, while
+ * reporting on "the form". 1280 is how a desktop visitor actually submits.
+ *
+ * This is not what caused the intercepted clicks; see the note at the
+ * checkbox. Both were true, only one mattered.
+ */
+const VIEWPORT = { width: 1280, height: 900 };
+
 async function fillAndSubmit(page) {
   await page.type("#name", "Verification Test");
   await page.type("#phone", "+971555572547");
   await page.type("#email", "verify@example.com");
-  await page.click("#consent");
+
+  /*
+   * A DOM click on the element, not a coordinate click.
+   *
+   * `page.click` scrolls the element into view, computes its centre, then
+   * dispatches at that point. Every section above the form reveals on scroll,
+   * so scrolling to the form animates them from `translateY` to 0 and changes
+   * their heights — between the coordinate being computed and the click being
+   * dispatched, the checkbox has moved. The click lands on empty space, the
+   * box stays unchecked, validation fails, and the only symptom is "never
+   * navigated", which reads as a broken redirect. It cost a real debugging
+   * session; the form was never at fault.
+   *
+   * Dispatching on the element itself cannot miss. It still exercises the
+   * real click handler and the real submit path — only the hit-testing is
+   * skipped, and hit-testing is not what this script is for.
+   */
+  await page.$eval("#consent", (el) => el.click());
+
+  // Assert rather than assume. A run that proceeds with an unchecked box
+  // tests nothing and blames the app for it.
+  const consented = await page.evaluate(
+    () => document.getElementById("consent")?.checked === true
+  );
+  if (!consented) {
+    throw new Error("consent checkbox did not toggle");
+  }
   // The API drops anything completed in under 2s as automated, and it would
   // still return ok — so the redirect would happen while nothing was
   // delivered. Wait it out rather than testing a path real users never take.
   await new Promise((r) => setTimeout(r, 2400));
 
-  await page.click('button[type="submit"]');
+  // Same reason as the checkbox above — the submit button moves too.
+  await page.$eval('button[type="submit"]', (el) => el.click());
 
   /*
    * Poll the URL from Node rather than `Promise.all([waitForNavigation,
@@ -93,6 +132,7 @@ try {
     ["wbraid", "TEST_WBRAID_456"],
   ]) {
     const page = await browser.newPage();
+    await page.setViewport(VIEWPORT);
     await page.goto(`${BASE}/${SLUG}?${param}=${value}`, {
       waitUntil: "networkidle2",
       timeout: 60000,
@@ -117,6 +157,7 @@ try {
   // ---------------------------------------------------- 3, 4, 5, 6, 7, 10
   console.log("\nSubmission");
   const page = await browser.newPage();
+  await page.setViewport(VIEWPORT);
   await recordDataLayer(page);
 
   const apiPayloads = [];
@@ -182,6 +223,7 @@ try {
 
   // ------------------------------------------------------------------- 9
   const direct = await browser.newPage();
+  await direct.setViewport(VIEWPORT);
   await recordDataLayer(direct);
   await direct.goto(`${BASE}/${SLUG}/thank-you`, {
     waitUntil: "networkidle2",

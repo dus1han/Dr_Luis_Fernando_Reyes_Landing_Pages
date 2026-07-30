@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 import { IMAGES } from "@/lib/generated/images";
 import { SITE } from "@/lib/site";
 import { ButtonLink } from "./Button";
@@ -62,11 +63,18 @@ export function Nav({ links }: { links: NavLink[] }) {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* The number in the nav opens WhatsApp, not a dialler — that is
+              the channel the clinic wants these going to. External, so it
+              needs rel="noopener noreferrer" with the target; the audit
+              flags a bare target="_blank". */}
           <a
-            href={SITE.phoneHref}
+            href={SITE.whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("whatsapp_click", { label: "nav" })}
             className="hidden text-[14px] font-medium text-body no-underline transition-colors hover:text-gold md:inline lg:hidden xl:inline"
           >
-            {SITE.phoneDisplay}
+            {SITE.contactDisplay}
           </a>
           {/* Hidden on the smallest screens — the sticky bottom bar owns
               the CTA there and two competing buttons hurt conversion.

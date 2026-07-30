@@ -635,19 +635,37 @@ and *what happens after I press this?* — so the form can stay short.
 
 - **Content:** `BOOKING` — `eyebrow`, `headline`, `lead`, `body[]`, `steps[]`
 
-### Where the phone number appears
+### There are TWO numbers, and they are not interchangeable
 
-Deliberately **twice on the whole page**: the nav and the footer. It was
-four, which read as repetitive once the booking band and footer sat back
-to back.
+| | Number | Where | Behaviour |
+|---|---|---|---|
+| `phoneDisplay` / `phoneHref` | **+971 55 557 2547** | **Footer only**, plus `telephone` in the JSON-LD | `tel:` — the voice line |
+| `contactDisplay` / `contactHref` / `whatsappHref` | **+971 56 663 6359** | Everywhere else, every page | WhatsApp, or `tel:` where the affordance is explicitly labelled "call" |
 
-The booking section's Call button and the FAQ's both say "Call the
-clinic" instead of printing the digits — same action, no third and fourth
-copy inside one screen. `tel:` links carry the number regardless.
+The footer keeps the voice line because that is the number that answers
+calls, and `telephone` in schema.org drives click-to-call in search
+results — pointing it at a WhatsApp-only line would send searchers to a
+number that does not ring.
 
-Counting occurrences in the rendered HTML will show five: three of those
-are `<script>` tags — the JSON-LD `telephone` field (correct and
-required) and Next's RSC payload. Only two are visible.
+Everywhere else shows and links the WhatsApp number, because that is the
+channel the clinic wants enquiries on. **The nav number opens WhatsApp
+rather than a dialler** — it is a contact display, not a call button.
+
+> **Four affordances are labelled "call" and dial the WhatsApp number**:
+> the sticky bar's phone icon, the FAQ button, the 404 and the form's error
+> message. They sit beside a separate WhatsApp button in two of those
+> places, so pointing them at WhatsApp too would give two identical
+> buttons. **If that number does not take voice calls, repoint them at
+> `whatsappHref` or remove them** — a call button that rings nothing is
+> worse than no call button. Flagged in the launch checklist.
+
+Every WhatsApp link carries `target="_blank"` with
+`rel="noopener noreferrer"`. The audit fails a bare `target="_blank"`.
+
+Counting occurrences in the raw HTML overcounts — Next's RSC payload
+repeats every string, and the JSON-LD adds another. Query the DOM instead;
+`scratchpad/qa/phones.mjs` lists every `tel:` and `wa.me` anchor per route
+with its number, container and rel.
 - **Form:** `components/lp/LeadForm.tsx`
 - **Validation:** `lib/validation.ts` — one Zod schema shared by client
   and server, so they can't drift

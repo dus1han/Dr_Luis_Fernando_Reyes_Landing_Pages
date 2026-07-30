@@ -27,8 +27,19 @@ Work top to bottom. Nothing below requires touching page or section code.
       consented clinical photos, set `SHOW_RESULTS_DISCLAIMER = false` in
       `lib/site.ts` (or keep it — "individual results vary" is a
       reasonable line to leave up either way).
-- [ ] **Verify the phone number and email** in `lib/site.ts`. Currently
-      `+971 55 557 2547` / `luisfernandoreyesmd@yahoo.com`.
+- [ ] **Verify BOTH numbers and the email** in `lib/site.ts`. There are two
+      and they are not interchangeable:
+      - `phoneDisplay` / `phoneHref` — **`+971 55 557 2547`**, the voice
+        line. Appears in the **footer only**, plus `telephone` in the
+        structured data (which drives click-to-call in search results).
+      - `contactDisplay` / `contactHref` / `whatsappHref` — **`+971 56 663
+        6359`**, WhatsApp. Every other touchpoint on every page.
+- [ ] **Confirm `+971 56 663 6359` answers voice calls.** Four affordances
+      are labelled "call" and dial it — the sticky bar's phone icon, the FAQ
+      button, the 404 and the form's error message. If it is WhatsApp-only,
+      repoint those at `whatsappHref` or remove them; a call button that
+      rings nothing is worse than no call button.
+- [ ] **Verify the email** — `luisfernandoreyesmd@yahoo.com`.
       *A yahoo.com address on a premium clinic page reads as less
       established than a domain address — worth considering.*
 - [ ] **Check the clinic location link** resolves correctly:

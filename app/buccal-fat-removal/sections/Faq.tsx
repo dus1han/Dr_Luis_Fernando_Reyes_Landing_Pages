@@ -43,7 +43,7 @@ export function Faq() {
             >
               Message on WhatsApp
             </ButtonLink>
-            <ButtonLink href={SITE.phoneHref} event="call_click" eventLabel="faq">
+            <ButtonLink href={SITE.contactHref} event="call_click" eventLabel="faq">
               Call the clinic
             </ButtonLink>
           </div>
