@@ -139,12 +139,12 @@ function Card({
         )}
       </blockquote>
 
+      {/* Name only. `review.meta` still holds the procedure each review is
+          actually about, but it is no longer displayed — see the note on the
+          field in content.ts. */}
       <figcaption className="mt-6 border-t border-ink/12 pt-4">
         <span className="block font-display text-[17px] font-semibold text-ink">
           {review.name}
-        </span>
-        <span className="mt-0.5 block text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
-          {review.meta}
         </span>
       </figcaption>
     </figure>
@@ -213,9 +213,6 @@ function QuoteModal({
             className="block font-display text-[18px] font-semibold text-ink"
           >
             {review.name}
-          </span>
-          <span className="mt-0.5 block text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
-            {review.meta}
           </span>
         </div>
 

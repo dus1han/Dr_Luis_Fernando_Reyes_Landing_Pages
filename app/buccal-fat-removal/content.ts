@@ -307,6 +307,19 @@ export const REVIEWS = {
 export type ReviewItem = {
   quote: string;
   name: string;
+  /**
+   * The procedure each review is actually about.
+   *
+   * **No longer rendered** — the line under the reviewer's name was removed
+   * at the clinic's request. Kept deliberately rather than deleted, because
+   * it is the record of *what these reviews describe*: gluteal biopolymer
+   * removal, liposculpture with augmentation, body contouring in Colombia.
+   * None of them is buccal fat removal.
+   *
+   * Deleting it would erase the only place that mismatch is written down,
+   * and the next person to read this file would assume five buccal-fat
+   * testimonials. Restoring the line is one span in `Reviews.tsx`.
+   */
   meta: string;
   /** Not a real review — dev-only, never rendered in production. */
   placeholder?: boolean;

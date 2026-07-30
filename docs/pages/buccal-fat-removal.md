@@ -26,7 +26,7 @@ Padding is written `desktop / mobile` (the breakpoint is `sm`, 640px).
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 707 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
 | 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1747 |
-| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 847 |
+| 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 802 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1024 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 676 |
 | — | Footer | `components/lp/Footer.tsx` | — | espresso-deep | 44 / 30 | 547 |
@@ -47,7 +47,7 @@ too loose. 44 is the value where a phone boundary (85–108px of visual gap,
 measured ink-to-ink) sits in proportion to the content beside it.
 
 **Do not "simplify" this back to a single number.** Desktop is signed off
-at 68 and must not move. Page height at 1440 is **10299px**; treat a change
+at 68 and must not move. Page height at 1440 is **10254px**; treat a change
 there as a regression unless a section was deliberately restructured.
 
 #### The hero is the one exception: 28px, not 44
@@ -545,7 +545,7 @@ without rewriting anything.
 
 ## 10. Reviews — `sections/Reviews.tsx`
 
-- **Content:** `REVIEWS.items` — `{quote, name, meta, placeholder?}` (5 real reviews; no placeholders remain)
+- **Content:** `REVIEWS.items` — `{quote, name, meta, placeholder?}` (5 real reviews; no placeholders remain). **`meta` is no longer rendered** — see below
 - **Switch:** `SHOW_PLACEHOLDER_REVIEWS` in `lib/site.ts`
 
 ### Layout switches on the count
@@ -573,12 +573,20 @@ all. Names are the reviewers' own platform handles.
 **1 · None of them is about buccal fat removal, and none is from Dubai.**
 They describe body contouring at the Colombian practice — gluteal
 biopolymer removal, liposculpture with augmentation — and two name
-"Majestic" rather than the Dubai clinic. `meta` states each actual
+"Majestic" rather than the Dubai clinic. `meta` records each actual
 procedure, because labelling them "Buccal fat removal" would be a
 fabricated claim on a medical page. The honesty is what makes the mismatch
 visible: someone researching a facial procedure reads five testimonials
 about bodies. **Facial-surgery reviews would convert better and carry less
 risk.**
+
+**The procedure line under each name was removed** at the clinic's request,
+so no card now claims a treatment. That reduces what a visitor can see of
+the mismatch — but `meta` is kept in `content.ts` rather than deleted,
+because it is the only place recording that these describe gluteal
+biopolymer removal, liposculpture and body contouring. Delete it and the
+next person to open the file assumes five buccal-fat testimonials.
+Restoring the line is one span in `Reviews.tsx`.
 
 **2 · DHA advertising rules restrict patient testimonials** in healthcare
 marketing in Dubai. The risk is the testimonials themselves, not their
@@ -1084,7 +1092,7 @@ changing code.
 Current mobile boundary gaps, ink to ink, at 390×844: hero→stats **69**,
 stats→credentials **86**, credentials→procedure **102**, anatomy→benefits
 **108**, benefits→candidate **94**, candidate→surgeon **88**. Total page
-height **16801px**.
+height **16756px**.
 
 > **Uniform padding is not the same as even spacing.** Section 1 sat at
 > 44px like everything else and still looked loose, because what precedes
