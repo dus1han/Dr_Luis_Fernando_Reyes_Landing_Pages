@@ -171,9 +171,20 @@ dig +short surgery.luisfernandoreyesmd.com   # expect 169.58.92.105
 **The A record must resolve before Caddy is reloaded**, or the certificate
 request fails and Caddy backs off before retrying.
 
-Then append the block from `deploy/Caddyfile.example` to the **existing**
-server-wide `/opt/sites/caddy/Caddyfile` — do not overwrite it, it holds the
-Nicole site too:
+> **Caddy was not yet running on this VPS when this site went up**, despite the
+> rest of the server being set up. That was measured, not assumed: ports 80 and
+> 443 were both closed from outside while 3101 (the Nicole site) answered
+> directly. Both sites had only ever been previewed on their raw ports, so
+> nothing had needed a reverse proxy before. Check before assuming a reload is
+> all that is required:
+>
+> ```bash
+> docker ps --filter name=caddy
+> ```
+
+**If a `caddy` container is already running**, append the block from
+`deploy/Caddyfile.example` to the server-wide `/opt/sites/caddy/Caddyfile` —
+do not overwrite it, it holds every other site — then:
 
 ```bash
 cd /opt/sites/caddy
@@ -183,6 +194,26 @@ docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
 Reload, not restart: the other sites never drop a request, and Caddy validates
 the config before swapping it in, so a typo fails loudly instead of taking
 every site on the server down.
+
+**If there is no `caddy` container**, this is the server's first one. Copy both
+files across, then start it:
+
+```bash
+sudo mkdir -p /opt/sites/caddy/logs && cd /opt/sites/caddy
+# docker-compose.yml  <- deploy/caddy-compose.yml
+# Caddyfile           <- deploy/Caddyfile.example
+docker compose up -d
+docker compose logs -f caddy      # watch the certificate issue
+```
+
+Two things block it silently at this point:
+
+- **The firewall.** `sudo ufw status` — 80 and 443 must both be allowed, or
+  Let's Encrypt cannot reach the challenge and nothing explains why.
+  `sudo ufw allow 80/tcp && sudo ufw allow 443/tcp`.
+- **A port 80 already in use** by a stray nginx or Apache. `sudo ss -lntp |
+  grep -E ':(80|443)\b'` names the process; Caddy exits at startup if it cannot
+  bind, and the compose `restart: unless-stopped` then hides it as a loop.
 
 > **One Caddy block serves this whole repo.** `/buccal-fat-removal` and pages
 > 2–4 are routes in one app on one port. They do not get a block, a port or a

@@ -1,8 +1,13 @@
 # /opt/sites/caddy/Caddyfile
 #
-# REFERENCE ONLY. The live Caddyfile is server-wide, not per repository — it
-# already exists on the VPS and holds a block for every site. Do not copy this
-# file over it; append the block below to what is already there.
+# The live Caddyfile is server-wide, not per repository. If one already exists
+# on the VPS it holds a block for every site — do NOT copy this file over it,
+# append only the block below. Check first: `docker ps --filter name=caddy`.
+#
+# If no Caddy container is running, this file IS the starting Caddyfile: copy
+# it to /opt/sites/caddy/Caddyfile as-is and add a block per site from there.
+# That was the situation here — the VPS had no reverse proxy at all until this
+# site needed one, because every site until then was previewed on its raw port.
 #
 # ONE Caddy instance fronts every site on the VPS. It is the only thing
 # listening on 80/443; each app sits privately on 127.0.0.1:<port>.
