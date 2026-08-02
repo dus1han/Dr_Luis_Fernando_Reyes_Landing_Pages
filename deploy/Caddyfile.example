@@ -14,14 +14,14 @@
 
 {
     # Let's Encrypt uses this for expiry warnings. Use a real address.
-    email admin@drluisfernandoreyes.com
+    email admin@luisfernandoreyesmd.com
 }
 
 # --- This project -----------------------------------------------------------
 # One block serves every landing page in this repo. /buccal-fat-removal and
 # whatever pages 2-4 turn out to be are routes in one app on one port — they
 # do NOT get a block each.
-lp.drluisfernandoreyes.com {
+surgery.luisfernandoreyesmd.com {
     reverse_proxy 127.0.0.1:3102
 
     encode gzip zstd

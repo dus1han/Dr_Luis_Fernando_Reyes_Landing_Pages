@@ -185,14 +185,14 @@ learn from, and **it cannot be backfilled**.
 > A campaign-named subdomain forces `buccalfat.example.com/buccal-fat-removal` —
 > redundant as a display URL, and every new campaign then needs its own DNS
 > record and Caddy block. A generic one is one record, one container, unlimited
-> pages: `book.drluisfernandoreyes.com/buccal-fat-removal`,
-> `…/rhinoplasty`, and so on.
+> pages.
 >
-> Avoid `go.` and `lp.` — the first reads as a redirect or tracker, the second
-> is internal jargon, and both quietly undercut trust in a medical ad. **The
-> current fallback origin is `lp.drluisfernandoreyes.com` and should be
-> changed** before launch; the display URL in the ad does not have to match the
-> real path, so the path can stay tidy.
+> **Settled: `surgery.luisfernandoreyesmd.com`.** It carries pages 2–4 as
+> routes on the same container — `…/buccal-fat-removal`, `…/rhinoplasty` — with
+> no new DNS record or Caddy block per campaign. It also avoids `go.` and `lp.`,
+> which read as a redirect and as internal jargon respectively and quietly
+> undercut trust in a medical ad. The display URL in the ad does not have to
+> match the real path, so the path can stay tidy.
 
 ---
 

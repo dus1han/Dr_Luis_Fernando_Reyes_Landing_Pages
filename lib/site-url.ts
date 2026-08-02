@@ -31,7 +31,7 @@ const CONFIGURED = (process.env.SITE_URL || "").trim();
 
 /** No trailing slash, or every generated URL gets a double one. */
 export const ORIGIN = (
-  CONFIGURED || "https://lp.drluisfernandoreyes.com"
+  CONFIGURED || "https://surgery.luisfernandoreyesmd.com"
 ).replace(/\/+$/, "");
 
 /**

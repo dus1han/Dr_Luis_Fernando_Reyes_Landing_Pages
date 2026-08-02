@@ -50,7 +50,7 @@ and something is quietly wrong for weeks.
 
 Set them at **Settings → Secrets and variables → Actions → Variables**. Both are
 optional; unset, the build falls back to no analytics and to
-`https://lp.drluisfernandoreyes.com`. Both survive every push — you never
+`https://surgery.luisfernandoreyesmd.com`. Both survive every push — you never
 re-enter them. Changing either needs a **rebuild**: push, or *Actions → Run
 workflow*.
 
@@ -158,12 +158,14 @@ the same setting as repository visibility and does not always follow it.
 
 ## 3 · DNS and Caddy
 
-One A record, `DNS only` (grey cloud) until the certificate issues — an orange
-Cloudflare proxy intercepts the HTTP challenge and the certificate never
-arrives.
+The live hostname is **`surgery.luisfernandoreyesmd.com`**, one A record
+straight at `169.58.92.105`. It is not behind a CDN — if it is ever put behind
+Cloudflare, the record must be `DNS only` (grey cloud) until the certificate
+issues, because an orange proxy intercepts the HTTP challenge and the
+certificate never arrives.
 
 ```bash
-dig +short lp.drluisfernandoreyes.com
+dig +short surgery.luisfernandoreyesmd.com   # expect 169.58.92.105
 ```
 
 **The A record must resolve before Caddy is reloaded**, or the certificate

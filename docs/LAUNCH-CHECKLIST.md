@@ -78,9 +78,10 @@ about outcomes are scrutinised.
 
 ## 3. Domain and hosting
 
-- [ ] Point the ads subdomain (e.g. `lp.drluisfernandoreyes.com`) at the VPS
+- [x] Point the ads subdomain `surgery.luisfernandoreyesmd.com` at the VPS
       with an A record — **before** reloading Caddy, or the certificate
-      request fails. See [deployment.md](deployment.md).
+      request fails. See [deployment.md](deployment.md). *Done: resolves to
+      169.58.92.105, unproxied.*
 - [ ] Create `/opt/sites/dr-luis-landing-pages/.env` — `IMAGE`,
       `CONTAINER_NAME` and `SITE_PORT=3102`. Not `SITE_URL`; that is a build
       arg and the deploy script strips it from this file.
