@@ -1,38 +1,50 @@
 # Deployment — VPS · Docker · GitHub Actions
 
-This project is the **second site on a server that is already set up**. Docker,
-Caddy, the `/opt/sites/` layout and the shared `deploy` user all exist from the
-Dr. Nicole Echeverry deployment; none of that is repeated here.
+**Live at <https://surgery.luisfernandoreyesmd.com>.**
+
+This project is the **second site on a server that was already set up**. Docker,
+the `/opt/sites/` layout and the shared `deploy` user all exist from the Dr.
+Nicole Echeverry deployment; none of that is repeated here. Caddy did *not* —
+see [§3](#3--dns-and-caddy).
 
 What is specific to this repo:
 
 | | |
 |---|---|
+| Public origin | `https://surgery.luisfernandoreyesmd.com` |
 | Site directory | `/opt/sites/dr-luis-landing-pages` |
 | Container | `dr-luis-landing-pages` |
 | Image | `ghcr.io/dus1han/dr_luis_fernando_reyes_landing_pages:latest` — **lowercase** |
-| Port | **3102** (3101 belongs to `dr-nicole-landing-pages`) |
+| Port | **3102**, bound to `127.0.0.1` (3101 belongs to `dr-nicole-landing-pages`) |
 | Health | `GET /` — the root index, which every page in this repo sits under |
 
 The full server-level procedure — installing Docker, the firewall, creating the
-`deploy` user, starting Caddy — lives in the Nicole repo's `docs/deployment.md`
-and is not duplicated. This file covers what is left.
+`deploy` user — lives in the Nicole repo's `docs/deployment.md` and is not
+duplicated. This file covers what is left.
 
 ---
 
 ## Status
 
-Server setup and GitHub secrets are done. What remains is below.
-
 | Step | State |
 |---|---|
-| Repo has Dockerfile, compose, workflow, deploy script | ✅ this commit |
-| Image builds and serves | ✅ verified locally, see [§5](#5--what-was-verified) |
-| GitHub secrets | ✅ reported done |
-| `/opt/sites/dr-luis-landing-pages/.env` on the VPS | ⬜ [§2](#2--the-env-file-on-the-vps) |
-| DNS A record | ⬜ [§3](#3--dns-and-caddy) |
-| Caddy block + reload | ⬜ [§3](#3--dns-and-caddy) |
-| First deploy | ⬜ push to `main` |
+| Repo has Dockerfile, compose, workflow, deploy script | ✅ |
+| Image builds and serves | ✅ see [§5](#5--what-was-verified) |
+| GitHub secrets and variables | ✅ incl. `SITE_URL` |
+| `/opt/sites/dr-luis-landing-pages/.env` on the VPS | ✅ [§2](#2--the-env-file-on-the-vps) |
+| DNS A record → `169.58.92.105`, unproxied | ✅ [§3](#3--dns-and-caddy) |
+| Caddy running server-wide, certificate issued | ✅ [§3](#3--dns-and-caddy) |
+| First deploy | ✅ |
+
+Verified live: HTTPS 200 on `/`, `/buccal-fat-removal`,
+`/buccal-fat-removal/thank-you`, `/robots.txt` and `/sitemap.xml`; HTTP 308 to
+HTTPS; canonical and `og:url` on the real origin; `noindex` on both the root hub
+and the thank-you page; HSTS, `nosniff` and `Referrer-Policy` present; Let's
+Encrypt certificate valid to 31 Oct 2026 and auto-renewing.
+
+The one thing still not wired is lead delivery — `deliver()` in
+[app/api/lead/route.ts](../app/api/lead/route.ts) is a stub, so submissions only
+reach the container log. See [§6 of ads-readiness.md](ads-readiness.md).
 
 ---
 
@@ -171,12 +183,20 @@ dig +short surgery.luisfernandoreyesmd.com   # expect 169.58.92.105
 **The A record must resolve before Caddy is reloaded**, or the certificate
 request fails and Caddy backs off before retrying.
 
-> **Caddy was not yet running on this VPS when this site went up**, despite the
-> rest of the server being set up. That was measured, not assumed: ports 80 and
-> 443 were both closed from outside while 3101 (the Nicole site) answered
-> directly. Both sites had only ever been previewed on their raw ports, so
-> nothing had needed a reverse proxy before. Check before assuming a reload is
-> all that is required:
+> **This is now done — `/opt/sites/caddy` exists and holds the block below.**
+> Kept here because the trap that caused it will recur on the next server.
+>
+> Caddy was *not* running on this VPS when the site first went up, despite the
+> rest of the server being set up. That was measured, not assumed: 80 and 443
+> were both closed from outside while 3101 (the Nicole site) answered directly.
+> Both sites had only ever been previewed on their raw ports, so nothing had
+> needed a reverse proxy before — and setting `SITE_URL` correctly is what
+> exposed it, because the deploy script then moved this site off `0.0.0.0` and
+> onto `127.0.0.1` with nothing in front of it. The symptom is "the site stopped
+> loading right after I set the URL", and the cause is the missing proxy, not
+> the URL.
+>
+> Check which case you are in before assuming a reload is all that is required:
 >
 > ```bash
 > docker ps --filter name=caddy
