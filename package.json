@@ -11,11 +11,13 @@
     "prepare-images": "node scripts/prepare-images.mjs",
     "verify:conversion": "node scripts/verify-conversion.mjs",
     "verify:phones": "node scripts/verify-phones.mjs",
-    "verify:reviews": "node scripts/verify-reviews.mjs"
+    "verify:reviews": "node scripts/verify-reviews.mjs",
+    "test:lead": "node scripts/send-test-lead.mjs"
   },
   "dependencies": {
     "motion": "^12.42.2",
     "next": "^16.2.12",
+    "nodemailer": "^7.0.13",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.1.13"
@@ -23,6 +25,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.10.1",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "puppeteer-core": "^25.4.0",

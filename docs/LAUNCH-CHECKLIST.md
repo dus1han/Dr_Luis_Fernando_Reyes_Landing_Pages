@@ -106,11 +106,20 @@ about outcomes are scrutinised.
 
 ## 4. Lead delivery
 
-- [ ] Implement `deliver()` in `app/api/lead/route.ts`.
-      Everything else — validation, honeypot, timing check, `gclid`/UTM
-      capture — already works. Leads currently log to the server console.
-- [ ] Put any API key in an environment variable, never in the repo.
-- [ ] **Submit a real test lead** and confirm it arrives at the clinic.
+- [x] Implement delivery. Leads are emailed over SMTP by `lib/lead-mail.ts`
+      to both clinic addresses, subject `[Page Name] New consultation
+      request — <name>`, `Reply-To` set to the patient.
+- [x] Put any API key in an environment variable, never in the repo. *The
+      SMTP credentials are runtime env in `.env` on the VPS; the deploy
+      script redacts them from the CI log.*
+- [ ] **Add the four `SMTP_*` keys to `/opt/sites/dr-luis-landing-pages/.env`
+      and restart.** Until this is done the form works, the thank-you page
+      appears and the conversion fires, but nobody is told — see "Lead
+      delivery" in [deployment.md](deployment.md). The deploy log warns on
+      every run until it is set.
+- [ ] **Submit a real test lead** and confirm it arrives at the clinic:
+      `npm run test:lead -- https://surgery.luisfernandoreyesmd.com`.
+      Point `LEAD_TO` at yourself first, then remove it.
 - [ ] Confirm someone owns follow-up. Speed-to-lead is the single largest
       lever on paid-traffic conversion — minutes, not hours.
 - [ ] Test the failure path: the form shows a fallback phone number if

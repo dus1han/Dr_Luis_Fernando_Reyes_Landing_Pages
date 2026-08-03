@@ -39,6 +39,28 @@ services:
       # It is a Docker build arg, fed by the SITE_URL repository variable, and
       # `deploy/remote-deploy.sh` strips it from .env if anyone adds it back.
 
+      # --- Lead email (runtime, unlike SITE_URL) ---------------------------
+      # Where consultation requests go. Listed explicitly because a key in
+      # .env does NOT reach the container on its own — compose reads .env for
+      # variable *substitution*, and only what appears here is passed through.
+      #
+      # All optional. With SMTP_HOST, SMTP_USER or SMTP_PASS missing the API
+      # route logs each lead and still answers the visitor normally, so a
+      # preview deployment is never broken by unset mail credentials — the
+      # deploy script warns instead. See lib/lead-mail.ts.
+      #
+      # Changing any of these is an edit to .env plus `docker compose up -d`.
+      # No rebuild: the API route is dynamic and reads them per request.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      # Defaults to SMTP_USER. Only set it if the provider allows a verified
+      # alias — most reject or silently rewrite a From they did not authorise.
+      MAIL_FROM: ${MAIL_FROM:-}
+      # Comma-separated. Defaults to the clinic addresses in lib/lead-mail.ts.
+      LEAD_TO: ${LEAD_TO:-}
+
     healthcheck:
       test:
         - CMD

@@ -21,6 +21,18 @@ SITE_URL="${SITE_URL:-}"
 
 fail() { echo "::error::$*"; exit 1; }
 
+# Print .env for diagnosis WITHOUT printing credentials.
+#
+# GitHub masks values it was given as repository secrets. SMTP_PASS is not one
+# of them — it lives only in .env on the server and has never passed through
+# Actions — so nothing would mask it, and this script's output is a public CI
+# log on a public repository. Redact by key name, which stays correct as keys
+# are added.
+show_env() {
+  sed -E 's/^([A-Za-z_][A-Za-z0-9_]*(PASS|PASSWORD|SECRET|TOKEN|KEY|PAT))=.+/\1=***redacted***/I' .env \
+    | grep -v '^#' | grep -v '^$' | sed 's/^/    /'
+}
+
 echo "==> host $(hostname), user $(whoami)"
 
 # --- locate the stack ------------------------------------------------------
@@ -49,7 +61,7 @@ for key in IMAGE CONTAINER_NAME SITE_PORT; do
 done
 if [ -n "$missing" ]; then
   echo "Current .env:"
-  sed 's/^/    /' .env
+  show_env
   echo
   echo "Write it with a single command rather than a heredoc — an interrupted"
   echo "paste truncates the file:"
@@ -115,7 +127,27 @@ baked_origin() {
 }
 
 echo "==> $SITE_PATH"
-grep -v '^#' .env | grep -v '^$' | sed 's/^/    /'
+show_env
+
+# --- lead delivery ---------------------------------------------------------
+# Without SMTP credentials the API route logs each consultation request and
+# answers the visitor normally, which is the right behaviour for a preview but
+# is a silent black hole in production: the form works, the thank-you page
+# appears, the conversion fires, and nobody is ever told a patient asked for an
+# appointment. It cannot be detected by looking at the site, so it is reported
+# here — the one place someone looks after every deploy.
+smtp_missing=""
+for key in SMTP_HOST SMTP_USER SMTP_PASS; do
+  grep -q "^${key}=." .env || smtp_missing="$smtp_missing $key"
+done
+if [ -n "$smtp_missing" ]; then
+  echo "::warning::Lead emails are NOT being sent — missing in .env:$smtp_missing"
+  echo "    Consultation requests are written to the container log and nowhere else:"
+  echo "      docker compose logs web | grep '\[lead\]'"
+  echo "    See 'Lead delivery' in docs/deployment.md for the four keys to add."
+else
+  echo "==> lead email configured: $(grep '^SMTP_HOST=' .env | cut -d= -f2-) as $(grep '^SMTP_USER=' .env | cut -d= -f2-)"
+fi
 
 command -v docker >/dev/null || fail "docker is not on PATH for this user."
 

@@ -35,6 +35,8 @@ duplicated. This file covers what is left.
 | DNS A record → `169.58.92.105`, unproxied | ✅ [§3](#3--dns-and-caddy) |
 | Caddy running server-wide, certificate issued | ✅ [§3](#3--dns-and-caddy) |
 | First deploy | ✅ |
+| Lead email code | ✅ [§5](#lead-email) |
+| `SMTP_*` keys in `.env` on the VPS | ⬜ [§2](#lead-delivery--the-smtp-keys) |
 
 Verified live: HTTPS 200 on `/`, `/buccal-fat-removal`,
 `/buccal-fat-removal/thank-you`, `/robots.txt` and `/sitemap.xml`; HTTP 308 to
@@ -42,9 +44,11 @@ HTTPS; canonical and `og:url` on the real origin; `noindex` on both the root hub
 and the thank-you page; HSTS, `nosniff` and `Referrer-Policy` present; Let's
 Encrypt certificate valid to 31 Oct 2026 and auto-renewing.
 
-The one thing still not wired is lead delivery — `deliver()` in
-[app/api/lead/route.ts](../app/api/lead/route.ts) is a stub, so submissions only
-reach the container log. See [§6 of ads-readiness.md](ads-readiness.md).
+The one step left is the **SMTP block in `.env`** — see
+[Lead delivery](#lead-delivery--the-smtp-keys). The code is done and verified;
+until the four keys are on the server, consultation requests are written to the
+container log and emailed to nobody. The deploy log warns on every run until
+then.
 
 ---
 
@@ -125,6 +129,75 @@ problem:
 ```bash
 sudo -u deploy bash -c 'printf "IMAGE=ghcr.io/dus1han/dr_luis_fernando_reyes_landing_pages:latest\nCONTAINER_NAME=dr-luis-landing-pages\nSITE_PORT=3102\n" > /opt/sites/dr-luis-landing-pages/.env'
 ```
+
+### Lead delivery — the SMTP keys
+
+Consultation requests are emailed to the clinic. These four keys go in the same
+`.env`, and unlike `SITE_URL` they **are** runtime values: change one, run
+`docker compose up -d`, done. No rebuild, no CI run, no redeploy.
+
+| Key | Required | Notes |
+|---|---|---|
+| `SMTP_HOST` | yes | e.g. `smtp.gmail.com` |
+| `SMTP_PORT` | no | defaults to `587` |
+| `SMTP_USER` | yes | the full mailbox address |
+| `SMTP_PASS` | yes | an **app password**, not the account password |
+| `MAIL_FROM` | no | defaults to `SMTP_USER` |
+| `LEAD_TO` | no | comma-separated; defaults to the two clinic addresses in `lib/lead-mail.ts` |
+
+```bash
+sudo -u deploy bash -c 'cat >> /opt/sites/dr-luis-landing-pages/.env' <<'EOF'
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=drluisfernandomarketing@gmail.com
+SMTP_PASS=xxxxxxxxxxxxxxxx
+EOF
+cd /opt/sites/dr-luis-landing-pages && docker compose up -d
+```
+
+**For Gmail specifically**, `SMTP_PASS` is a 16-character App Password from
+*Google Account → Security → App passwords*, which only appears once 2-Step
+Verification is on. The normal account password is refused outright, and the
+error Google returns says "username and password not accepted" — which reads
+like a typo and sends people round in circles.
+
+> **Send as the mailbox you authenticated as.** Gmail silently rewrites a `From`
+> it did not authorise, so a `MAIL_FROM` on a different domain does not fail, it
+> just quietly stops being what you set. Leave `MAIL_FROM` unset unless the
+> provider explicitly supports a verified alias.
+
+Two ports, two behaviours, and mixing them up hangs rather than errors: **587**
+opens in plaintext and upgrades via STARTTLS, **465** is encrypted from the
+first byte. The code derives this from the port rather than exposing a flag,
+because `secure: true` on 587 blocks until the socket timeout with nothing
+useful in the log.
+
+**Not setting these is a supported state, not a broken one.** The route logs
+each lead and answers the visitor normally, so a preview deployment is never
+broken by absent credentials. It is also invisible from the outside, which is
+why `deploy/remote-deploy.sh` warns on every run until the three required keys
+are present.
+
+`SMTP_PASS` is redacted from the deploy log by key name. It has never passed
+through GitHub Actions, so GitHub would not mask it — and this repo's CI log is
+public.
+
+Confirm it end to end with a real submission:
+
+```bash
+npm run test:lead -- https://surgery.luisfernandoreyesmd.com
+```
+
+Point `LEAD_TO` at your own address first and remove it afterwards, or the
+clinic gets the test. A `200` alone does not prove an email was sent — the
+unconfigured path also returns `200` by design. Check the log:
+
+```bash
+docker compose logs web | grep '\[lead\]'
+```
+
+`emailed <recipients>` means it went out. `SMTP is not configured` means it did
+not.
 
 ### The port register
 
@@ -299,6 +372,28 @@ Measured locally against a real image build, not assumed:
 | `/api/lead` validation alive in the container | ✅ empty body → 400 |
 | Security headers survive the container | ✅ nosniff, Referrer-Policy, X-Frame-Options |
 | Runs unprivileged | ✅ `nextjs`, not root |
+
+### Lead email
+
+Verified against the **standalone** build — the artefact the image actually runs
+— with SMTP pointed at a throwaway local SMTP server that captured the raw
+message, so these are properties of a real send rather than of the code that
+composes one.
+
+| Check | Result |
+|---|---|
+| nodemailer survives the standalone build | ✅ a message was genuinely sent and received. It is bundled into the server chunk rather than copied to `node_modules`, so the presence of a directory proves nothing either way — only a send does |
+| Subject carries the page name | ✅ `[Buccal Fat Removal] New consultation request — <name>`, resolved through `lib/pages.ts` so pages 2–4 need no change |
+| Both recipients addressed | ✅ single `To:` with the two clinic addresses |
+| `Reply-To` is the patient | ✅ replying answers them, not the server |
+| WhatsApp link normalised | ✅ `+971 50 123 4567` and local `0501234567` both → `wa.me/971501234567` |
+| Timestamp in clinic time | ✅ Dubai, via `TZ` in compose |
+| Click ID and UTMs carried | ✅ `gclid` and both `utm_*` in the body |
+| **Header injection** | ✅ CRLF in the name collapsed to a space; a `Bcc:` smuggled into the name did **not** become a header |
+| **HTML escaping** | ✅ `<script>` escaped in the `text/html` part; it appears raw only in `text/plain`, where it is inert |
+| Unconfigured SMTP | ✅ 200 to the visitor, lead logged, `SMTP is not configured` warning |
+| Bot gates still suppress the email | ✅ a 100ms submission returned 200 and sent nothing — exactly two sends for three POSTs |
+| Credentials kept out of the CI log | ✅ `SMTP_PASS` and `GHCR_PAT` redacted by key name, everything else still readable |
 
 ---
 

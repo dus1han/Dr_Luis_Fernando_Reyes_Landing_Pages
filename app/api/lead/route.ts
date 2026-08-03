@@ -1,26 +1,20 @@
 import { NextResponse } from "next/server";
+import { type Lead, sendLeadEmail } from "@/lib/lead-mail";
 import { leadSchema } from "@/lib/validation";
 
 /**
  * Consultation request handler.
  *
- * ── TO GO LIVE ──────────────────────────────────────────────────────
- * Validation, spam filtering and Google Ads attribution capture are
- * already done. The only thing left is delivery — implement `deliver()`
- * below with whichever channel you choose (clinic email, WhatsApp
- * handoff, Google Sheet, CRM webhook). Until then every lead is logged
- * to the server console so nothing is silently lost in testing.
- * ────────────────────────────────────────────────────────────────────
+ * Validated, spam-filtered, attributed to its Google Ads click, and emailed to
+ * the clinic. Delivery lives in `lib/lead-mail.ts`; configuration is the SMTP_*
+ * block in the container's `.env` — see `docs/deployment.md`.
  */
+
+/** nodemailer opens a TCP socket, which the edge runtime has no API for. */
+export const runtime = "nodejs";
 
 /** Sub-2-second completions are automated, not human. */
 const MIN_HUMAN_MS = 2000;
-
-async function deliver(lead: Record<string, unknown>) {
-  // TODO(delivery): replace this with the chosen destination, e.g.
-  //   await fetch(process.env.LEAD_WEBHOOK_URL!, { method: "POST", body: JSON.stringify(lead) })
-  console.info("[lead]", JSON.stringify(lead));
-}
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -38,7 +32,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const { company, elapsedMs, ...lead } = parsed.data;
+  const { company, elapsedMs, ...lead } = parsed.data satisfies Lead & {
+    company?: string;
+    elapsedMs?: number;
+  };
 
   // Honeypot filled or form completed impossibly fast — accept the
   // request so the bot sees success, but drop it silently.
@@ -46,8 +43,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  const receivedAt = new Date();
+
+  /*
+   * Logged BEFORE the send is attempted, and unconditionally.
+   *
+   * The email is the delivery mechanism, not the record. If the relay is down,
+   * the mailbox is full or the credentials expired, this line is the only
+   * remaining copy of a lead somebody paid for — and `docker logs` keeps three
+   * 10MB files, so it survives a restart. Recovering a lead from a log is
+   * unpleasant; not having it at all is worse.
+   */
+  console.info("[lead]", JSON.stringify({ ...lead, receivedAt: receivedAt.toISOString() }));
+
   try {
-    await deliver({ ...lead, receivedAt: new Date().toISOString() });
+    const result = await sendLeadEmail(lead, receivedAt);
+
+    if (!result.delivered) {
+      /*
+       * SMTP is not configured on this deployment. Answer the visitor
+       * normally: they have done nothing wrong, the lead is in the log above,
+       * and showing them an error would cost a conversion for what is an ops
+       * gap. It is made visible where ops people actually look — the deploy
+       * script warns on every run until SMTP_HOST/USER/PASS are set.
+       */
+      console.warn(
+        "[lead] SMTP is not configured — lead logged only, no email sent."
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    console.info(`[lead] emailed ${result.to} (${result.messageId})`);
   } catch (error) {
     console.error("[lead] delivery failed", error);
     return NextResponse.json({ ok: false, error: "delivery_failed" }, { status: 502 });

@@ -196,15 +196,36 @@ learn from, and **it cannot be backfilled**.
 
 ---
 
-## 6 · The thing that is still not done
+## 6 · Lead delivery
 
-**`deliver()` in `app/api/lead/route.ts` is a stub.** Validation, the honeypot,
-the timing check and click-ID capture all work, and the lead is logged to the
-server console — but **nothing sends it to anybody**. It is not emailed, not in
-a CRM, not in a sheet.
+**Done — leads are emailed to the clinic.** `lib/lead-mail.ts` sends over SMTP
+to `drluisfernandomarketing@gmail.com` and `luisfernandoreyesmd@yahoo.com`, with
+the page name in the subject:
 
-Reporting conversions for enquiries nobody receives is worse than not tracking
-at all: the campaign optimises toward leads, Google reports success, and the
-enquiries sit in a container log until it rotates.
+```
+[Buccal Fat Removal] New consultation request — Jane Doe
+```
 
-**Fix this before the first ad runs**, not after.
+`Reply-To` is the patient's own address, so replying answers them directly, and
+the body carries a `wa.me` link built from the number they typed — the clinic
+works WhatsApp-first and retyping a number is where a fast callback goes to die.
+The Google Ads click ID travels with it, because whoever eventually runs an
+offline-conversion import is reading the inbox, not `docker logs`.
+
+The credentials are **runtime** values in `.env` on the VPS, not build args —
+see "Lead delivery" in [deployment.md](deployment.md) for the four keys.
+
+> ### Reporting a conversion nobody receives is worse than not tracking at all
+> The campaign optimises toward leads, Google reports success, and the enquiries
+> sit in a container log until it rotates. Two things guard against a silent
+> regression:
+>
+> - Every lead is written to the container log **before** the send is attempted,
+>   so a relay outage costs a notification but never the lead itself.
+> - `deploy/remote-deploy.sh` warns on every run while `SMTP_HOST`, `SMTP_USER`
+>   or `SMTP_PASS` is missing. The site looks identical either way, so this is
+>   the only place the gap is visible.
+>
+> Confirm delivery with a real submission before the first ad runs —
+> `npm run test:lead -- https://surgery.luisfernandoreyesmd.com` — having first
+> pointed `LEAD_TO` at yourself.

@@ -46,7 +46,7 @@ single file so none of them require touching page code.
 
 | # | What | Where | Notes |
 |---|---|---|---|
-| 1 | **Lead delivery** | `app/api/lead/route.ts` → `deliver()` | Validation, spam filtering and Google Ads attribution already work. Only the destination is missing — leads currently log to the server console. |
+| 1 | **SMTP credentials** | `.env` on the VPS — `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` | Not a code change. Lead email is written and verified (`lib/lead-mail.ts`); until the keys are on the server, requests are logged and emailed to nobody. Runtime values, so adding them is an edit plus `docker compose up -d` — no rebuild. The deploy log warns on every run until then. See [docs/deployment.md](docs/deployment.md). |
 | 2 | **Analytics ID** | GitHub → Actions **variable** `NEXT_PUBLIC_GTM_ID` | Not a code change. While empty, **no tag scripts load at all** — zero requests. Compiled into the bundle, so setting it needs a **rebuild**, not a restart. See [docs/ads-readiness.md](docs/ads-readiness.md). |
 | 3 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
 | 4 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
@@ -101,6 +101,7 @@ lib/
   analytics.ts                  event layer + the generate_lead contract
   click-id.ts                   gclid/wbraid/gbraid, kept 90 days
   validation.ts                 Zod schema shared by client and server
+  lead-mail.ts                  consultation requests → the clinic, over SMTP
   generated/images.ts           AUTO-GENERATED — sizes + blur placeholders
 
 scripts/prepare-images.mjs      source artwork → optimised page assets
@@ -246,14 +247,25 @@ campaign that produced them.
 `LeadForm` and `app/api/lead/route.ts` share one Zod schema
 (`lib/validation.ts`), so client and server validation can never drift.
 
-Spam defences, both silent to real users:
+Spam defences, both invisible to real users:
 
 - A honeypot `company` field, positioned off-screen and non-focusable.
 - A timing check — submissions completed in under two seconds are treated
   as automated.
 
-Either trip returns `200 OK` so the bot sees success, while the lead is
-dropped.
+A tripped **timing** check returns `200 OK`, so the bot sees success while the
+lead is dropped. A filled **honeypot** returns `400`: the schema types
+`company` as `max(0)`, so Zod rejects it before the route's own check is
+reached. The lead is blocked either way, but the intent — never tell a bot
+which field it got wrong — only holds for the timing gate. Measured, not
+inferred, and worth knowing before anyone treats the two as equivalent.
+
+Delivery is email, over SMTP, in `lib/lead-mail.ts`. Both clinic addresses,
+subject `[Page Name] New consultation request — <name>` with the page name
+resolved through `lib/pages.ts`, `Reply-To` set to the patient, and a `wa.me`
+link built from the number they typed. Every lead is written to the container
+log **before** the send is attempted, so a relay outage costs a notification
+and never the lead.
 
 ---
 
