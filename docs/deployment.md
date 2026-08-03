@@ -157,9 +157,26 @@ cd /opt/sites/dr-luis-landing-pages && docker compose up -d
 
 **For Gmail specifically**, `SMTP_PASS` is a 16-character App Password from
 *Google Account → Security → App passwords*, which only appears once 2-Step
-Verification is on. The normal account password is refused outright, and the
-error Google returns says "username and password not accepted" — which reads
-like a typo and sends people round in circles.
+Verification is on. The normal account password is refused outright — confirmed
+against the live site, not assumed:
+
+```
+[lead] delivery failed Error: Invalid login: 535-5.7.8 Username and Password
+not accepted. https://support.google.com/mail/?p=BadCredentials
+  code: 'EAUTH', responseCode: 535, command: 'AUTH PLAIN'
+```
+
+That message reads like a typo and sends people round in circles re-checking
+the address. It is not a typo: `EAUTH` with `535` on Gmail means the password
+is the wrong *kind*. Everything before AUTH had already succeeded — DNS,
+egress on 587, STARTTLS — so this error also confirms the rest of the path is
+sound.
+
+> **A rejected credential is worse than no credential.** With `SMTP_PASS` set
+> but wrong, every submission returns 502 and the visitor sees the form's error
+> state. With it absent, they get a normal confirmation and the lead is logged.
+> If mail cannot be made to work immediately, **remove `SMTP_PASS`** rather
+> than leaving a failing one in place; the other keys can stay.
 
 > **Send as the mailbox you authenticated as.** Gmail silently rewrites a `From`
 > it did not authorise, so a `MAIL_FROM` on a different domain does not fail, it
