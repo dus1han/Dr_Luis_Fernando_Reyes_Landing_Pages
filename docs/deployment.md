@@ -36,7 +36,8 @@ duplicated. This file covers what is left.
 | Caddy running server-wide, certificate issued | ✅ [§3](#3--dns-and-caddy) |
 | First deploy | ✅ |
 | Lead email code | ✅ [§5](#lead-email) |
-| `SMTP_*` keys in `.env` on the VPS | ⬜ [§2](#lead-delivery--the-smtp-keys) |
+| `SMTP_*` keys in `.env` on the VPS | ✅ [§2](#lead-delivery--the-smtp-keys) |
+| Lead email delivered end to end | ✅ both clinic addresses, from the live site |
 
 Verified live: HTTPS 200 on `/`, `/buccal-fat-removal`,
 `/buccal-fat-removal/thank-you`, `/robots.txt` and `/sitemap.xml`; HTTP 308 to
@@ -44,11 +45,9 @@ HTTPS; canonical and `og:url` on the real origin; `noindex` on both the root hub
 and the thank-you page; HSTS, `nosniff` and `Referrer-Policy` present; Let's
 Encrypt certificate valid to 31 Oct 2026 and auto-renewing.
 
-The one step left is the **SMTP block in `.env`** — see
-[Lead delivery](#lead-delivery--the-smtp-keys). The code is done and verified;
-until the four keys are on the server, consultation requests are written to the
-container log and emailed to nobody. The deploy log warns on every run until
-then.
+Lead email is live: a submission on the production site was accepted by Gmail
+and delivered to both clinic addresses. Sending mailbox is
+`drnicole.ads@gmail.com` — see [Lead delivery](#lead-delivery--the-smtp-keys).
 
 ---
 

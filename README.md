@@ -41,15 +41,21 @@ Requires Node 20+. No environment variables are needed to run locally.
 
 ## Before this goes live
 
-Four things are deliberately left outstanding. Each is isolated to a
+Three things are deliberately left outstanding. Each is isolated to a
 single file so none of them require touching page code.
 
 | # | What | Where | Notes |
 |---|---|---|---|
-| 1 | **SMTP credentials** | `.env` on the VPS — `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` | Not a code change. Lead email is written and verified (`lib/lead-mail.ts`); until the keys are on the server, requests are logged and emailed to nobody. Runtime values, so adding them is an edit plus `docker compose up -d` — no rebuild. The deploy log warns on every run until then. See [docs/deployment.md](docs/deployment.md). |
-| 2 | **Analytics ID** | GitHub → Actions **variable** `NEXT_PUBLIC_GTM_ID` | Not a code change. While empty, **no tag scripts load at all** — zero requests. Compiled into the bundle, so setting it needs a **rebuild**, not a restart. See [docs/ads-readiness.md](docs/ads-readiness.md). |
-| 3 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
-| 4 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
+| 1 | **Analytics ID** | GitHub → Actions **variable** `NEXT_PUBLIC_GTM_ID` | Not a code change. While empty, **no tag scripts load at all** — zero requests. Compiled into the bundle, so setting it needs a **rebuild**, not a restart. See [docs/ads-readiness.md](docs/ads-readiness.md). |
+| 2 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
+| 3 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
+
+**Lead email is live.** Consultation requests reach
+`drluisfernandomarketing@gmail.com` and `luisfernandoreyesmd@yahoo.com`,
+verified end to end against the production site. Sent from
+`drnicole.ads@gmail.com` via Gmail SMTP with an app password — a shared
+marketing mailbox, so the `From` does not match the clinic's own domain.
+Worth revisiting if it ever affects deliverability.
 
 Once the ads subdomain is confirmed, set the `SITE_URL` Actions **variable**
 to that exact origin and rebuild. It drives canonical URLs, Open Graph tags

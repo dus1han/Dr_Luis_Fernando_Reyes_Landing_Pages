@@ -226,6 +226,14 @@ see "Lead delivery" in [deployment.md](deployment.md) for the four keys.
 >   or `SMTP_PASS` is missing. The site looks identical either way, so this is
 >   the only place the gap is visible.
 >
-> Confirm delivery with a real submission before the first ad runs —
-> `npm run test:lead -- https://surgery.luisfernandoreyesmd.com` — having first
-> pointed `LEAD_TO` at yourself.
+**Verified live**: a submission on the production site was accepted by Gmail for
+both clinic addresses. Sending mailbox is `drnicole.ads@gmail.com` over
+`smtp.gmail.com:587` with an app password.
+
+Re-run the check after any change to the form, the schema or the mail code:
+
+```bash
+npm run test:lead -- https://surgery.luisfernandoreyesmd.com
+```
+
+Point `LEAD_TO` at yourself first if you would rather the clinic not receive it.

@@ -112,14 +112,16 @@ about outcomes are scrutinised.
 - [x] Put any API key in an environment variable, never in the repo. *The
       SMTP credentials are runtime env in `.env` on the VPS; the deploy
       script redacts them from the CI log.*
-- [ ] **Add the four `SMTP_*` keys to `/opt/sites/dr-luis-landing-pages/.env`
-      and restart.** Until this is done the form works, the thank-you page
-      appears and the conversion fires, but nobody is told — see "Lead
-      delivery" in [deployment.md](deployment.md). The deploy log warns on
-      every run until it is set.
-- [ ] **Submit a real test lead** and confirm it arrives at the clinic:
-      `npm run test:lead -- https://surgery.luisfernandoreyesmd.com`.
-      Point `LEAD_TO` at yourself first, then remove it.
+- [x] **Add the four `SMTP_*` keys to `/opt/sites/dr-luis-landing-pages/.env`
+      and restart.** *Done — `smtp.gmail.com:587` as `drnicole.ads@gmail.com`
+      with a Gmail app password. `.env` is `600`, owned by `deploy`.*
+- [x] **Submit a real test lead** and confirm it arrives at the clinic.
+      *Done from the live site; Gmail accepted it for both clinic addresses.
+      Tested first with `LEAD_TO` pointed at the sending mailbox, then again
+      with it removed.*
+- [ ] Confirm with the clinic that the test email actually **landed in the
+      inbox, not spam** — acceptance by Gmail is not the same as arrival,
+      and the Yahoo address is the more likely of the two to filter it.
 - [ ] Confirm someone owns follow-up. Speed-to-lead is the single largest
       lever on paid-traffic conversion — minutes, not hours.
 - [ ] Test the failure path: the form shows a fallback phone number if
