@@ -1,29 +1,46 @@
 /**
  * Conversion tracking layer.
  *
- * ── TO GO LIVE ──────────────────────────────────────────────────────
- * Fill in GTM_ID below (and/or GA4_ID + ADS_CONVERSION). Everything
- * else is already wired: every CTA on every page calls track() with a
- * stable event name, so once the IDs are present Google Ads conversions
- * can be configured entirely from the GTM UI without touching code.
- * Leave the IDs empty and nothing loads — zero requests, zero cost.
- * ────────────────────────────────────────────────────────────────────
+ * GTM is live and every CTA calls track() with a stable event name, so
+ * Google Ads conversions are configured entirely from the GTM UI without
+ * touching code. What remains is building the tags inside the container —
+ * see docs/ads-readiness.md for the event contract they must match.
+ *
+ * GA4_ID and ADS_CONVERSION below stay empty on purpose: with GTM in place
+ * both belong inside the container, where marketing can change them without
+ * a deploy. Filling them here loads a second, competing tag stack.
  */
+/**
+ * The clinic's Google Tag Manager container, supplied by the marketing side.
+ *
+ * **A container ID is not a secret.** It ships in the page source of every
+ * site that uses GTM, so there is nothing to protect by keeping it out of the
+ * repository — and the reason it once lived only in a repository variable
+ * turned out not to hold: `NEXT_PUBLIC_*` is compiled into the bundle, so
+ * changing it needs a **rebuild** either way. The variable bought no
+ * operational flexibility over a constant, and cost a manual step that, if
+ * forgotten, fails invisibly — the build goes green, the page looks perfect,
+ * and no conversion is ever recorded.
+ *
+ * `NEXT_PUBLIC_GTM_ID` still overrides this, so a fork or a second clinic can
+ * point at its own container without editing code. Set it to `off` to disable
+ * tracking entirely — an empty value falls back to the default, because "the
+ * variable is unset" is far more often an oversight than an intention.
+ */
+const DEFAULT_GTM_ID = "GTM-NHBRF7G5";
+
+const CONFIGURED_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim() ?? "";
+
 export const ANALYTICS = {
   /**
-   * e.g. "GTM-XXXXXXX". Comes from the `NEXT_PUBLIC_GTM_ID` repository
-   * variable, passed to the Docker build as a build arg.
+   * e.g. "GTM-XXXXXXX". Defaults to the clinic's container; override with the
+   * `NEXT_PUBLIC_GTM_ID` repository variable, which is passed to the Docker
+   * build as a build arg.
    *
-   * It has to be read here rather than typed in as a literal, or setting the
-   * variable in GitHub does nothing at all — and that failure is invisible.
-   * The build succeeds, the page looks perfect, and it silently never fires a
-   * conversion; you find out from an empty Google Ads report weeks later.
-   *
-   * `NEXT_PUBLIC_*` is compiled into the JavaScript at build time, so
-   * **changing it needs a rebuild, not a restart**, and setting it in `.env`
-   * on the server does nothing.
+   * Compiled in at build time, so **changing it needs a rebuild, not a
+   * restart** — setting it in `.env` on the server does nothing.
    */
-  GTM_ID: process.env.NEXT_PUBLIC_GTM_ID ?? "",
+  GTM_ID: CONFIGURED_GTM_ID === "off" ? "" : CONFIGURED_GTM_ID || DEFAULT_GTM_ID,
   /**
    * e.g. "G-XXXXXXXXXX". Not wired to CI on purpose — with GTM in place, GA4
    * and Ads are better added as tags *inside* the GTM container, which the

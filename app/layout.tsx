@@ -65,6 +65,28 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${poppins.variable}`}>
       <body>
+        {/*
+          The second half of the GTM snippet, which has to sit immediately
+          after the opening <body> tag.
+
+          It does nothing for conversion tracking — without JavaScript there is
+          no dataLayer to push to — but it is what Tag Assistant and Google's
+          own container checks look for when verifying an installation, and its
+          absence is reported as a broken install. Rendered alongside the
+          script, so the pair can never drift apart.
+        */}
+        {ANALYTICS.GTM_ID && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${ANALYTICS.GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+              title="Google Tag Manager"
+            />
+          </noscript>
+        )}
+
         {/* Captures the Google Ads click ID on arrival, on every route.
             It only exists in the URL the visitor landed on, and it cannot be
             recovered later — see lib/click-id.ts. */}

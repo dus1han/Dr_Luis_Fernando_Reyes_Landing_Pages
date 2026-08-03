@@ -27,33 +27,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Set the GTM ID ONCE as a repository variable and every future build
-      # picks it up automatically — pushing code never changes or clears it.
+      # The GTM container now has a default in lib/analytics.ts, so an unset
+      # variable is the normal case and NOT a warning — it means "use the
+      # clinic's container". This step previously warned that an unset variable
+      # meant no tracking at all, which stopped being true and would have sent
+      # someone hunting for a problem that no longer exists.
       #
-      # A missing ID does NOT stop the deploy. The site is fully functional
-      # without GTM: the container script renders nothing at all, so there are
-      # no requests, no errors and no console noise.
-      #
-      # It still warrants a warning, because the failure mode is silent. The
-      # value is compiled into the bundle, so a build without it produces a site
-      # that looks completely correct and simply never fires a conversion — and
-      # you find out from an empty Google Ads report weeks later. The annotation
-      # below puts that on the run summary where someone will see it.
+      # Only an explicit `off` disables tracking, and that IS worth an
+      # annotation: the value is compiled into the bundle, so a build with
+      # tracking off produces a site that looks completely correct and simply
+      # never fires a conversion — discovered weeks later from an empty Google
+      # Ads report.
       - name: Check analytics configuration
         run: |
-          if [ -z "${{ vars.NEXT_PUBLIC_GTM_ID }}" ]; then
-            echo "::warning::NEXT_PUBLIC_GTM_ID is not set — deploying without Google Tag Manager."
+          if [ "${{ vars.NEXT_PUBLIC_GTM_ID }}" = "off" ]; then
+            echo "::warning::NEXT_PUBLIC_GTM_ID is 'off' — deploying with NO conversion tracking."
             echo ""
-            echo "The site will work normally but will have NO conversion tracking."
-            echo ""
-            echo "To enable it, set the variable once at:"
-            echo "  Settings → Secrets and variables → Actions → Variables → New repository variable"
-            echo "  Name: NEXT_PUBLIC_GTM_ID   Value: GTM-XXXXXXX"
-            echo ""
-            echo "Then re-run this workflow — the ID is baked in at build time,"
-            echo "so setting the variable alone changes nothing until a rebuild."
+            echo "The site will work normally but will record no conversions."
+            echo "Remove the variable to fall back to the clinic's container."
+          elif [ -z "${{ vars.NEXT_PUBLIC_GTM_ID }}" ]; then
+            echo "✓ GTM container: default from lib/analytics.ts"
           else
-            echo "✓ GTM container: ${{ vars.NEXT_PUBLIC_GTM_ID }}"
+            echo "✓ GTM container: ${{ vars.NEXT_PUBLIC_GTM_ID }} (overriding the default)"
           fi
 
           # The origin is baked into the prerendered HTML by this build, and it

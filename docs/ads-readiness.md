@@ -91,11 +91,33 @@ Pixel or TikTok later needs no code change and no deploy. `form_location` is
 what lets one GTM container serve every landing page on this subdomain and
 still report which produced the lead.
 
-No tracking IDs in the repository. `NEXT_PUBLIC_GTM_ID` is a repository
-variable passed as a build arg; unset, the container script renders nothing —
-no requests, no errors, no console noise — and the build **warns rather than
-fails**. Tracking is a marketing concern and must never be able to take the
-clinic's page offline.
+### Where the container ID lives — this changed
+
+The container is **`GTM-NHBRF7G5`**, and it is a constant in `lib/analytics.ts`.
+
+It used to be repository-variable-only, under a rule of "no tracking IDs in the
+repository". That rule was dropped deliberately, for two reasons:
+
+- **A container ID is not a secret.** It ships in the page source of every site
+  that uses GTM. There was nothing to protect.
+- **The variable bought no flexibility.** `NEXT_PUBLIC_*` is compiled into the
+  bundle, so changing the container needs a **rebuild** whether the value comes
+  from a variable or a constant. The variable's only effect was to add a manual
+  step whose omission fails invisibly — green build, perfect-looking page, no
+  conversions, discovered weeks later from an empty Google Ads report. That is
+  exactly the failure this document exists to prevent.
+
+`NEXT_PUBLIC_GTM_ID` still **overrides** the default, so a fork or a second
+clinic points at its own container with no code change. Set it to `off` to
+disable tracking entirely; an empty value falls back to the default, because an
+unset variable is far more often an oversight than an intention.
+
+All three states were verified against real builds — default `GTM-NHBRF7G5`,
+override `GTM-OVERRIDE1`, and `off` producing zero `googletagmanager`
+references in the HTML.
+
+Tracking still must never be able to take the clinic's page offline: a bad
+value renders no script rather than failing the build.
 
 ### A real page, not a modal
 

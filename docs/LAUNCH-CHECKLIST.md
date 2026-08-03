@@ -131,7 +131,9 @@ about outcomes are scrutinised.
 
 ## 5. Tracking
 
-- [ ] Create the GTM container; put its ID in `lib/analytics.ts`.
+- [x] Create the GTM container; put its ID in `lib/analytics.ts`.
+      *Done — `GTM-NHBRF7G5`, script plus the `<noscript>` iframe, verified
+      present in the prerendered HTML of all three pages.*
 - [ ] Create the Google Ads conversion action for **form submit** and wire
       it in GTM to the `form_submit` dataLayer event.
 - [ ] Add secondary conversions for `call_click` and `whatsapp_click`.
@@ -142,8 +144,13 @@ about outcomes are scrutinised.
 - [ ] Submit a test lead with `?gclid=test123` in the URL and confirm the
       value travels with the lead.
 
-> While the IDs are blank, **no tag scripts load at all**. Nothing to
-> disable for testing.
+> The container now loads on every page, so **anything you do on the live site
+> is recorded** — test submissions included. Filter them out in GA4/Ads, or set
+> the `NEXT_PUBLIC_GTM_ID` variable to `off` and rebuild while testing.
+>
+> The tags *inside* the container are still to be built. GTM loading is not the
+> same as a conversion being reported: the event contract in
+> [ads-readiness.md](ads-readiness.md) is what the tags must be built against.
 
 ---
 

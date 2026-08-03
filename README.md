@@ -43,14 +43,19 @@ Requires Node 20+. No environment variables are needed to run locally.
 
 ## Before this goes live
 
-Three things are deliberately left outstanding. Each is isolated to a
-single file so none of them require touching page code.
+Two things are deliberately left outstanding. Each is isolated to a
+single file so neither requires touching page code.
 
 | # | What | Where | Notes |
 |---|---|---|---|
-| 1 | **Analytics ID** | GitHub → Actions **variable** `NEXT_PUBLIC_GTM_ID` | Not a code change. While empty, **no tag scripts load at all** — zero requests. Compiled into the bundle, so setting it needs a **rebuild**, not a restart. See [docs/ads-readiness.md](docs/ads-readiness.md). |
-| 2 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
-| 3 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
+| 1 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
+| 2 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
+
+**Google Tag Manager is live** — container `GTM-NHBRF7G5`, a constant in
+`lib/analytics.ts`, with both the script and the `<noscript>` iframe on every
+page. `NEXT_PUBLIC_GTM_ID` overrides it; `off` disables tracking. The tags
+themselves are still built inside the GTM UI — see
+[docs/ads-readiness.md](docs/ads-readiness.md) for the event contract.
 
 **Lead email is live.** Consultation requests reach
 `drluisfernandomarketing@gmail.com` and `luisfernandoreyesmd@yahoo.com`,
