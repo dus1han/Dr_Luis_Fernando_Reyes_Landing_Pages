@@ -30,6 +30,8 @@ npm run dev            # http://localhost:3000/buccal-fat-removal
 npm run build && npm start
 npm run prepare-images    # only after changing source artwork
 npm run verify:conversion -- https://url   # asserts the whole conversion path
+npm run verify:menu -- http://127.0.0.1:3000   # mobile menu, in a real browser
+npm run test:lead -- https://url          # posts one marked test lead
 
 # Deployment is a push to main — see docs/deployment.md
 docker build -t lp . && docker run --rm -p 3000:3000 lp   # build the deploy image locally
@@ -168,7 +170,7 @@ animates, and the gotchas. This table is only a map.
 
 | # | Section | In one line |
 |---|---|---|
-| — | Nav | Clinic logo lockup; transparent over hero → frosted ivory on scroll |
+| — | Nav | Clinic logo lockup; transparent over hero → frosted ivory on scroll. Below `lg` the links move into a full-screen menu |
 | 1 | Hero | Built around the portrait — full-bleed top on phones, feathered right 60% on desktop. The LCP element |
 | 2 | Trust strip | Four numbers, counting up |
 | 3 | Credentials | Four trust marks whose icons draw on, then idle |
@@ -281,6 +283,10 @@ and never the lead.
   arrow keys (Shift for larger steps, Home/End for the extremes), and it
   announces its position through `aria-valuetext`.
 - The FAQ accordion uses proper `aria-expanded` / `aria-controls` wiring.
+- The mobile menu is a real modal dialog: `role="dialog"`, `aria-modal`,
+  focus moved into the panel on open and returned to the trigger on close,
+  Tab trapped inside it, and Escape to dismiss. One button carries
+  `aria-expanded`, so there is a single state to keep honest.
 - Form errors are announced via `role="alert"` and focus jumps to the
   first invalid field on failed submit.
 - Focus rings are visible and on-brand (`:focus-visible`).

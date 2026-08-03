@@ -12,6 +12,7 @@
     "verify:conversion": "node scripts/verify-conversion.mjs",
     "verify:phones": "node scripts/verify-phones.mjs",
     "verify:reviews": "node scripts/verify-reviews.mjs",
+    "verify:menu": "node scripts/verify-mobile-menu.mjs",
     "test:lead": "node scripts/send-test-lead.mjs"
   },
   "dependencies": {

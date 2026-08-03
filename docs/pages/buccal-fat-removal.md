@@ -99,6 +99,64 @@ legitimately taller because of how much they hold.
 
 ---
 
+## 0. Nav and the mobile menu — `components/lp/Nav.tsx`
+
+Transparent over the hero, frosted ivory past 40px of scroll. Below `lg` the
+five links move into a full-screen panel; at `lg` and above they sit inline and
+the trigger is gone.
+
+The panel exists because the links used to be plain `hidden` on phones, which
+is where nearly all ads traffic lands — Results, Reviews and the FAQ had no
+entry point at all from the top of the page.
+
+### Selecting an option has to close it, explicitly
+
+Every link is a same-page anchor. There is no route change, so nothing closes
+the menu on its own: it closes because the click handler closes it. A
+`hashchange` listener backs that up for the routes a click handler cannot see —
+the back and forward buttons most of all, which would otherwise leave the panel
+sitting over the section the visitor just navigated to.
+
+### The scroll lock must be a *layout* effect
+
+This is the part that looks like a detail and is not. Closing the menu and
+jumping to the anchor happen in one click: the handler sets state, then the
+browser performs the anchor navigation. A passive `useEffect` cleanup runs
+after paint — **after** that jump — so the body would still be `overflow:
+hidden` at the moment the page tried to scroll, and tapping "Results" would
+close the menu and go nowhere.
+
+`useLayoutEffect` flushes synchronously while the click is still being
+dispatched, so the lock is released in time. `overflow` on the body propagates
+to the viewport, which is both why the lock works and why the ordering matters.
+
+Verified rather than reasoned about: `npm run verify:menu` asserts the menu
+closed **and** that the target section landed at 84px — `--nav-h` (72px) plus
+the 12px in `scroll-padding-top`.
+
+### Sibling of the header, not a child
+
+The header is `sticky` with a z-index, so it forms a stacking context. A
+`fixed` panel inside it can never paint above the sticky CTA bar (z-70), which
+would then float over the menu. `Nav` returns a fragment so the two are
+ordinary siblings and z-index means what it says: panel 75, header raised to 80
+while open so one button both opens and closes.
+
+### A width utility that silently lost
+
+The lower hamburger bar is meant to be shorter than the upper one. It rendered
+full width, because the shared class string carried `w-full` and the closed
+branch added `w-[16px]` — both width utilities of equal specificity, so
+stylesheet source order decides, not the order in the attribute. Measured at
+23px when it should have been 16px, and invisible to a glance at a 23px icon.
+
+Width now lives entirely in the branches. **The same trap already had a comment
+in this file** about `hidden` losing to `inline-flex` on the CTA wrapper, which
+is a fair warning that it recurs — if a conditional class appears to do
+nothing, check whether a base class of the same property is beating it.
+
+---
+
 ## 1. Hero — `sections/Hero.tsx`
 
 Built around the photograph, framed differently at each breakpoint.
