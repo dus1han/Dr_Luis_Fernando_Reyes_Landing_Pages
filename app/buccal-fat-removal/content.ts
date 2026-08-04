@@ -103,7 +103,7 @@ export const ANATOMY = {
     {
       n: "01",
       title: "The fat pad is located",
-      body: "The buccal fat pad sits deep between your cheekbone and jaw. Its size and position are assessed against your facial anatomy before anything begins.",
+      body: "The buccal fat pad sits deep between cheekbone and jaw. Its size and position are assessed against your facial anatomy before anything begins.",
     },
     {
       n: "02",
@@ -348,7 +348,7 @@ export const FAQ = {
     },
     {
       q: "Will there be visible scars?",
-      a: "None. Every incision is made inside the mouth, so there's nothing on the outside of your face. No one needs to know unless you choose to tell them.",
+      a: "None. Every incision is made inside the mouth, so there's nothing on the outside of your face.",
     },
     {
       q: "Is the result permanent?",
