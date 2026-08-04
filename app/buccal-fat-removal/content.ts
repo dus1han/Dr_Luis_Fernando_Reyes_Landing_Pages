@@ -64,7 +64,7 @@ export const ASSURANCE = {
   items: [
     {
       icon: "certificate",
-      title: "Board-Certified Plastic Surgeon",
+      title: "Double Board-Certified Plastic Surgeon",
       body: "Double board certified in plastic, aesthetic and reconstructive surgery.",
     },
     {
@@ -74,12 +74,12 @@ export const ASSURANCE = {
     },
     {
       icon: "globe",
-      title: "International Patient Experience",
+      title: "International Standards. Colombian Artistry",
       body: "Over 19 years of practice across international patients and standards.",
     },
     {
       icon: "heart",
-      title: "Patient Safety-First Approach",
+      title: "Patient-Centred Safety Standards",
       body: "Every face individually assessed, including when the honest answer is no.",
     },
   ],
