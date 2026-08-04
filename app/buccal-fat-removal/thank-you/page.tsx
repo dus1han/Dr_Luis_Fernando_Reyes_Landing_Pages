@@ -81,7 +81,7 @@ export default function ThankYou() {
             </p>
 
             <h1 className="m-0 font-display text-[clamp(32px,6vw,52px)] font-semibold leading-[1.1] tracking-[-0.015em] text-white">
-              Thank you &mdash;{" "}
+              Thank you,{" "}
               <em className="italic text-champagne">we&rsquo;ll be in touch</em>
             </h1>
 

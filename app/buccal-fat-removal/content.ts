@@ -18,7 +18,14 @@ export const HERO = {
   eyebrow: "Facial contouring · Dubai",
   kicker: "Achieve a slimmer, more sculpted face",
   headline: ["Buccal Fat", "Removal"] as const,
-  lede: "Combining Colombian aesthetic artistry with precise facial contouring to define the jawline and reduce cheek fullness — through an incision inside the mouth, so nothing shows on your face.",
+  /*
+   * The "through an incision inside the mouth, so nothing shows on your face"
+   * clause was removed at the clinic's request. It is not lost: the same point
+   * is made in the procedure section, in the FAQ answer about scarring, and in
+   * the structured data — so the page still answers it, just not in the first
+   * sentence a visitor reads.
+   */
+  lede: "Combining Colombian aesthetic artistry with precise facial contouring to define the jawline and reduce cheek fullness.",
   primaryCta: "Book a consultation",
   secondaryCta: "See real results",
   // No credentials line here — the trust strip immediately below already
@@ -67,7 +74,7 @@ export const ASSURANCE = {
     {
       icon: "heart",
       title: "Patient Safety-First Approach",
-      body: "Every face individually assessed — including when the honest answer is no.",
+      body: "Every face individually assessed, including when the honest answer is no.",
     },
   ],
 } as const;
@@ -76,7 +83,7 @@ export const PROCEDURE = {
   eyebrow: "The procedure",
   headline: ["What is", "buccal fat removal?"] as const,
   body: [
-    "Buccal fat removal is a precise, minimally invasive procedure that refines the shape of your mid face by reducing the buccal fat pad — a deep, naturally occurring pocket of fat that sits between your cheekbone and jaw.",
+    "Buccal fat removal is a precise, minimally invasive procedure that refines the shape of your mid face by reducing the buccal fat pad, a deep, naturally occurring pocket of fat that sits between your cheekbone and jaw.",
     "Because this fat sits deep in the mid face and doesn't respond to diet or exercise the way body fat does, no amount of training or clean eating will ever shift it.",
   ],
   quote:
@@ -100,7 +107,7 @@ export const ANATOMY = {
     {
       n: "03",
       title: "Only the precise amount is removed",
-      body: "Enough to reveal the definition already in your bone structure — never enough to hollow the cheeks. The result reads as natural, not operated on.",
+      body: "Enough to reveal the definition already in your bone structure, never enough to hollow the cheeks. The result reads as natural, not operated on.",
     },
   ],
   caption: "Buccal fat pad before and after reduction",
@@ -113,7 +120,7 @@ export const BENEFITS = {
     {
       icon: "contour",
       title: "Sharper cheekbone and jawline definition",
-      body: "The bone structure you felt was hidden finally shows — the sculpted profile that dieting could never give you.",
+      body: "The bone structure you felt was hidden finally shows, the sculpted profile that dieting could never give you.",
     },
     {
       icon: "hidden",
@@ -123,7 +130,7 @@ export const BENEFITS = {
     {
       icon: "permanent",
       title: "Permanent results",
-      body: "Once the buccal fat is reduced, those fat cells don't come back — so the fullness you've fought for years is gone for good.",
+      body: "Once the buccal fat is reduced, those fat cells don't come back, so the fullness you've fought for years is gone for good.",
     },
     {
       icon: "clock",
@@ -147,7 +154,7 @@ export const RESULTS = {
   eyebrow: "Before & after",
   headline: ["The difference is in", "the mid face"] as const,
   intro:
-    "Look at the mid face and the line running from cheekbone to chin. The change is structural rather than dramatic — the same face, more clearly defined.",
+    "Look at the mid face and the line running from cheekbone to chin. The change is structural rather than dramatic, the same face, more clearly defined.",
   /** Describes what the photographs show — no claims beyond the copy above. */
   lookFor: [
     {
@@ -160,7 +167,7 @@ export const RESULTS = {
     },
     {
       title: "The jawline",
-      body: "The line from cheekbone to chin sharpens — clearest in the profile views.",
+      body: "The line from cheekbone to chin sharpens, clearest in the profile views.",
     },
   ],
   /*
@@ -218,9 +225,9 @@ export const SURGEON = {
   pullQuote: "Natural harmony over dramatic change.",
   pullQuoteMeta: "The principle behind every facial procedure",
   why: [
-    "Dr. Luis brings the renowned artistry of Colombian plastic surgery to Dubai, where facial aesthetics are guided by one simple principle: natural harmony over dramatic change. Rather than simply removing facial volume, his approach focuses on revealing the definition that's already there — creating balanced, elegant contours that complement your unique features.",
+    "Dr. Luis brings the renowned artistry of Colombian plastic surgery to Dubai, where facial aesthetics are guided by one simple principle: natural harmony over dramatic change. Rather than simply removing facial volume, his approach focuses on revealing the definition that's already there, creating balanced, elegant contours that complement your unique features.",
     "Every face deserves an individualised approach. Buccal fat removal is carefully planned around your facial anatomy, bone structure, skin quality and long-term ageing considerations, to achieve a slimmer, more refined appearance without looking overdone.",
-    "Most importantly, your care doesn't end after surgery. From your first consultation through every follow-up, Dr. Luis and his experienced medical team remain closely involved — providing personalised guidance and attentive aftercare for a smooth recovery and beautiful, lasting results.",
+    "Most importantly, your care doesn't end after surgery. From your first consultation through every follow-up, Dr. Luis and his experienced medical team remain closely involved, providing personalised guidance and attentive aftercare for a smooth recovery and beautiful, lasting results.",
   ],
 };
 
@@ -234,7 +241,7 @@ export const CANDIDATE = {
     "You want a slimmer, more defined lower face",
     "You've lost weight everywhere else and the cheeks stayed full",
     "You've tried dieting and exercise, and the mid face never changed",
-    "You're a busy professional wanting maximum impact with minimal disruption — a quick recovery, several concerns addressed at once",
+    "You're a busy professional wanting maximum impact with minimal disruption, a quick recovery, several concerns addressed at once",
   ],
   note: "Not sure whether it's buccal fat? That's the first thing your consultation confirms.",
 };
@@ -339,7 +346,7 @@ export const FAQ = {
     },
     {
       q: "Is the result permanent?",
-      a: "Yes. Once the buccal fat is reduced, those fat cells don't regenerate — so the fullness won't return, even as your weight fluctuates. It's a one-time change, with no fillers to top up.",
+      a: "Yes. Once the buccal fat is reduced, those fat cells don't regenerate, so the fullness won't return, even as your weight fluctuates. It's a one-time change, with no fillers to top up.",
     },
     {
       q: "How long is the recovery?",
@@ -355,7 +362,7 @@ export const FAQ = {
     },
     {
       q: "Is there a suitable age range?",
-      a: "Rather than going by age alone, each patient is evaluated individually — looking at your facial anatomy, the amount and position of buccal fat, and how your features are likely to change over time. A face at one age can be a strong candidate while another isn't, so it's the structure of your face, not a number, that guides the decision. Your consultation is where that's assessed properly.",
+      a: "Rather than going by age alone, each patient is evaluated individually, looking at your facial anatomy, the amount and position of buccal fat, and how your features are likely to change over time. A face at one age can be a strong candidate while another isn't, so it's the structure of your face, not a number, that guides the decision. Your consultation is where that's assessed properly.",
     },
   ],
 };
