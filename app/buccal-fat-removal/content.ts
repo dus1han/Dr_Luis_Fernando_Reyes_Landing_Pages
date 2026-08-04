@@ -135,8 +135,8 @@ export const BENEFITS = {
     },
     {
       icon: "permanent",
-      title: "Permanent results",
-      body: "Once the buccal fat is reduced, those fat cells don't come back, so the fullness you've fought for years is gone for good.",
+      title: "Long-lasting results",
+      body: "Once the buccal fat is reduced, those fat cells don't come back, so the slimming effect is long-lasting.",
     },
     {
       icon: "clock",
