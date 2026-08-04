@@ -44,7 +44,13 @@ export type Stat = {
 export const STATS: Stat[] = [
   { value: 19, suffix: "+", label: "Years of experience" },
   { value: 2, display: "Double", label: "Board certified" },
-  { value: 1, prefix: "~", suffix: " week", label: "Typical recovery" },
+  /*
+   * A range, so it uses `display` and skips the count-up: animating to "4-5"
+   * has no sensible intermediate state. `value` is inert while `display` is
+   * set, and holds the upper bound only so the stat still reads correctly if
+   * someone removes the override later.
+   */
+  { value: 5, display: "4-5 Days", label: "Typical recovery" },
   { value: 0, display: "Zero", label: "Scars on the face" },
 ];
 
