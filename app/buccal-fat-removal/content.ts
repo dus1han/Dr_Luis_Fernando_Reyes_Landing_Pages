@@ -141,7 +141,7 @@ export const BENEFITS = {
     {
       icon: "clock",
       title: "Quick recovery",
-      body: "Most people are back to their normal routine within about a week, with mild early swelling that settles as you heal.",
+      body: "Most people are back to their normal routine within 4-5 days, with mild early swelling that settles as you heal.",
     },
     {
       icon: "pairs",
@@ -356,7 +356,7 @@ export const FAQ = {
     },
     {
       q: "How long is the recovery?",
-      a: "Short. Most people are back to normal activities within about a week, with some mild swelling early on that settles as you heal. Individual recovery varies.",
+      a: "Short. Most people are back to normal activities within 4-5 days, with some mild swelling early on that settles as you heal. Individual recovery varies.",
     },
     {
       q: "Does it hurt?",

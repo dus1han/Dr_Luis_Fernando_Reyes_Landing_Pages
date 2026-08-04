@@ -107,7 +107,7 @@ function StructuredData() {
         howPerformed:
           "The buccal fat pad is accessed through a small incision inside the mouth under local anaesthetic, and a precise amount of fat is removed to reveal cheekbone and jawline definition. No incisions are made on the outside of the face.",
         followup:
-          "Most patients return to normal activities within about a week, with mild early swelling that settles during healing.",
+          "Most patients return to normal activities within 4-5 days, with mild early swelling that settles during healing.",
         performer: { "@id": `${ORIGIN}/#physician` },
       },
       {
