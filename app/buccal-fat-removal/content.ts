@@ -89,8 +89,8 @@ export const PROCEDURE = {
   eyebrow: "The procedure",
   headline: ["What is", "buccal fat removal?"] as const,
   body: [
-    "Buccal fat removal is a precise, minimally invasive procedure that refines the shape of your mid face by reducing the buccal fat pad, a deep, naturally occurring pocket of fat that sits between your cheekbone and jaw.",
-    "Because this fat sits deep in the mid face and doesn't respond to diet or exercise the way body fat does, no amount of training or clean eating will ever shift it.",
+    "Buccal fat removal is a precise, minimally invasive procedure that refines the shape of your mid face by reducing the buccal fat pad which is a deep, naturally occurring pocket of fat that sits between cheekbone and jaw.",
+    "Because this fat sits deep in the mid face and doesn't respond to diet or exercise, no amount of training or clean eating will ever shift it.",
   ],
   quote:
     "Cheekbones that finally show, a slimmer profile, and contours that look like you were simply born with them.",
@@ -131,7 +131,7 @@ export const BENEFITS = {
     {
       icon: "hidden",
       title: "No visible scarring",
-      body: "Every incision is made inside the mouth, so nothing shows on your face. No one needs to know unless you choose to tell them.",
+      body: "Every incision is made inside the mouth, so nothing shows on your face.",
     },
     {
       icon: "permanent",
