@@ -160,7 +160,7 @@ export const RESULTS = {
   eyebrow: "Before & after",
   headline: ["The difference is in", "the mid face"] as const,
   intro:
-    "Look at the mid face and the line running from cheekbone to chin. The change is structural rather than dramatic, the same face, more clearly defined.",
+    "Look at the mid face and the line running from cheekbone to chin. The change is structural. The same face, more clearly defined.",
   /** Describes what the photographs show — no claims beyond the copy above. */
   lookFor: [
     {
