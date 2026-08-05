@@ -1,18 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { BeforeAfterSlider } from "@/components/lp/BeforeAfterSlider";
 import { Eyebrow } from "@/components/lp/Eyebrow";
+import { ImageReveal } from "@/components/lp/ImageReveal";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/lp/Reveal";
 import { ButtonLink } from "@/components/lp/Button";
 import { Section, SectionHead } from "@/components/lp/Section";
 import { BBL } from "@/lib/generated/images";
 import { SHOW_RESULTS_DISCLAIMER } from "@/lib/site";
-import { GALLERY, RESULTS } from "../content";
+import { FEATURED, GALLERY, RESULTS } from "../content";
 
-const compareBefore = BBL["compare-before.jpg"];
-const compareAfter = BBL["compare-after.jpg"];
+const featured = BBL[FEATURED.key as keyof typeof BBL];
 
 /**
  * Frosted pill. `backdrop-blur` is what makes one legible over skin tones,
@@ -60,29 +59,49 @@ export function Results() {
         </SectionHead>
 
         {/*
-          Featured comparison — the one image on the page the visitor can
-          actually operate, so it leads the proof section.
+          Featured comparison — the clearest pair the clinic supplied,
+          shown whole and larger than the gallery cards so it leads the
+          proof section.
 
-          0.66fr, where the buccal page gives its slider 0.82fr. The two
-          halves are 238px of source (see the crop note in
-          prepare-images.mjs — that is everything the clinic's grid holds
-          at full resolution), and a wider column would only stretch them
-          further. 0.66fr lands at roughly 380px, a 1.6x upscale, which a
-          photograph carries and a wider one does not.
+          1.15fr where the buccal page gives its slider 0.82fr, because
+          this is a 1.84:1 landscape and that is a portrait. At 0.82 the
+          card renders ~470x255 and the pair stops being readable; 1.15
+          lands near 640x347, and the reading guide still has ~475px,
+          which is enough for the intro and three items. The two columns
+          finish within ~20px of each other.
+
+          Not a <BeforeAfterSlider>: it needs the halves as separate
+          files, and no image in the clinic's "B A" folder can be split
+          without cutting a watermark in half. Reasoning in content.ts,
+          above FEATURED.
         */}
-        <div className="mb-14 grid items-center gap-10 lg:grid-cols-[0.66fr_1.34fr] lg:gap-16">
+        <div className="mb-14 grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
           <Reveal>
             <div className="mb-4 flex items-baseline justify-between border-b border-ink/16 pb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-muted">
               <span>Actual comparison</span>
-              <span>Shape &amp; projection</span>
+              <span>{FEATURED.area}</span>
             </div>
-            <BeforeAfterSlider
-              before={compareBefore}
-              after={compareAfter}
-              beforeAlt="A patient's buttocks and upper thighs before a Brazilian Butt Lift"
-              afterAlt="The same patient after a Brazilian Butt Lift, showing a rounder, more projected shape"
-              sizes="(max-width: 1024px) 92vw, 380px"
-            />
+
+            <ImageReveal
+              curtain="bg-ivory"
+              className="rounded-[3px] shadow-[0_30px_60px_-38px_rgb(35_27_22/0.55)]"
+            >
+              <div className="relative">
+                <Image
+                  src={featured.src}
+                  alt={FEATURED.alt}
+                  width={featured.width}
+                  height={featured.height}
+                  sizes="(max-width: 1024px) 92vw, 640px"
+                  placeholder="blur"
+                  blurDataURL={featured.blurDataURL}
+                  className="h-auto w-full"
+                />
+                {/* No tags on this one. The clinic burnt its own
+                    "Before"/"After" into the photograph, and a second set
+                    of pills over the top would label each half twice. */}
+              </div>
+            </ImageReveal>
           </Reveal>
 
           <div>
@@ -110,25 +129,39 @@ export function Results() {
 
         {/*
           `items-start` so a card is never stretched away from its own
-          aspect ratio. All six are 700x380 today, so nothing is ragged —
+          aspect ratio. All five are 700x380 today, so nothing is ragged —
           but the buccal page's gallery mixes two shapes, and a card added
           here in a third would otherwise be stretched to match its row.
 
+          Flex wrap, not grid — and that is the whole reason it changed.
+          Five cards in three columns leaves an orphan row of two, and CSS
+          grid has no way to centre it: `justify-content` centres the
+          *track set*, so the two still sit in columns 1 and 2 with a hole
+          on the right. Flex lays out row by row, so `justify-center`
+          centres the trailing pair under the gap between the three above.
+
+          The widths reproduce the grid's columns arithmetically — one up,
+          two from sm, three from lg — because `basis` has to do the job
+          `grid-cols` was doing.
+
           Tags come from each card's own `kind`, not from a rule applied to
           the whole gallery: three of these photographs have no "before" in
-          them, and stamping the pair labels across all six would be
+          them, and stamping the pair labels across all five would be
           describing pictures that don't exist. See the note above GALLERY
           in content.ts.
         */}
         <RevealGroup
           step={0.07}
-          className="grid items-start gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          className="flex flex-wrap items-start justify-center gap-5"
         >
           {GALLERY.map((card) => {
             const img = BBL[card.key as keyof typeof BBL];
             const pair = card.kind === "pair";
             return (
-              <RevealItem key={card.key}>
+              <RevealItem
+                key={card.key}
+                className="w-full sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-40px)/3)]"
+              >
                 <figure className="group relative m-0 overflow-hidden rounded-[3px] bg-greige shadow-[0_20px_40px_-32px_rgb(35_27_22/0.5)] transition-[box-shadow] duration-500 ease-out-soft hover:shadow-[0_28px_54px_-30px_rgb(35_27_22/0.6)]">
                   <div className="relative overflow-hidden">
                     <Image
@@ -140,7 +173,7 @@ export function Results() {
                       }
                       width={img.width}
                       height={img.height}
-                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 31vw"
+                      sizes="(max-width: 640px) 92vw, 380px"
                       placeholder="blur"
                       blurDataURL={img.blurDataURL}
                       className="h-auto w-full transition-transform duration-700 ease-out-soft group-hover:scale-[1.035]"

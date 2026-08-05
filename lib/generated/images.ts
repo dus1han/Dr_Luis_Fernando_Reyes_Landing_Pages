@@ -159,18 +159,6 @@ export const BBL = {
     "height": 600,
     "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAACQAwCdASoUAA0APwlur0+rpiQiMAgBcCEJZwCdACHgl7wU9mE4AP7mEF7u8KQRKS91se7gS3Hvk91bNgAAAA=="
   },
-  "compare-before.jpg": {
-    "src": "/brazilian-butt-lift/compare-before.jpg",
-    "width": 238,
-    "height": 298,
-    "blurDataURL": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACQBQCdASoUABoAPwlurlArpiQisBgMAXAhCUATpygqe7wgD+KZTqVztc6uI2e8TZJu/mYRAAD53aDr1r0QOAc51d2H65gV/G9C/keNxtjeAK5SZAohpA/5evPV5P2rnJts6FjwAAA="
-  },
-  "compare-after.jpg": {
-    "src": "/brazilian-butt-lift/compare-after.jpg",
-    "width": 238,
-    "height": 298,
-    "blurDataURL": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABwBACdASoUABoAPwl2tVKrpyUiqAqpcCEJQBUeggv3LhppWXcT1Ph29YozzAD9GDpw04HC6PHPLhAYwmP6sGW2xT4wwn/F9shLOnO6Y256yS1PJNJOsWIcthEcql8HYAA="
-  },
   "ba-1.jpg": {
     "src": "/brazilian-butt-lift/ba-1.jpg",
     "width": 700,

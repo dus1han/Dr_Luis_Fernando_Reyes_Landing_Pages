@@ -33,7 +33,7 @@ Measured at 1440×900 with reduced motion.
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 838 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1513 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1471 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 802 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1173 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 824 |
@@ -44,7 +44,7 @@ from the buccal page by more than their imports: **`Steps.tsx`** (which
 replaces `Anatomy.tsx`) and **`Results.tsx`**. Everything else is the same
 component reading different content.
 
-The page is 10.9k tall at 1440 against the buccal page's 10.3k. Most of the
+The page is 10.8k tall at 1440 against the buccal page's 10.3k. Most of the
 difference is section 5, where four steps and a recovery panel run taller
 than the buccal page's three.
 
@@ -230,49 +230,60 @@ size."
 
 The section with the most changes, all driven by what the clinic supplied.
 
-### The featured comparison, and its one compromise
+**Everything in this section comes from the clinic's `B A` folder.** Six
+files, six uses: one leads as the featured comparison, five fill the
+gallery. Nothing is sourced from `Images/`.
 
-The drag slider needs before and after as two separate, equally sized files.
-Nothing in the `B A` folder splits cleanly — three of those files are
-continuous composites with the clinic's watermark centred **across** the
-join, so cutting them in half cuts the watermark in half.
+### There is no drag slider here
 
-What does split is the 6-pair grid filed under `Images/`
-(`ChatGPT Image Jul 25, 2026, 04_23_19 PM.png`), which is also the only
-source on this page showing the buttocks before and after. Its separators
-were measured, not estimated — columns that are ≥60% near-white:
+The buccal page's featured slot is a `<BeforeAfterSlider>`, and that needs
+the before and after as two separate, equally sized files. No image in
+`B A` can supply them. Measured — scoring every column by the *median*
+row-to-row difference, so one high-contrast row can't fake a seam:
 
-```
-x 253-256   766-769   1290-1293   ← the "→" glyph, INSIDE a pair
-x 512-516   1024-1028              ← plain gutter, BETWEEN pairs
-y 510-514                          ← the row split
-```
+| File | Seam | Why it can't be split |
+|---|---|---|
+| `(20)` | none (score 8) | Both photographs sit on one continuous black backdrop with "NICOLE ECHEVERRY" spanning the join. There is no edge to cut on |
+| `(21)` | x313, weak (21) | A real tonal step, but the clinic's crown mark and "LUIS FERNANDO REYES" straddle it — a split leaves half a crown and "…S FERNANDO R" |
+| `(25)` | x350, hard (131) | Splits cleanly. It is also the intra-operative photograph |
+| `(26)` | x371, hard (296) | Splits, but into unequal halves, and it is not a confirmed pair |
 
-The arrow does **not** sit in the white gutter; it bleeds into both
-photographs, spanning x 239–273. So the slider halves are taken outside the
-glyph — 0–238 and 274–511 — and cropped to 238×298 (waist to mid-thigh)
-rather than used at full height, because a 238×509 half makes the slider
-twice as tall as the reading guide beside it.
+Cutting a clinic watermark in half to feed a slider is not a trade worth
+making, and the one file that does split is the one image on the page you'd
+least want blown up as the lead. So the slot holds `(21)` **whole**, as a
+large static card, with the header rule above it kept exactly as it was.
 
-**238px of source is everything the clinic has.** The featured column is
-narrowed to `0.66fr` (the buccal page gives its slider `0.82fr`) so it lands
-at ~380px — a 1.6× upscale, which a photograph carries. A wider column would
-only stretch it further. Fixing this properly needs new source art, not a
-different crop.
+**Consequence worth knowing:** `slider_interact` never fires on this page.
+The event contract in `lib/analytics.ts` is shared across pages, and a page
+with no slider simply doesn't emit one of its events. Nothing to fix.
+
+The column split changes with it — `1.15fr` here against the buccal page's
+`0.82fr` — because this is a 1.84:1 landscape and that is a portrait. At
+`0.82` the card renders ~470×255 and the pair stops being readable; `1.15`
+lands near 640×347 and still leaves the reading guide ~475px.
+
+No Before/After pills on this one either: the clinic burnt its own labels
+into the photograph, and a second set over the top would label each half
+twice. (Its "Before" is clipped to "ore" at the left edge — that is in the
+supplied file, not the crop.)
 
 ### The gallery labels each card
 
-Six cards, all 700×380 from the `B A` folder and resized only. Uniform
-shape, so unlike the buccal gallery nothing has to be ordered to keep the
-rows even.
+Five cards, all 700×380, resized only.
 
-> **It used to be twelve.** Six before/after pairs cut out of the grid
-> composite led the list, showing the buttocks themselves; they were removed
-> at the clinic's request. The featured comparison is still cut from that
-> same grid, so the page has not lost the procedure's own before/after —
-> only the longer gallery. The cut coordinates survive in
-> `prepare-images.mjs` (deliberately — re-deriving them is a pixel-scanning
-> job) but the cards are no longer emitted, so nothing unreferenced ships.
+> **It used to be twelve, then six.** Six pairs cut out of a grid composite
+> in `Images/` led the list, and the featured slot was a slider cut from the
+> same grid. The clinic asked for the before/after to come from `B A` and
+> nothing else, so no part of this section is sourced outside that folder
+> now. The grid is still on disk and `prepare-images.mjs` still records
+> where its separators are, but nothing reads it.
+
+**Flex wrap, not grid.** Five cards in three columns leaves an orphan row of
+two, and CSS grid cannot centre it — `justify-content` centres the *track
+set*, so the two stay in columns 1 and 2 with a hole on the right. Flex lays
+out row by row, so `justify-center` puts the trailing pair under the gap
+between the three above. The `basis` widths reproduce the grid's columns
+arithmetically because they have to do the job `grid-cols` was doing.
 
 The tags come from each card's own `kind` in `GALLERY`, not from a rule
 applied to the whole gallery:
@@ -287,7 +298,7 @@ why the distinction exists at all.
 
 ### Three things for the clinic to confirm
 
-1. **`ba-10`** — the two dress photographs — is labelled `result`, not
+1. **`ba-4`** — the two dress photographs — is labelled `result`, not
    `pair`. Both halves read as post-operative and neither carries a "before"
    marking. If it *is* a before/after, change `kind` to `"pair"` in
    `content.ts`; don't leave it labelled a pair on a guess.
@@ -300,9 +311,14 @@ why the distinction exists at all.
 
 ### `area` is copy, not decoration
 
-Cards 1–3 are waist and abdomen. That is the donor site, and sculpting it is
+The pairs are waist and abdomen. That is the donor site, and sculpting it is
 half of what a BBL does, so they belong here — but `area` says so, and the
 alt text says so, because calling them buttock results would not be true.
+
+Worth stating plainly for whoever picks this up: **no image on the page now
+shows a buttock before and after.** The only source that did was the grid,
+and it is out. If the clinic wants gluteal before/afters back, they need to
+come from `B A` — which means new files in that folder, not a code change.
 
 ---
 

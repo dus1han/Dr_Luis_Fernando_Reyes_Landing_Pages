@@ -54,21 +54,22 @@ const SOURCES = {
   logo: "logo-reyes-blanco-1.png",
 };
 
+/*
+ * Photography only. Every before/after on this page comes from the "B A"
+ * folder and nothing else — see the gallery block at the bottom.
+ *
+ * Deliberately unused from this folder:
+ *   • "ChatGPT Image Jul 25, 2026, 04_23_19 PM.png" — a 6-pair before/after
+ *     grid, filed with the photography rather than in "B A". It fed the
+ *     gallery and then the featured comparison; the clinic asked for the
+ *     before/after to come from "B A" alone, so it feeds neither now.
+ *   • "…03_07_02 PM.png" and "…03_09_22 PM.png" — byte-identical to each
+ *     other and framed like `interior`. One image, three files.
+ */
 const BBL_SOURCES = {
   hero: "Hero Image.png",
   profile: "ChatGPT Image Jul 25, 2026, 02_59_52 PM.png",
   interior: "ChatGPT Image Jul 25, 2026, 03_09_16 PM.png",
-  /*
-   * A 6-pair before/after grid, filed with the photography rather than in
-   * the "B A" folder. It is the only source on this page that shows the
-   * buttocks themselves before and after, so it carries both the featured
-   * comparison and half the gallery. Cut below on measured separators.
-   *
-   * Not used: "ChatGPT Image Jul 25, 2026, 03_07_02 PM.png" and
-   * "…03_09_22 PM.png" are byte-identical to each other and to `interior`'s
-   * framing — one image, three files.
-   */
-  grid: "ChatGPT Image Jul 25, 2026, 04_23_19 PM.png",
 };
 
 const src = (k) => path.join(SRC, SOURCES[k]);
@@ -521,55 +522,6 @@ await emit(
 await emit(
   "steps.jpg",
   sharp(bblSrc("interior")).resize({ width: 900, withoutEnlargement: true })
-);
-
-console.log("\nBBL featured comparison — one pair, split at the arrow");
-/*
- * The drag slider needs the two halves as separate, equally-sized files.
- *
- * Source is a 1536x1024 composite: two rows of three before/after PAIRS.
- * Measured, not estimated — scanning for columns that are ≥60% near-white
- * gives five vertical separators and one horizontal one:
- *
- *   x 253-256   766-769   1290-1293   ← the "→" glyph, INSIDE a pair
- *   x 512-516   1024-1028              ← plain gutter, BETWEEN pairs
- *   y 510-514                          ← the row split
- *
- * Only the first pair is used, and only for the slider. The gallery used
- * to carry all six cut out as cards; it doesn't any more, so the other
- * five are deliberately not emitted rather than shipped unreferenced. The
- * measurements above are kept because they are what a future gallery would
- * need, and re-deriving them is a pixel-scanning job.
- *
- * The arrow does not sit in the white gutter — it bleeds into both
- * photographs, spanning x 239-273 (measured the same way, by white pixels
- * in the y 170-340 band). Splitting on the gutter alone would leave half
- * an arrow pinned to the inside edge of each half, which the slider then
- * drags across the frame. So the halves are taken *outside* the glyph:
- * 0-238 and 274-511, 238px each.
- *
- * Cropped to waist-to-mid-thigh rather than used full height. At full
- * height each half is 238x509, and the slider sizes itself from that
- * aspect — a 0.47 ratio makes it twice as tall as the reading guide
- * beside it. 238x298 is close to the buccal slider's 0.89 and frames the
- * part of the photograph the section is actually discussing.
- *
- * ── The one real compromise on this page ────────────────────────────
- * 238px of source in a ~380px column is a 1.6x upscale. It is the
- * highest-resolution before/after of the buttocks the clinic supplied;
- * anything larger would need new source art, not a different crop. The
- * featured column is narrowed to 0.66fr in Results.tsx to hold the
- * upscale down — see the note there.
- * ────────────────────────────────────────────────────────────────────
- */
-const COMPARE = { top: 45, height: 298, width: 238 };
-await emit(
-  "compare-before.jpg",
-  sharp(bblSrc("grid")).extract({ left: 0, ...COMPARE })
-);
-await emit(
-  "compare-after.jpg",
-  sharp(bblSrc("grid")).extract({ left: 274, ...COMPARE })
 );
 
 console.log("\nBBL gallery — the clinic’s own cards, resized only");

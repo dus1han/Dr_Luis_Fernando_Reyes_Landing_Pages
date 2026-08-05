@@ -184,8 +184,10 @@ covers every section properly** — what it reads from `content.ts`, what
 animates, and the gotchas. This table is only a map.
 
 `/brazilian-butt-lift` runs the same twelve sections in the same order, with
-two rebuilt: section 5 loses the locator ring (there is no illustration for
-that procedure) and section 9 labels each gallery card individually. See
+two rebuilt. Section 5 loses the locator ring — there is no illustration for
+that procedure. Section 9 has no drag slider (nothing the clinic supplied
+can be split into two halves) and labels each gallery card individually,
+because not all of them contain a "before". See
 [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 
 | # | Section | In one line |
@@ -256,8 +258,7 @@ Output is namespaced into three buckets, which is also how
 |---|---|
 | `hero-bg.jpg` | The hero photograph, capped at 1000px for the same reason |
 | `benefits-portrait.jpg`, `steps.jpg` | The profile and interior shots at 900px. `steps.jpg` stands in for `anatomy.webp` — there is no illustration for this procedure, and drawing one would mean inventing anatomy |
-| `compare-before.jpg`, `compare-after.jpg` | One before/after pair from a 6-pair grid composite, split **outside** the arrow glyph (which bleeds into both photographs at x 239–273, not into the white gutter) and cropped to 238×298 so the slider isn't twice as tall as the text beside it. The other five pairs were emitted as gallery cards until the clinic asked for them to be dropped; the measured cut coordinates stay in the script, the files no longer ship |
-| `ba-1…6.jpg` | The clinic's own cards from `B A/`, resized only — all 700×380, so the gallery grid needs no ordering |
+| `ba-1…6.jpg` | The clinic's own before/after cards from `B A/`, resized only — all 700×380. **The whole of this page's results section is these six files:** one leads as the featured comparison, five fill the gallery. The 6-pair grid composite in `Images/` used to feed both and now feeds neither |
 
 The script also writes `lib/generated/images.ts` with each asset's natural
 dimensions and an inline blur placeholder, so `<Image>` never causes
@@ -344,11 +345,16 @@ and never the lead.
 - **Results galleries are 3-column on desktop** because the source cards
   are small. At 2 columns they would be upscaled on high-DPI screens.
   Higher-resolution source art would allow a larger presentation.
-- **The BBL featured comparison is upscaled ~1.6×.** Its halves are 238px
-  wide, which is everything the clinic's grid holds at full resolution and
-  the only before/after of the buttocks supplied. The featured column is
-  narrowed to `0.66fr` to hold the upscale down; fixing it properly needs
-  new source art, not a different crop.
+- **The BBL page has no drag slider.** A slider needs the before and after
+  as two separate files, and no image in the clinic's `B A` folder can be
+  split without cutting a watermark through the middle — measured per file
+  in [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
+  Its featured comparison is a static card instead, so `slider_interact`
+  never fires on that page.
+- **No BBL image shows a buttock before and after.** The only source that
+  did was a grid composite in `Images/`, dropped when the before/after was
+  restricted to the `B A` folder. Restoring one means new files in that
+  folder, not a code change.
 - **Three BBL gallery cards still need the clinic's word** — one that may
   or may not be a before/after, one carrying a different surgeon's
   watermark, one intra-operative. Listed in

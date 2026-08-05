@@ -208,8 +208,42 @@ export const BENEFITS = {
 } as const;
 
 /**
- * The gallery, card by card. Six cards, all from the clinic's own `B A`
- * folder and used exactly as supplied.
+ * The featured comparison — the card the section leads on, shown large
+ * beside the reading guide.
+ *
+ * `Untitled design (21)`: the clearest of the three genuine pairs, the
+ * only one carrying Dr. Luis's own watermark rather than another
+ * surgeon's, and it already has the clinic's "Before"/"After" burnt in.
+ *
+ * ── WHY THIS ISN'T THE DRAG SLIDER ──────────────────────────────────────
+ * The buccal page's featured slot is a <BeforeAfterSlider>, which needs
+ * the two halves as separate files. Nothing in `B A` can supply that:
+ *
+ *   (20)  no seam at all — both photographs sit on one black backdrop
+ *         with "NICOLE ECHEVERRY" spanning the join
+ *   (21)  a tonal step at x313, but the clinic's watermark straddles it,
+ *         so a split leaves half a crown and "…S FERNANDO R" on one side
+ *   (25)  splits cleanly at x350 — and is the intra-operative photograph
+ *   (26)  splits at x371 into unequal halves, and is not a confirmed pair
+ *
+ * Cutting a clinic watermark in half to feed a slider is not a trade
+ * worth making, so the slot holds the pair whole. The consequence to know
+ * about: `slider_interact` never fires on this page. The event contract in
+ * lib/analytics.ts is shared, and a page with no slider simply doesn't
+ * emit it.
+ * ────────────────────────────────────────────────────────────────────────
+ */
+export const FEATURED = {
+  key: "ba-2.jpg",
+  /** Sits opposite "Actual comparison" on the rule above the card. */
+  area: "Waist & abdomen",
+  alt: "Waist and abdomen before and after body contouring with Dr. Luis Fernando Reyes — before left, after right",
+};
+
+/**
+ * The rest of the gallery, card by card. Five cards, all from the clinic's
+ * own `B A` folder and used exactly as supplied — the sixth is FEATURED
+ * above.
  *
  * Each card carries its own label because this set is not uniform, and
  * stamping "Before"/"After" across all of it would be a claim about
@@ -218,20 +252,20 @@ export const BENEFITS = {
  *   pair    a genuine side-by-side comparison — before left, after right
  *   result  a single post-operative photograph, labelled as a result only
  *
- * `area` says what the card actually shows. Cards 1-3 are waist and
+ * `area` says what the card actually shows. The pairs are waist and
  * abdomen: that is the donor site, and sculpting it is half of what a BBL
  * does, so they belong here — but calling them buttock results would not
  * be true.
  *
  * ── WHAT USED TO BE HERE ────────────────────────────────────────────────
- * Six more cards led this list: before/after pairs cut out of the grid
- * composite in `Images/`, showing the buttocks themselves. They were
- * removed at the clinic's request. The featured comparison at the top of
- * the section is still cut from that same grid, so the page has not lost
- * the procedure's own before/after — only the twelve-card gallery.
+ * Six more cards led this list — before/after pairs cut out of the grid
+ * composite in `Images/`, showing the buttocks themselves — and the
+ * featured slot was a drag slider cut from the same grid. Both are gone:
+ * the clinic asked for the before/after to come from `B A` and nothing
+ * else, so no part of this section is sourced outside that folder now.
  *
- * The cut coordinates survive in `scripts/prepare-images.mjs`; restoring
- * the cards means emitting them again and adding them back above.
+ * The grid is still in `Images/`, and `prepare-images.mjs` still records
+ * where its separators are, but nothing reads it.
  * ────────────────────────────────────────────────────────────────────────
  *
  * ── FOR THE CLINIC TO CONFIRM ───────────────────────────────────────────
@@ -250,7 +284,6 @@ export type GalleryCard = {
 
 export const GALLERY: GalleryCard[] = [
   { key: "ba-1.jpg", kind: "pair", area: "Waist and abdomen" },
-  { key: "ba-2.jpg", kind: "pair", area: "Waist and abdomen" },
   { key: "ba-3.jpg", kind: "pair", area: "Waist and abdomen" },
   { key: "ba-4.jpg", kind: "result", area: "Silhouette" },
   { key: "ba-5.jpg", kind: "result", area: "Silhouette" },
