@@ -6,14 +6,42 @@ import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal } from "@/components/lp/Reveal";
 import { Section } from "@/components/lp/Section";
 import { TiltCard } from "@/components/lp/TiltCard";
-import { BUCCAL } from "@/lib/generated/images";
+import { BBL } from "@/lib/generated/images";
 import { BENEFITS } from "../content";
 
-const portrait = BUCCAL["benefits-portrait.jpg"];
+const portrait = BBL["benefits-portrait.jpg"];
 
+/**
+ * Same drawing conventions as the buccal page's set — 24px box, 1.5
+ * stroke, no fills — so the two pages' cards read as one system. Four of
+ * the six shapes are shared outright; `waist` and `balance` are new,
+ * because an hourglass and a pair of scales have no facial equivalent.
+ */
 const ICONS: Record<string, React.ReactNode> = {
-  contour: (
+  curves: (
     <path d="M4 6c4.5 0 7 2.2 8.4 5.2C13.8 14.2 16.6 17 21 18" strokeLinecap="round" />
+  ),
+  natural: (
+    <>
+      <path d="M12 3.5 20 7v5.4c0 4.6-3.2 7.6-8 9.1-4.8-1.5-8-4.5-8-9.1V7l8-3.5Z" strokeLinejoin="round" />
+      <path d="m8.8 12.2 2.2 2.2 4.4-4.4" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  /* Hourglass — the waist narrowing, which is the point of the card. */
+  waist: (
+    <>
+      <path d="M6.5 3.2h11M6.5 20.8h11" strokeLinecap="round" />
+      <path d="M7.6 3.2c0 4 4.4 5.7 4.4 8.8s-4.4 4.8-4.4 8.8" strokeLinecap="round" />
+      <path d="M16.4 3.2c0 4-4.4 5.7-4.4 8.8s4.4 4.8 4.4 8.8" strokeLinecap="round" />
+    </>
+  ),
+  /* Beam and fulcrum — proportion between parts, not size of one. */
+  balance: (
+    <>
+      <path d="M12 4.4V20M7 20h10" strokeLinecap="round" />
+      <path d="M4 8.4h16" strokeLinecap="round" />
+      <path d="M4 8.4 1.8 13a2.6 2.6 0 0 0 4.4 0L4 8.4ZM20 8.4 17.8 13a2.6 2.6 0 0 0 4.4 0L20 8.4Z" strokeLinejoin="round" />
+    </>
   ),
   hidden: (
     <>
@@ -22,28 +50,10 @@ const ICONS: Record<string, React.ReactNode> = {
       <path d="M3 3l18 18" strokeLinecap="round" />
     </>
   ),
-  permanent: (
-    <>
-      <path d="M12 3.5 20 7v5.4c0 4.6-3.2 7.6-8 9.1-4.8-1.5-8-4.5-8-9.1V7l8-3.5Z" strokeLinejoin="round" />
-      <path d="m8.8 12.2 2.2 2.2 4.4-4.4" strokeLinecap="round" strokeLinejoin="round" />
-    </>
-  ),
   clock: (
     <>
       <circle cx="12" cy="12" r="8.6" />
       <path d="M12 7.2V12l3.2 2" strokeLinecap="round" strokeLinejoin="round" />
-    </>
-  ),
-  pairs: (
-    <>
-      <circle cx="9" cy="12" r="5.6" />
-      <circle cx="15" cy="12" r="5.6" />
-    </>
-  ),
-  once: (
-    <>
-      <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1" strokeLinecap="round" />
-      <path d="M20.6 4v4.6H16" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
 };
@@ -73,9 +83,9 @@ export function Benefits() {
 
         {/* One grid holds the photograph and all six cards.
 
-            Front-facing on purpose: this section is describing cheekbone
-            and jawline definition, and the hero's three-quarter view
-            can't show it.
+            A profile on purpose: this section is describing shape and
+            projection, and the hero's back three-quarter view flattens
+            exactly the line the cards are claiming.
 
             The shape is driven by a single rule — **the photograph and
             every card have to be on screen together**. That rules out
@@ -105,11 +115,12 @@ export function Benefits() {
               className="pointer-events-none absolute -bottom-3.5 -left-3.5 hidden h-full w-full rounded-[3px] border border-gold/30 lg:block"
             />
 
-            {/* 5:4 while stacked. A 4:5 portrait is far too tall to sit
-                above a phone's card stack, but the 16:10 band this started
-                as cropped the chin away — and the jawline is half of what
-                the copy beside it is claiming. 5:4 is the widest crop that
-                still holds hairline to jaw. */}
+            {/* 5:4 while stacked — the same crop the buccal page uses, and
+                for the same reason: anything taller pushes the card stack
+                off a phone screen. The source here is a 3:2 landscape, so
+                both this box and the tall desktop cell crop it
+                horizontally; only the horizontal object-position below is
+                doing any work. */}
             <div className="relative aspect-[5/4] overflow-hidden rounded-[3px] lg:absolute lg:inset-0 lg:aspect-auto">
               <Image
                 src={portrait.src}
@@ -122,12 +133,11 @@ export function Benefits() {
                 sizes="(max-width: 1023px) 100vw, 500px"
                 placeholder="blur"
                 blurDataURL={portrait.blurDataURL}
-                /* 42% while stacked puts the crop window over hairline-to-
-                   jaw rather than centring it on the eyes. From lg the
-                   column is taller than the source is wide, so cover uses
-                   the full height and the vertical value stops mattering —
-                   only the horizontal 50% does. */
-                className="object-cover object-[50%_42%] lg:object-[50%_24%]"
+                /* 56%, not 50%. The subject stands right of centre against
+                   an empty wall; a centred crop spends a third of the
+                   frame on the wall and clips her calves out of the
+                   narrower desktop cell. */
+                className="object-cover object-[56%_50%]"
               />
 
               {/* Warm wash pinned to the lower edge, so the photograph

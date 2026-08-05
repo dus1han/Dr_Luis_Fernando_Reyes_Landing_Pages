@@ -7,7 +7,6 @@ import { GlowLogo } from "@/components/lp/GlowLogo";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal } from "@/components/lp/Reveal";
 import { TiltCard } from "@/components/lp/TiltCard";
-import { IMAGES } from "@/lib/generated/images";
 import { PAGES, type LandingPage } from "@/lib/pages";
 import { INDEXABLE } from "@/lib/site-url";
 import { SITE } from "@/lib/site";
@@ -56,7 +55,7 @@ function shape(count: number) {
 
 /** Card contents — the shell around them differs for live vs planned. */
 function CardBody({ page, index }: { page: LandingPage; index: number }) {
-  const img = IMAGES[page.image];
+  const img = page.image;
   const planned = page.status === "planned";
 
   return (

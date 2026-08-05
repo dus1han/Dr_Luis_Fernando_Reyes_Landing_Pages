@@ -1,10 +1,10 @@
 # Dr. Luis Fernando Reyes — Google Ads Landing Pages
 
 A Next.js app serving paid-traffic landing pages for the clinic. One app,
-one shared design system, one route per campaign — so pages 2–4 reuse
-everything page 1 established.
+one shared design system, one route per campaign — so pages 3–4 reuse
+everything pages 1 and 2 established.
 
-**Live route:** `/buccal-fat-removal`
+**Live routes:** `/buccal-fat-removal`, `/brazilian-butt-lift`
 **Root:** `/` is an index of every page, driven by `lib/pages.ts`.
 
 ---
@@ -13,14 +13,15 @@ everything page 1 established.
 
 | Doc | What's in it |
 |---|---|
-| **[docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md)** | **Section-by-section reference for the live page** — what each section does, which content keys it reads, what animates, and the gotchas that will bite you if you change it. Start here for any edit. |
+| **[docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md)** | **Section-by-section reference for page 1** — what each section does, which content keys it reads, what animates, and the gotchas that will bite you if you change it. Start here for any edit, on either page. |
+| **[docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md)** | **Page 2, and only what differs** — the namespaced image manifest, the stepper rebuilt without an illustration, the results gallery that labels each card, and the three images the clinic still has to confirm |
 | [docs/pages/index.md](docs/pages/index.md) | The root index at `/` — how to add a page to it, why it's `noindex`, and the body-padding trap any page without a sticky bar will hit |
 | [docs/ads-readiness.md](docs/ads-readiness.md) | **Read before spending a penny on ads** — how the origin decides indexing, why AdsBot is named explicitly, the conversion contract, and the one thing still not done |
 | [docs/deployment.md](docs/deployment.md) | VPS, Docker and GitHub Actions — the site directory, the two build-time variables, and why editing them on the server does nothing |
 | [docs/LAUNCH-CHECKLIST.md](docs/LAUNCH-CHECKLIST.md) | Ordered pre-launch steps: content sign-off, DHA approval, lead delivery, tracking, QA |
 | This file | Architecture, design system, image pipeline, conventions |
 
-One page reference per landing page — copy the file when you add pages 2–4.
+One page reference per landing page — copy the file when you add pages 3–4.
 
 ## Quick start
 
@@ -29,8 +30,12 @@ npm install
 npm run dev            # http://localhost:3000/buccal-fat-removal
 npm run build && npm start
 npm run prepare-images    # only after changing source artwork
-npm run verify:conversion -- https://url   # asserts the whole conversion path
-npm run verify:menu -- http://127.0.0.1:3000   # mobile menu, in a real browser
+
+# Every verify script takes the page slug as a second argument and defaults
+# to buccal-fat-removal. Each page has its own form and its own thank-you
+# route, so passing on one proves nothing about the next.
+npm run verify:conversion -- https://url brazilian-butt-lift
+npm run verify:menu -- http://127.0.0.1:3000 brazilian-butt-lift
 npm run test:lead -- https://url          # posts one marked test lead
 
 # Deployment is a push to main — see docs/deployment.md
@@ -43,13 +48,14 @@ Requires Node 20+. No environment variables are needed to run locally.
 
 ## Before this goes live
 
-Two things are deliberately left outstanding. Each is isolated to a
-single file so neither requires touching page code.
+Three things are deliberately left outstanding. Each is isolated to a
+single file so none requires touching page code.
 
 | # | What | Where | Notes |
 |---|---|---|---|
-| 1 | **Patient reviews** | `app/buccal-fat-removal/content.ts` → `REVIEWS.items` | Now five **real** reviews; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. But none is about buccal fat removal or from Dubai — they are body-contouring reviews from the Colombian practice. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
+| 1 | **Patient reviews** | `app/*/content.ts` → `REVIEWS.items` | The same five **real** reviews on both pages; placeholders are gone and `SHOW_PLACEHOLDER_REVIEWS` is false. They are body-contouring reviews from the Colombian practice, so on `/brazilian-butt-lift` they describe the right procedure and on `/buccal-fat-removal` they do not. None is from Dubai. Also: DHA rules restrict patient testimonials. See [docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md). |
 | 2 | **Clinic street address** | `lib/site.ts` → `addressLines` | Empty. The map is correct regardless (pinned by clinic-supplied coordinates), but nothing is printed until the real address arrives. |
+| 3 | **Three BBL gallery cards** | `app/brazilian-butt-lift/content.ts` → `GALLERY` | One may or may not be a before/after and is labelled the cautious way; one carries a different surgeon's watermark; one is intra-operative. All three need the clinic's word. See [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md). |
 
 **Google Tag Manager is live** — container `GTM-NHBRF7G5`, a constant in
 `lib/analytics.ts`, with both the script and the `<noscript>` iframe on every
@@ -92,11 +98,12 @@ app/
   page.tsx                      root index — lists the pages in lib/pages.ts
   api/lead/route.ts             form handler: validate → spam-filter → deliver
   robots.ts / sitemap.ts        both derived from the origin — see ads-readiness
-  buccal-fat-removal/thank-you/ real page, noindex, fires the conversion once
   buccal-fat-removal/
     page.tsx                    metadata, JSON-LD, section composition
     content.ts                  ALL copy for the page, in one typed object
     sections/                   12 section components
+    thank-you/                  real page, noindex, fires the conversion once
+  brazilian-butt-lift/          same shape; Anatomy.tsx becomes Steps.tsx
 
 components/analytics/           ClickIdCapture (layout) + LeadEvent (thank-you)
 components/lp/                  SHARED KIT — reused by every future page
@@ -115,10 +122,12 @@ lib/
   click-id.ts                   gclid/wbraid/gbraid, kept 90 days
   validation.ts                 Zod schema shared by client and server
   lead-mail.ts                  consultation requests → the clinic, over SMTP
-  generated/images.ts           AUTO-GENERATED — sizes + blur placeholders
+  generated/images.ts           AUTO-GENERATED — SHARED / BUCCAL / BBL
 
 scripts/prepare-images.mjs      source artwork → optimised page assets
-public/buccal-fat-removal/      the generated assets
+public/shared/                  logo, portrait, affiliation marks — every page
+public/buccal-fat-removal/      page 1 assets
+public/brazilian-butt-lift/     page 2 assets
 
 Dockerfile                      standalone image, three stages
 docker-compose.yml              shipped to the VPS on every deploy
@@ -130,12 +139,12 @@ deploy/                         remote-deploy.sh + Caddy reference
 
 | I want to… | Edit |
 |---|---|
-| Reword any copy | `app/buccal-fat-removal/content.ts` |
-| Change phone / email / socials | `lib/site.ts` — note there are **two** numbers: the voice line (footer + structured data only) and the WhatsApp number used everywhere else |
+| Reword any copy | `app/<slug>/content.ts` |
+| Change phone / email / socials | `lib/site.ts` — note there are **two** numbers: the voice line (footer + structured data only) and the WhatsApp number used everywhere else. The WhatsApp prefill is procedure-neutral on purpose; the shared chrome has no page context |
 | Adjust a colour | `app/globals.css` → `@theme` |
 | Retune an animation | `lib/motion.ts` |
 | Add a section | new file in `sections/`, then add to `page.tsx` |
-| Add a new campaign page | copy the `buccal-fat-removal/` folder, swap `content.ts`, add an entry to `lib/pages.ts` |
+| Add a new campaign page | copy the `buccal-fat-removal/` folder, swap `content.ts`, add a bucket to `scripts/prepare-images.mjs`, add an entry to `lib/pages.ts` |
 
 ---
 
@@ -169,9 +178,15 @@ request to Google, no layout shift.
 
 ## Page structure
 
-Order, in one line each. **[docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md)
+Order, in one line each, as built for `/buccal-fat-removal`.
+**[docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md)
 covers every section properly** — what it reads from `content.ts`, what
 animates, and the gotchas. This table is only a map.
+
+`/brazilian-butt-lift` runs the same twelve sections in the same order, with
+two rebuilt: section 5 loses the locator ring (there is no illustration for
+that procedure) and section 9 labels each gallery card individually. See
+[docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 
 | # | Section | In one line |
 |---|---|---|
@@ -199,25 +214,51 @@ itself honour the preference, which the CSS override alone cannot do.
 
 ## The image pipeline
 
-Source artwork lives outside this app, in two folders:
-`../buccal-fat-removal/Images/` for photography and the clinic logo, and
-`../buccal-fat-removal/uni logo/` for the affiliation marks. Several of
-the photography files are composites that the page needs as separate
-pieces, and none of them are web-sized, so `npm run prepare-images`
-derives everything:
+Source artwork lives outside this app, one folder per page plus the
+affiliation marks: `../buccal-fat-removal/Images/`,
+`../buccal-fat-removal/Before after/`, `../buccal-fat-removal/uni logo/`,
+`../brazilian-butt-lift/Images/` and `../brazilian-butt-lift/B A/`. Several
+of the files are composites that a page needs as separate pieces, and none
+are web-sized, so `npm run prepare-images` derives everything.
+
+Output is namespaced into three buckets, which is also how
+`lib/generated/images.ts` is shaped:
+
+| Bucket | Public path | Export | Holds |
+|---|---|---|---|
+| shared | `/shared/` | `SHARED` | The clinic and the surgeon — used by the shared kit, so every page gets the same file |
+| buccal | `/buccal-fat-removal/` | `BUCCAL` | Page 1 photography |
+| bbl | `/brazilian-butt-lift/` | `BBL` | Page 2 photography |
+
+**Shared**
 
 | Output | Derived from |
 |---|---|
-| `hero-before.jpg`, `hero-after.jpg` | The side-by-side hero composite, split at the measured gutter (x766–769) with the burnt-in labels and caption band cropped away, so the drag slider gets two independent, equally-sized images |
-| `result-1…6.jpg` | The 4×3 results grid, cut into six before/after pairs on the measured separators |
-| `anatomy.webp` | The medical illustration, trimmed of its white margins with the studio background flood-filled to transparent from the borders inward (interior whites — tissue detail — are preserved). 679 kB PNG → 42 kB WebP |
 | `dr-portrait.jpg` | The full-length studio shot, cropped to a 4:5 portrait around head, shoulders and hands |
-| `hero-bg.jpg` | The hero portrait, capped at 1000px. Tighter than the others because it is the LCP element |
-| `benefits-portrait.jpg` | The front-facing portrait for the benefits band, at 900px. Below the fold and lazy, so it can afford more width than the hero |
-| `affil-*.png` (six) | The affiliation marks. Each is trimmed to its ink, recoloured to a flat champagne and normalised to 144px tall. Most arrive as dark line art on transparency and would be invisible on the espresso band; only the RGB is replaced, so the original alpha keeps the antialiasing and the interior cuts in the engraved seals. **AASMA has no alpha channel at all** — it came flattened on opaque white, so `onWhite: true` derives its alpha from `255 - min(r,g,b)` first; without that it emits a solid champagne rectangle. **Trim before resize** — otherwise each normalises to the height of its transparent padding rather than its artwork, and the row comes out ragged. `IMG_3483.PNG` duplicates `IMG_3478.PNG` byte for byte and is not emitted |
 | `dr-surgery.jpg`, `logo-white.png` | Resized and re-encoded |
-| `app/icon.png` | The favicon — just the logo's circular monogram, in ink on transparent. Its crop box was found by scanning the source for horizontal bands of opaque pixels. At 16px a full lockup is an illegible smear |
+| `affil-*.png` (six) | The affiliation marks. Each is trimmed to its ink, recoloured to a flat champagne and normalised to 144px tall. Most arrive as dark line art on transparency and would be invisible on the espresso band; only the RGB is replaced, so the original alpha keeps the antialiasing and the interior cuts in the engraved seals. **AASMA has no alpha channel at all** — it came flattened on opaque white, so `onWhite: true` derives its alpha from `255 - min(r,g,b)` first; without that it emits a solid champagne rectangle. **Trim before resize** — otherwise each normalises to the height of its transparent padding rather than its artwork, and the row comes out ragged. `IMG_3483.PNG` duplicates `IMG_3478.PNG` byte for byte and is not emitted |
 | `logo-ink.png` | The supplied logo is white on transparent, so it is invisible on the ivory nav. This variant keeps the alpha channel as a mask and repaints every visible pixel in `ink` — same artwork, usable on light surfaces. The nav uses it; the dark footer keeps the white original |
+| `app/icon.png` | The favicon — just the logo's circular monogram, in ink on transparent. Its crop box was found by scanning the source for horizontal bands of opaque pixels. At 16px a full lockup is an illegible smear |
+
+**Buccal fat removal**
+
+| Output | Derived from |
+|---|---|
+| `hero-bg.jpg` | The hero portrait, capped at 1000px. Tighter than the others because it is the LCP element |
+| `hero-before.jpg`, `hero-after.jpg` | The side-by-side hero composite, split at the measured gutter (x766–769) with the burnt-in labels and caption band cropped away, so the drag slider gets two independent, equally-sized images |
+| `ba-1…6.jpg` | The clinic's own before/after cards, resized only. Two aspect ratios, both preserved rather than normalised |
+| `anatomy.webp` | The medical illustration, trimmed of its white margins with the studio background flood-filled to transparent from the borders inward (interior whites — tissue detail — are preserved). 679 kB PNG → 42 kB WebP |
+| `benefits-portrait.jpg` | The front-facing portrait for the benefits band, at 900px. Below the fold and lazy, so it can afford more width than the hero |
+
+**Brazilian butt lift**
+
+| Output | Derived from |
+|---|---|
+| `hero-bg.jpg` | The hero photograph, capped at 1000px for the same reason |
+| `benefits-portrait.jpg`, `steps.jpg` | The profile and interior shots at 900px. `steps.jpg` stands in for `anatomy.webp` — there is no illustration for this procedure, and drawing one would mean inventing anatomy |
+| `ba-1…6.jpg` | Six before/after **pairs** cut from a 6-pair grid on measured separators. The cuts are on the *between-pair* gutters (x 512–516, 1024–1028, y 510–514) so each card keeps its own burnt-in arrow — the arrow is what tells a visitor which half is which |
+| `compare-before.jpg`, `compare-after.jpg` | One pair from that grid, split **outside** the arrow glyph (which bleeds into both photographs at x 239–273, not into the gutter) and cropped to 238×298 so the slider isn't twice as tall as the text beside it |
+| `ba-7…12.jpg` | The clinic's own cards from `B A/`, resized only — all 700×380 |
 
 The script also writes `lib/generated/images.ts` with each asset's natural
 dimensions and an inline blur placeholder, so `<Image>` never causes
@@ -301,11 +342,18 @@ and never the lead.
 
 ## Known constraints
 
-- **Results gallery source resolution.** The pairs are cut from a 1402px
-  grid, giving 696×360 per pair. The gallery is therefore a 3-column
-  layout on desktop — at 2 columns the images would be upscaled on
-  high-DPI screens. Higher-resolution source art would allow a larger
-  presentation.
+- **Results galleries are 3-column on desktop** because the source cards
+  are small. At 2 columns they would be upscaled on high-DPI screens.
+  Higher-resolution source art would allow a larger presentation.
+- **The BBL featured comparison is upscaled ~1.6×.** Its halves are 238px
+  wide, which is everything the clinic's grid holds at full resolution and
+  the only before/after of the buttocks supplied. The featured column is
+  narrowed to `0.66fr` to hold the upscale down; fixing it properly needs
+  new source art, not a different crop.
+- **Three BBL gallery cards still need the clinic's word** — one that may
+  or may not be a before/after, one carrying a different surgeon's
+  watermark, one intra-operative. Listed in
+  [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 - **Before/after photography is reference art**, not identified patient
   records. See `SHOW_RESULTS_DISCLAIMER` above.
 - **`lib/motion.ts` intentionally has no clip-path reveal variant.**
@@ -316,14 +364,26 @@ and never the lead.
 
 ---
 
-## Adding campaign pages 2–4
+## Adding campaign pages 3–4
 
 1. `cp -r app/buccal-fat-removal app/<new-slug>`
 2. Rewrite `content.ts` — it holds every word on the page.
 3. Adjust `page.tsx`: title, description, JSON-LD `MedicalProcedure`.
-4. Add the new artwork to `scripts/prepare-images.mjs` and re-run it.
-5. Add the page to `lib/pages.ts` so the root index lists it.
-6. Drop or swap any section that doesn't apply.
+4. Add a bucket to `DIRS` in `scripts/prepare-images.mjs`, add a block that
+   emits the new artwork into it, and re-run the script. Anything that is
+   the clinic or the surgeon rather than the procedure belongs in `shared`.
+5. Point the copied sections at the new manifest export.
+6. Add the page to `lib/pages.ts` so the root index lists it.
+7. Drop or swap any section that doesn't apply.
+8. Copy `docs/pages/brazilian-butt-lift.md` — it is already written as
+   "page 1 plus the differences", which is the right shape for page 3.
+9. Verify the conversion path on the new slug:
+   `npm run verify:conversion -- <url> <new-slug>`.
 
 The shared kit in `components/lp/`, the palette, the motion vocabulary and
 the entire form + tracking stack carry over untouched.
+
+**One thing that does not carry over automatically:** anything in the shared
+chrome that names a procedure. `SITE.whatsappHref` was buccal-specific until
+page 2 arrived and had to be made neutral, because the nav, sticky bar,
+footer and 404 have no idea which page they are on.

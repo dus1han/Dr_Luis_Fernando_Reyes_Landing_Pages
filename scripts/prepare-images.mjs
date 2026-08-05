@@ -1,13 +1,30 @@
 /**
- * Asset pipeline for the buccal-fat-removal landing page.
+ * Asset pipeline for every landing page in this app.
  *
- * Source art is a set of composites (a side-by-side hero, a 4x3 results
- * grid, a flat-white medical illustration). The page needs them as
- * independent, equally-sized pieces so the before/after slider and the
- * results gallery can animate them individually.
+ * Source art is a set of composites (a side-by-side hero, a grid of
+ * before/after pairs, a flat-white medical illustration). The pages need
+ * them as independent, equally-sized pieces so the before/after sliders
+ * and the results galleries can animate them individually.
  *
- * Crop rectangles below come from scripts/inspect-images.mjs +
- * probe-hero.mjs, which measured the real separator pixels.
+ * Crop rectangles below are measured, never estimated — each is commented
+ * with the separator pixels it came from.
+ *
+ * ── THREE BUCKETS ───────────────────────────────────────────────────────
+ * Output is namespaced, because assets fall into two kinds and a single
+ * flat manifest could not express the difference once there was a second
+ * page:
+ *
+ *   shared/              the clinic itself — logo, favicon, the surgeon's
+ *                        portrait, the affiliation marks. Identical on
+ *                        every page, emitted once, referenced by the
+ *                        shared kit in components/lp/.
+ *   buccal-fat-removal/  page assets
+ *   brazilian-butt-lift/ page assets
+ *
+ * Each bucket becomes one export in lib/generated/images.ts (SHARED,
+ * BUCCAL, BBL). Adding page 3 means adding a bucket and a block below —
+ * nothing here needs restructuring again.
+ * ────────────────────────────────────────────────────────────────────────
  *
  * Run: npm run prepare-images
  */
@@ -20,7 +37,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.resolve(__dirname, "../../buccal-fat-removal/Images");
 const LOGO_SRC = path.resolve(__dirname, "../../buccal-fat-removal/uni logo");
 const BA_SRC = path.resolve(__dirname, "../../buccal-fat-removal/Before after");
-const OUT = path.resolve(__dirname, "../public/buccal-fat-removal");
+const BBL_SRC = path.resolve(__dirname, "../../brazilian-butt-lift/Images");
+const BBL_BA_SRC = path.resolve(__dirname, "../../brazilian-butt-lift/B A");
+const PUBLIC = path.resolve(__dirname, "../public");
 const GEN = path.resolve(__dirname, "../lib/generated");
 
 const SOURCES = {
@@ -35,11 +54,40 @@ const SOURCES = {
   logo: "logo-reyes-blanco-1.png",
 };
 
-const src = (k) => path.join(SRC, SOURCES[k]);
-const out = (f) => path.join(OUT, f);
+const BBL_SOURCES = {
+  hero: "Hero Image.png",
+  profile: "ChatGPT Image Jul 25, 2026, 02_59_52 PM.png",
+  interior: "ChatGPT Image Jul 25, 2026, 03_09_16 PM.png",
+  /*
+   * A 6-pair before/after grid, filed with the photography rather than in
+   * the "B A" folder. It is the only source on this page that shows the
+   * buttocks themselves before and after, so it carries both the featured
+   * comparison and half the gallery. Cut below on measured separators.
+   *
+   * Not used: "ChatGPT Image Jul 25, 2026, 03_07_02 PM.png" and
+   * "…03_09_22 PM.png" are byte-identical to each other and to `interior`'s
+   * framing — one image, three files.
+   */
+  grid: "ChatGPT Image Jul 25, 2026, 04_23_19 PM.png",
+};
 
-/** Records natural size + a tiny inline placeholder for every emitted file. */
-const manifest = {};
+const src = (k) => path.join(SRC, SOURCES[k]);
+const bblSrc = (k) => path.join(BBL_SRC, BBL_SOURCES[k]);
+
+/**
+ * One manifest per bucket. `emit` writes into whichever is current, so a
+ * block of the script never has to repeat which page it is building for.
+ */
+const manifests = { shared: {}, buccal: {}, bbl: {} };
+const DIRS = {
+  shared: "shared",
+  buccal: "buccal-fat-removal",
+  bbl: "brazilian-butt-lift",
+};
+let bucket = "buccal";
+const into = (b) => {
+  bucket = b;
+};
 
 async function emit(name, pipeline) {
   // WebP for anything needing alpha — the anatomy illustration is 10x
@@ -51,7 +99,8 @@ async function emit(name, pipeline) {
       : pipeline.jpeg({ quality: 82, mozjpeg: true });
   const buf = await encode.toBuffer();
 
-  await fs.writeFile(out(name), buf);
+  const dir = DIRS[bucket];
+  await fs.writeFile(path.join(PUBLIC, dir, name), buf);
 
   const meta = await sharp(buf).metadata();
   // 20px-wide LQIP — enough to hint colour, small enough to inline.
@@ -61,15 +110,16 @@ async function emit(name, pipeline) {
     .webp({ quality: 32 })
     .toBuffer();
 
-  manifest[name] = {
-    src: `/buccal-fat-removal/${name}`,
+  manifests[bucket][name] = {
+    src: `/${dir}/${name}`,
     width: meta.width,
     height: meta.height,
     blurDataURL: `data:image/webp;base64,${lqip.toString("base64")}`,
   };
 
   console.log(
-    `  ${name.padEnd(22)} ${String(meta.width).padStart(4)}x${String(meta.height).padEnd(4)}  ${(buf.length / 1024).toFixed(0)}kb`
+    `  ${dir}/${name}`.padEnd(44) +
+      `${String(meta.width).padStart(4)}x${String(meta.height).padEnd(4)}  ${(buf.length / 1024).toFixed(0)}kb`
   );
 }
 
@@ -137,8 +187,15 @@ async function knockOutBackground(inputBuffer) {
 }
 
 // ------------------------------------------------------------------
-await fs.mkdir(OUT, { recursive: true });
+for (const dir of Object.values(DIRS)) {
+  await fs.mkdir(path.join(PUBLIC, dir), { recursive: true });
+}
 await fs.mkdir(GEN, { recursive: true });
+
+// ══════════════════════════════════════════════════════════════════
+// BUCCAL FAT REMOVAL
+// ══════════════════════════════════════════════════════════════════
+into("buccal");
 
 console.log("\nHero background");
 /**
@@ -191,6 +248,8 @@ await emit(
  * which is deliberately not emitted.
  */
 console.log("\nAffiliation logos — trimmed, tinted champagne for the dark band");
+// Shared: the same ribbon runs in every page's surgeon band.
+into("shared");
 {
   const CHAMPAGNE = [0xed, 0xdf, 0xc6];
   // 3x the tallest height any of these render at, so they stay crisp on
@@ -263,6 +322,7 @@ console.log("\nAffiliation logos — trimmed, tinted champagne for the dark band
   }
 }
 
+into("buccal");
 console.log("\nHero before/after — splitting composite at the measured gutter");
 // 1536x1024 composite: gutter x766-769, "BEFORE"/"AFTER" labels end y68,
 // photo area ends y934 where the caption band begins. We render our own
@@ -319,7 +379,14 @@ const anatomyCropped = await sharp(src("anatomy"))
   .toBuffer();
 await emit("anatomy.webp", await knockOutBackground(anatomyCropped));
 
-console.log("\nPortraits + logo");
+console.log("\nPortraits + logo — shared, one surgeon and one clinic");
+/*
+ * Shared, not per-page. These are photographs of the surgeon and marks of
+ * the clinic: the "meet your surgeon" band and the theatre photo are the
+ * same on every landing page, so emitting a copy per page would ship the
+ * same bytes twice and let the two drift apart.
+ */
+into("shared");
 // The source is a full-length studio shot on black; most of the frame is
 // empty. Crop to a 4:5 portrait around the head, shoulders and hands so
 // the "meet your surgeon" panel reads as a portrait, not a torso.
@@ -425,16 +492,169 @@ await emit(
   console.log(`  app/icon.png           ${SIZE}x${SIZE}   ${(icon.length / 1024).toFixed(0)}kb  (ink on transparent)`);
 }
 
+// ══════════════════════════════════════════════════════════════════
+// BRAZILIAN BUTT LIFT
+// ══════════════════════════════════════════════════════════════════
+into("bbl");
+
+console.log("\nBBL — hero, benefits portrait, procedure photograph");
+/*
+ * Same treatment as the buccal page's three photographic slots, and for
+ * the same reasons: the hero is capped tighter because it is the LCP
+ * element, the two below-the-fold images can afford more width.
+ */
+await emit(
+  "hero-bg.jpg",
+  sharp(bblSrc("hero")).resize({ width: 1000, withoutEnlargement: true })
+);
+await emit(
+  "benefits-portrait.jpg",
+  sharp(bblSrc("profile")).resize({ width: 900, withoutEnlargement: true })
+);
+/*
+ * Stands in for the buccal page's `anatomy.webp` beside the how-it's-
+ * performed stepper. There is no medical illustration for this procedure
+ * — and inventing one would be inventing anatomy — so the slot holds a
+ * photograph instead. Dark and quiet on purpose: it sits on the sand band
+ * and must not compete with the four steps beside it.
+ */
+await emit(
+  "steps.jpg",
+  sharp(bblSrc("interior")).resize({ width: 900, withoutEnlargement: true })
+);
+
+console.log("\nBBL results grid — six pairs, cut on measured separators");
+/*
+ * A 1536x1024 composite: two rows of three before/after PAIRS.
+ *
+ * Measured, not estimated. Scanning for columns that are ≥60% near-white
+ * gives five vertical separators and one horizontal one:
+ *
+ *   x 253-256   766-769   1290-1293   ← the "→" glyph, INSIDE a pair
+ *   x 512-516   1024-1028              ← plain gutter, BETWEEN pairs
+ *   y 510-514                          ← the row split
+ *
+ * So the pair boundaries are x 0-511 / 517-1023 / 1029-1535, and each
+ * pair keeps its own arrow: the cards are cut on the *between-pair*
+ * gutters, never the arrow, because the arrow is what tells a visitor
+ * which half is which.
+ */
+const PAIR_X = [
+  [0, 512],
+  [517, 507],
+  [1029, 507],
+];
+const PAIR_Y = [
+  [0, 510],
+  [515, 509],
+];
+{
+  let n = 0;
+  for (const [top, height] of PAIR_Y) {
+    for (const [left, width] of PAIR_X) {
+      n += 1;
+      await emit(
+        `ba-${n}.jpg`,
+        sharp(bblSrc("grid")).extract({ left, top, width, height })
+      );
+    }
+  }
+}
+
+console.log("\nBBL featured comparison — one pair, split at the arrow");
+/*
+ * The drag slider needs the two halves as separate, equally-sized files.
+ *
+ * The arrow does not sit in the white gutter — it bleeds into both
+ * photographs, spanning x 239-273 (measured the same way, by white pixels
+ * in the y 170-340 band). Splitting on the gutter alone would leave half
+ * an arrow pinned to the inside edge of each half, which the slider then
+ * drags across the frame. So the halves are taken *outside* the glyph:
+ * 0-238 and 274-511, 238px each.
+ *
+ * Cropped to waist-to-mid-thigh rather than used full height. At full
+ * height each half is 238x509, and the slider sizes itself from that
+ * aspect — a 0.47 ratio makes it twice as tall as the reading guide
+ * beside it. 238x298 is close to the buccal slider's 0.89 and frames the
+ * part of the photograph the section is actually discussing.
+ *
+ * ── The one real compromise on this page ────────────────────────────
+ * 238px of source in a ~380px column is a 1.6x upscale. It is the
+ * highest-resolution before/after of the buttocks the clinic supplied;
+ * anything larger would need new source art, not a different crop. The
+ * featured column is narrowed to 0.66fr in Results.tsx to hold the
+ * upscale down — see the note there.
+ * ────────────────────────────────────────────────────────────────────
+ */
+const COMPARE = { top: 45, height: 298, width: 238 };
+await emit(
+  "compare-before.jpg",
+  sharp(bblSrc("grid")).extract({ left: 0, ...COMPARE })
+);
+await emit(
+  "compare-after.jpg",
+  sharp(bblSrc("grid")).extract({ left: 274, ...COMPARE })
+);
+
+console.log("\nBBL gallery — the clinic’s own cards, resized only");
+/*
+ * Supplied already composed and watermarked, so the pipeline only
+ * resizes: each file IS one finished card, and cropping one would either
+ * destroy the comparison it exists to make or cut the clinic's watermark
+ * in half.
+ *
+ * All six are 700x380. Three are genuine side-by-side before/after pairs;
+ * three are single post-operative photographs with no "before" in them,
+ * which is why content.ts labels each card individually rather than the
+ * page stamping "Before"/"After" on all of them.
+ */
+const BBL_CARDS = [
+  "Untitled design (20).png",
+  "Untitled design (21).png",
+  "Untitled design (25).png",
+  "Untitled design (26).png",
+  "Untitled design (27).png",
+  "Untitled design (30).png",
+];
+for (const [i, file] of BBL_CARDS.entries()) {
+  await emit(
+    `ba-${i + 7}.jpg`,
+    sharp(path.join(BBL_BA_SRC, file)).resize({ width: 1000, withoutEnlargement: true })
+  );
+}
+
 // ------------------------------------------------------------------
 const banner = `/**
  * AUTO-GENERATED by scripts/prepare-images.mjs — do not edit by hand.
  * Natural dimensions + inline LQIP placeholders for every page asset,
  * so <Image> never causes layout shift and never flashes empty.
+ *
+ * SHARED  the clinic — logo, portrait, affiliation marks. Used by the
+ *         shared kit in components/lp/, so every page gets the same file.
+ * BUCCAL  /buccal-fat-removal page assets.
+ * BBL     /brazilian-butt-lift page assets.
  */`;
+
+const asConst = (name, obj) =>
+  `export const ${name} = ${JSON.stringify(obj, null, 2)} as const;\n`;
 
 await fs.writeFile(
   path.join(GEN, "images.ts"),
-  `${banner}\nexport const IMAGES = ${JSON.stringify(manifest, null, 2)} as const;\n\nexport type ImageKey = keyof typeof IMAGES;\n`
+  [
+    banner,
+    asConst("SHARED", manifests.shared),
+    asConst("BUCCAL", manifests.buccal),
+    asConst("BBL", manifests.bbl),
+    `/** The shape every entry above has — what <Image> and the slider read. */
+export type ImageAsset = {
+  src: string;
+  width: number;
+  height: number;
+  blurDataURL: string;
+};
+`,
+  ].join("\n")
 );
 
-console.log(`\nWrote ${Object.keys(manifest).length} assets + lib/generated/images.ts\n`);
+const total = Object.values(manifests).reduce((n, m) => n + Object.keys(m).length, 0);
+console.log(`\nWrote ${total} assets + lib/generated/images.ts\n`);

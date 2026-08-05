@@ -7,7 +7,11 @@
  * that a refresh and a direct visit fire nothing at all.
  *
  * Run it against the deployed URL, not just localhost:
- *   node scripts/verify-conversion.mjs http://127.0.0.1:3000
+ *   node scripts/verify-conversion.mjs http://127.0.0.1:3000 [page-slug]
+ *
+ * The slug defaults to buccal-fat-removal. Every landing page has its own
+ * form and its own thank-you route, so each one has to be verified
+ * separately — passing on one page proves nothing about the next.
  *
  * Re-run after any change to the form or the thank-you page. A false
  * conversion is worse than a missing one: Google's bidding optimises toward
@@ -19,7 +23,7 @@
 import puppeteer from "puppeteer-core";
 
 const BASE = (process.argv[2] || "http://127.0.0.1:3000").replace(/\/+$/, "");
-const SLUG = "buccal-fat-removal";
+const SLUG = process.argv[3] || "buccal-fat-removal";
 const CHROME =
   process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe";
 

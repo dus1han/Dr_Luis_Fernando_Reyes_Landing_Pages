@@ -1,7 +1,7 @@
 /**
  * Reviews carousel + modal verification.
  *
- *   node scripts/verify-reviews.mjs http://127.0.0.1:3000
+ *   node scripts/verify-reviews.mjs http://127.0.0.1:3000 [page-slug]
  *
  * The checks that matter are "does not auto-scroll" and the real-coordinate
  * click on Read more. The section used to auto-scroll, which made every
@@ -10,6 +10,7 @@
  */
 import puppeteer from "puppeteer-core";
 const B=(process.argv[2] || "http://127.0.0.1:3000").replace(/\/+$/,"");
+const SLUG=process.argv[3] || "buccal-fat-removal";
 const b=await puppeteer.launch({executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe",headless:"new",args:["--disable-gpu","--hide-scrollbars","--no-sandbox"]});
 const fail=[];
 const ok=(n,p,d="")=>{ if(!p) fail.push(n); console.log(`${p?"  PASS":"  FAIL"}  ${n}${d?` — ${d}`:""}`); };
@@ -17,7 +18,7 @@ const ok=(n,p,d="")=>{ if(!p) fail.push(n); console.log(`${p?"  PASS":"  FAIL"} 
 for (const [w,h,mob,tag] of [[1440,900,false,"desktop"],[390,844,true,"mobile"]]) {
   const p=await b.newPage();
   await p.setViewport({width:w,height:h,deviceScaleFactor:1,isMobile:mob,hasTouch:mob});
-  await p.goto(`${B}/buccal-fat-removal`,{waitUntil:"networkidle2",timeout:90000});
+  await p.goto(`${B}/${SLUG}`,{waitUntil:"networkidle2",timeout:90000});
   const top=await p.evaluate(()=>document.getElementById("reviews").getBoundingClientRect().top+scrollY);
   for(let y=0;y<=top-200;y+=350){await p.evaluate(v=>scrollTo(0,v),y);await new Promise(r=>setTimeout(r,110));}
   await p.evaluate(v=>scrollTo(0,v),Math.max(0,top-200));

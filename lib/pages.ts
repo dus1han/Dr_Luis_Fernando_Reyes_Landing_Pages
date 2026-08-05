@@ -1,4 +1,4 @@
-import type { IMAGES } from "@/lib/generated/images";
+import { BBL, BUCCAL, type ImageAsset } from "@/lib/generated/images";
 
 /**
  * Every landing page on this subdomain, in the order the index lists them.
@@ -19,8 +19,15 @@ export type LandingPage = {
   title: string;
   /** One sentence. What the visitor gets, not what the surgery is. */
   blurb: string;
-  /** Key into the generated image manifest — the card's thumbnail. */
-  image: keyof typeof IMAGES;
+  /**
+   * The card's thumbnail, taken straight from the generated manifest.
+   *
+   * The asset itself rather than a key into it: every page has its own
+   * manifest now (`BUCCAL`, `BBL`, …) and they share key names — both
+   * define `hero-bg.jpg` — so a bare string could no longer say which
+   * file it meant.
+   */
+  image: ImageAsset;
   /**
    * `live` renders a link. `planned` renders a muted, unclickable card so
    * the roadmap is visible without shipping a dead link — use it only when
@@ -36,21 +43,30 @@ export const PAGES: LandingPage[] = [
     title: "Buccal Fat Removal",
     blurb:
       "Sharper cheekbones and a defined jawline, through an incision inside the mouth so nothing shows on the face.",
-    image: "hero-bg.jpg",
+    image: BUCCAL["hero-bg.jpg"],
+    status: "live",
+  },
+  {
+    slug: "brazilian-butt-lift",
+    eyebrow: "Body contouring",
+    title: "Brazilian Butt Lift",
+    blurb:
+      "Fuller, naturally shaped curves built from your own fat, with the waist and flanks sculpted in the same procedure.",
+    image: BBL["hero-bg.jpg"],
     status: "live",
   },
 
-  /* ── PAGES 2–4 ──────────────────────────────────────────────────────
+  /* ── PAGES 3–4 ──────────────────────────────────────────────────────
    * Add them here as they're built. The index picks them up with no
    * other change. Copy the shape above:
    *
    *   { slug: "…", eyebrow: "…", title: "…", blurb: "…",
-   *     image: "…", status: "live" }
+   *     image: PAGE["…"], status: "live" }
    *
-   * `image` must be a key that already exists in the generated manifest
-   * (`lib/generated/images.ts`) — run `npm run images` after dropping the
-   * source file into the page's Images folder, or TypeScript will reject
-   * the entry at build time rather than shipping a broken thumbnail.
+   * `image` comes from that page's manifest in `lib/generated/images.ts`
+   * — run `npm run images` after dropping the source file into the page's
+   * Images folder, or TypeScript will reject the entry at build time
+   * rather than shipping a broken thumbnail.
    * ─────────────────────────────────────────────────────────────────── */
 ];
 

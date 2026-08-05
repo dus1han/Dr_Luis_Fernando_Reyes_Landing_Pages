@@ -43,10 +43,24 @@ export const SITE = {
    */
   contactHref: "tel:+971566636359",
 
+  /*
+   * The prefilled message is procedure-NEUTRAL, and has to stay that way.
+   *
+   * It used to name buccal fat removal, which was correct while that was
+   * the only page. Every button that opens WhatsApp lives in the shared
+   * chrome — the nav, the sticky bar, the footer, the 404 — and none of
+   * those knows which landing page it is sitting on, so a procedure name
+   * here would have greeted Brazilian Butt Lift visitors with the wrong
+   * one.
+   *
+   * If per-page wording is ever wanted, it has to be threaded from the
+   * page down through those components as a prop; changing this string is
+   * not a substitute.
+   */
   whatsappHref:
     "https://wa.me/971566636359?text=" +
     encodeURIComponent(
-      "Hello, I'd like to book a consultation about buccal fat removal."
+      "Hello, I'd like to book a consultation with Dr. Luis."
     ),
 
   email: "luisfernandoreyesmd@yahoo.com",

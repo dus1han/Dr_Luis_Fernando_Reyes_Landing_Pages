@@ -31,14 +31,20 @@ the card appears; nothing in `app/page.tsx` needs touching.
   eyebrow: "…",           // the category, not the procedure
   title: "…",
   blurb: "…",             // one sentence, what the visitor gets
-  image: "…",             // key into lib/generated/images.ts
+  image: BBL["hero-bg.jpg"],   // from that page's image manifest
   status: "live",         // or "planned"
 }
 ```
 
-`image` is typed as `keyof typeof IMAGES`, so a thumbnail that hasn't been
-through the pipeline fails the build instead of shipping a broken card.
-Run `npm run images` after dropping the source file in.
+`image` is the asset itself, taken from the page's own manifest in
+`lib/generated/images.ts` (`BUCCAL`, `BBL`, …), so a thumbnail that hasn't
+been through the pipeline fails the build instead of shipping a broken
+card. Run `npm run prepare-images` after dropping the source file in.
+
+It used to be a bare key, typed `keyof typeof IMAGES`, back when one flat
+manifest held every asset. That stopped working the moment there was a
+second page: both define `hero-bg.jpg`, so the string could no longer say
+which file it meant.
 
 `status: "planned"` renders a greyscale, unclickable card with an "In
 progress" pill — visible roadmap without a dead link. Use it only for pages

@@ -41,16 +41,20 @@ export default function NotFound() {
           </h1>
 
           <p className="mx-auto mb-9 mt-6 max-w-[46ch] text-[16.5px] leading-[1.75] text-white/64">
-            The link may be out of date. You can go to the buccal fat removal
-            page, or speak to the clinic directly.
+            The link may be out of date. You can see the procedures we have
+            pages for, or speak to the clinic directly.
           </p>
 
           <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+            {/* The index, not a named procedure. This button pointed at
+                buccal fat removal while that was the only page; with more
+                than one, sending everyone to a specific one is a guess,
+                and `/` lists them all. */}
             <Link
-              href="/buccal-fat-removal"
+              href="/"
               className="inline-flex min-h-12 items-center justify-center rounded-[2px] bg-gold px-7 text-[13px] font-semibold uppercase tracking-[0.09em] text-white no-underline transition-colors duration-300 hover:bg-champagne hover:text-espresso-deep"
             >
-              Buccal fat removal
+              See the procedures
             </Link>
             <a
               href={SITE.contactHref}

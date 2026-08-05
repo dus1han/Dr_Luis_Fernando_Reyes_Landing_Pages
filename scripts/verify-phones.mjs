@@ -2,7 +2,7 @@
  * Lists every tel: and wa.me link per route, with its number, container and
  * rel — so the two-number split can be checked without trusting a grep.
  *
- *   node scripts/verify-phones.mjs http://127.0.0.1:3000
+ *   node scripts/verify-phones.mjs http://127.0.0.1:3000 [page-slug]
  *
  * Raw-HTML grepping overcounts: Next’s RSC payload repeats every string and
  * the JSON-LD adds another. This queries the DOM.
@@ -24,7 +24,8 @@ const b = await puppeteer.launch({
   headless: "new",
   args: ["--disable-gpu", "--hide-scrollbars", "--no-sandbox"],
 });
-for (const [route,mob] of [["/buccal-fat-removal",false],["/buccal-fat-removal",true],["/",false],["/buccal-fat-removal/thank-you",false],["/nope",false]]) {
+const SLUG=process.argv[3] || "buccal-fat-removal";
+for (const [route,mob] of [[`/${SLUG}`,false],[`/${SLUG}`,true],["/",false],[`/${SLUG}/thank-you`,false],["/nope",false]]) {
   const p=await b.newPage();
   await p.setViewport({width:mob?390:1440,height:mob?844:900,isMobile:mob,hasTouch:mob});
   await p.goto(B+route,{waitUntil:"networkidle2",timeout:60000});

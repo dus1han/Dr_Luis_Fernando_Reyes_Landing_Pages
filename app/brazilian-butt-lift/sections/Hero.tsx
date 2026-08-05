@@ -7,10 +7,10 @@ import { ButtonLink } from "@/components/lp/Button";
 import { Eyebrow } from "@/components/lp/Eyebrow";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { EASE_OUT_SOFT } from "@/lib/motion";
-import { BUCCAL } from "@/lib/generated/images";
+import { BBL } from "@/lib/generated/images";
 import { HERO } from "../content";
 
-const bg = BUCCAL["hero-bg.jpg"];
+const bg = BBL["hero-bg.jpg"];
 
 /** How much of the phone viewport the photograph occupies. */
 const PHOTO_H = "40svh";

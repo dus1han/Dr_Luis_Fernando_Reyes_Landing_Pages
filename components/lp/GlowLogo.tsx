@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
-import { IMAGES } from "@/lib/generated/images";
+import { SHARED } from "@/lib/generated/images";
 import { SITE } from "@/lib/site";
 
-const logo = IMAGES["logo-white.png"];
+const logo = SHARED["logo-white.png"];
 
 /**
  * The clinic logo with a slow gold halo breathing behind it.

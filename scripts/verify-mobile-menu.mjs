@@ -2,7 +2,7 @@
  * Mobile menu behaviour, measured in a real browser at a real phone viewport.
  *
  *   npm run build && npm run start
- *   node scripts/verify-mobile-menu.mjs [url]
+ *   node scripts/verify-mobile-menu.mjs [url] [page-slug]
  *
  * Needs a Chrome and puppeteer-core. CHROME_PATH overrides the default.
  *
@@ -19,7 +19,8 @@ import puppeteer from "puppeteer-core";
 const CHROME =
   process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const BASE = (process.argv[2] || "http://127.0.0.1:3000").replace(/\/+$/, "");
-const URL = `${BASE}/buccal-fat-removal`;
+const SLUG = process.argv[3] || "buccal-fat-removal";
+const URL = `${BASE}/${SLUG}`;
 
 const TRIGGER = "header button[aria-controls]";
 const PANEL = '[role="dialog"][aria-modal="true"]';

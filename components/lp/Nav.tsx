@@ -4,11 +4,11 @@ import Image from "next/image";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
-import { IMAGES } from "@/lib/generated/images";
+import { SHARED } from "@/lib/generated/images";
 import { SITE } from "@/lib/site";
 import { ButtonLink } from "./Button";
 
-const logo = IMAGES["logo-ink.png"];
+const logo = SHARED["logo-ink.png"];
 
 type NavLink = { label: string; href: string };
 

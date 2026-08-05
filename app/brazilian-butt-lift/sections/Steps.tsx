@@ -7,39 +7,30 @@ import { Eyebrow } from "@/components/lp/Eyebrow";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Section } from "@/components/lp/Section";
 import { EASE_OUT_SOFT } from "@/lib/motion";
-import { BUCCAL } from "@/lib/generated/images";
-import { ANATOMY } from "../content";
+import { BBL } from "@/lib/generated/images";
+import { STEPS } from "../content";
 
-const art = BUCCAL["anatomy.webp"];
+const art = BBL["steps.jpg"];
 
 /** How long each step holds before advancing. */
 const DWELL = 5200;
 
 /**
- * Where the locator sits for each step, as percentages of the trimmed
- * 1157x437 illustration.
+ * How it's performed — the buccal page's `Anatomy` section, rebuilt around
+ * a photograph.
  *
- * Measured off the artwork's alpha channel, not estimated: for each
- * column, the vertical extent of opaque pixels peaks exactly at a
- * circle's horizontal centre, which pins both axes at once. The tissue
- * insets peak at x=85 and x=1071, spanning y=181..379 — so centres of
- * (85, 280) and (1071, 280), diameter 198.
+ * Same behaviour: a self-playing stepper that pauses on hover or focus,
+ * restarts its dwell on a click, and only runs while on screen. What is
+ * gone is the travelling locator ring. That ring sat on measured
+ * coordinates of a medical illustration — it pointed at the buccal fat pad
+ * because the artwork had a buccal fat pad at 7.35%, 64.07%. There is no
+ * equivalent illustration for this procedure, and putting a ring on an
+ * editorial photograph would be pointing at nothing.
  *
- * The arrow sits in the sparse band between the two faces, x=530..600 /
- * y=261..284, so it needs its own centre and a smaller ring: a
- * circle-sized locator would swamp a 70px glyph.
- *
- * An earlier version had these at 8.7% / 91.3% because the scan window
- * clipped the shapes and returned the window's midpoint rather than the
- * circle's. That put the ring ~8px off centre at both ends.
+ * The progress rail stays, evenly spaced: it is a position indicator for
+ * four steps, which is honest, rather than a map of the image above it.
  */
-const STOPS = [
-  { x: 7.35, y: 64.07, size: "17.1%" },
-  { x: 48.83, y: 62.36, size: "9.4%" },
-  { x: 92.57, y: 64.07, size: "17.1%" },
-];
-
-export function Anatomy() {
+export function Steps() {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useInView(ref, { amount: 0.3 });
   const reduced = useReducedMotion();
@@ -55,13 +46,12 @@ export function Anatomy() {
    */
   useEffect(() => {
     if (!seen || paused || reduced) return;
-    const t = setTimeout(() => setActive((a) => (a + 1) % ANATOMY.steps.length), DWELL);
+    const t = setTimeout(() => setActive((a) => (a + 1) % STEPS.steps.length), DWELL);
     return () => clearTimeout(t);
   }, [active, seen, paused, reduced]);
 
-  /** Fraction of the rail covered, 0 at the first stop, 1 at the last. */
-  const span = STOPS[2].x - STOPS[0].x;
-  const progress = (STOPS[active].x - STOPS[0].x) / span;
+  const last = STEPS.steps.length - 1;
+  const progress = active / last;
 
   return (
     <Section tone="sand" padding="tight">
@@ -74,32 +64,36 @@ export function Anatomy() {
         onBlurCapture={() => setPaused(false)}
       >
         {/* The heading lives inside the left column rather than spanning
-            the section. Full width, it left a ~550x180 hole in the top
-            right; here both columns start at the top and the steps fill
-            that space. */}
+            the section, so both columns start at the top and the steps
+            fill the space beside the photograph. */}
         <div className="grid items-start gap-9 lg:grid-cols-[1.06fr_0.94fr] lg:gap-14">
-          {/* ---------- heading + illustration with a travelling locator ---------- */}
+          {/* ---------- heading + photograph ---------- */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, ease: EASE_OUT_SOFT }}
           >
-            <Eyebrow>{ANATOMY.eyebrow}</Eyebrow>
+            <Eyebrow>{STEPS.eyebrow}</Eyebrow>
             <MaskedHeading
               lines={[
-                ANATOMY.headline[0],
+                STEPS.headline[0],
                 <em key="a" className="accent">
-                  {ANATOMY.headline[1]}
+                  {STEPS.headline[1]}
                 </em>,
               ]}
               className="mb-9 font-display text-[clamp(30px,4vw,42px)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
             />
 
-            <div className="relative">
+            <figure className="relative m-0 overflow-hidden rounded-[3px]">
               <Image
                 src={art.src}
-                alt="Medical illustration comparing the buccal fat pad before and after reduction"
+                /* Decorative, and it has to stay that way. This is
+                   editorial photography, not a patient record, so it must
+                   not be captioned as a result — the four steps beside it
+                   carry the meaning. */
+                alt=""
+                aria-hidden
                 width={art.width}
                 height={art.height}
                 sizes="(max-width: 1024px) 92vw, 52vw"
@@ -108,38 +102,19 @@ export function Anatomy() {
                 className="h-auto w-full"
               />
 
-              {/* Only the ring sits on the artwork. The progress rail used
-                  to run across here too, drawing a line straight over both
-                  faces — it lives under the illustration now. */}
-              <motion.span
+              {/* The source is a dark interior; the caption needs a floor
+                  to sit on at the bottom edge without dimming the frame. */}
+              <div
                 aria-hidden
-                className="absolute block aspect-square -translate-x-1/2 -translate-y-1/2"
-                animate={{
-                  left: `${STOPS[active].x}%`,
-                  top: `${STOPS[active].y}%`,
-                  width: STOPS[active].size,
-                }}
-                transition={{ duration: 0.9, ease: EASE_OUT_SOFT }}
-              >
-                <span className="absolute inset-0 rounded-full border-2 border-gold" />
-                <span className="absolute inset-0 rounded-full bg-gold/10" />
-                {!reduced && (
-                  <motion.span
-                    className="absolute inset-0 rounded-full border border-gold"
-                    animate={{ scale: [1, 1.35], opacity: [0.6, 0] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
-                  />
-                )}
-              </motion.span>
-            </div>
+                className="pointer-events-none absolute inset-0 bg-linear-to-t from-espresso-deep/70 via-transparent to-transparent"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 m-0 p-5 text-[12.5px] font-medium uppercase tracking-[0.14em] text-white/85">
+                {STEPS.caption}
+              </figcaption>
+            </figure>
 
-            {/* Progress rail, aligned to the same stops as the ring so the
-                markers sit directly beneath it. */}
-            <div
-              className="relative mt-5 h-4"
-              style={{ marginLeft: `${STOPS[0].x}%`, marginRight: `${100 - STOPS[2].x}%` }}
-              aria-hidden
-            >
+            {/* Progress rail — four evenly spaced stops, one per step. */}
+            <div className="relative mt-5 h-4 px-[3px]" aria-hidden>
               <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-ink/14" />
               <motion.span
                 className="absolute left-0 top-1/2 h-px origin-left -translate-y-1/2 bg-gold"
@@ -147,11 +122,11 @@ export function Anatomy() {
                 animate={{ scaleX: progress }}
                 transition={{ duration: 0.9, ease: EASE_OUT_SOFT }}
               />
-              {STOPS.map((s, i) => (
+              {STEPS.steps.map((s, i) => (
                 <motion.span
-                  key={s.x}
+                  key={s.n}
                   className="absolute top-1/2 block h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold bg-sand"
-                  style={{ left: `${((s.x - STOPS[0].x) / span) * 100}%` }}
+                  style={{ left: `${(i / last) * 100}%` }}
                   animate={{
                     backgroundColor:
                       i <= active ? "var(--color-gold)" : "var(--color-sand)",
@@ -165,22 +140,13 @@ export function Anatomy() {
 
           {/* ---------- the steps ---------- */}
           <ol className="m-0 list-none p-0">
-            {ANATOMY.steps.map((s, i) => {
+            {STEPS.steps.map((s, i) => {
               const isActive = i === active;
-              // max-lg:last:[&>button]:pb-0 — same reason as the assurance
-              // rows: the final step has no divider beneath it, so its 12px
-              // of bottom padding separates nothing and just deepens the gap
-              // to the next section. Only while the list is stacked; from lg
-              // it sits in a grid column beside the illustration and doesn't
-              // set the section height.
               return (
-                <li
-                  key={s.n}
-                  className="border-b border-ink/12 last:border-0 max-lg:last:[&>button]:pb-0"
-                >
+                <li key={s.n} className="border-b border-ink/12 last:border-0">
                   {/* Every step shows its detail at all times. Collapsing
-                      the inactive ones hid two thirds of the explanation
-                      behind a click and left the column half empty. */}
+                      the inactive ones hides three quarters of the
+                      explanation behind a click. */}
                   <motion.button
                     onClick={() => setActive(i)}
                     aria-current={isActive}
@@ -227,6 +193,33 @@ export function Anatomy() {
             })}
           </ol>
         </div>
+
+        {/*
+          Recovery, spanning both columns.
+
+          Outside the numbered list on purpose — see the note on STEPS.note
+          in content.ts. Full width rather than stacked under the fourth
+          step, which is where it started: the photograph column is a good
+          200px shorter than four steps plus a panel, so keeping it in the
+          right-hand column left a hole under the progress rail and nothing
+          to fill it. Spanning both closes the hole and gives recovery its
+          own beat, which the same strip in the candidate band already
+          established as this page's shape for an aside.
+        */}
+        <motion.aside
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.7, ease: EASE_OUT_SOFT }}
+          className="mt-10 flex flex-col gap-4 rounded-[3px] border border-gold/28 bg-ivory p-6 sm:flex-row sm:items-baseline sm:gap-10 sm:p-7"
+        >
+          <h3 className="m-0 flex-none font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-gold sm:w-[14ch]">
+            {STEPS.note.title}
+          </h3>
+          <p className="m-0 max-w-[86ch] text-[15.5px] leading-[1.7] text-body">
+            {STEPS.note.body}
+          </p>
+        </motion.aside>
       </div>
     </Section>
   );
