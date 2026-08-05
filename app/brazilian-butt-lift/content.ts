@@ -33,7 +33,20 @@ export const HERO = {
   kicker: "Curves that look naturally yours",
   headline: ["Brazilian", "Butt Lift"] as const,
   lede: "Enhance your natural curves with Colombian aesthetic artistry, creating fuller, beautifully balanced proportions.",
-  primaryCta: "Book your consultation",
+  /*
+   * "Book a consultation", not the brief's "Book Your Consultation".
+   *
+   * The hero CTAs sit side by side inside a 44ch copy column. The pair's
+   * natural width has to fit it, and "your" instead of "a" pushed the
+   * primary from 250px to 277px — past the limit, at which point flex
+   * shrank BOTH buttons and both wrapped to two lines. The secondary was
+   * already narrower than the buccal page's and wrapped anyway, which is
+   * the tell: it is the pair's total that matters, not either label.
+   *
+   * These two lengths are what the layout was built around. Lengthen
+   * either and measure the pair again before shipping it.
+   */
+  primaryCta: "Book a consultation",
   secondaryCta: "See the results",
 };
 

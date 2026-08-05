@@ -172,8 +172,14 @@ export function Results() {
         </RevealGroup>
 
         <Reveal delay={0.12} className="mt-11 text-center">
+          {/* Shorter than the buccal page's "…for your face", which sits
+              exactly at the shell width at 390px. Matching its character
+              count is not enough — this label is uppercase, and BODY is
+              measurably wider than FACE at the same length. Dropping the
+              noun leaves real headroom instead of landing on the limit
+              again. */}
           <ButtonLink href="#book" event="cta_click" eventLabel="results">
-            See what&rsquo;s possible for your shape
+            See what&rsquo;s possible for you
           </ButtonLink>
           {SHOW_RESULTS_DISCLAIMER && (
             <p className="mx-auto m-0 mt-6 max-w-[62ch] text-[13px] leading-[1.7] text-muted">
