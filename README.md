@@ -256,9 +256,8 @@ Output is namespaced into three buckets, which is also how
 |---|---|
 | `hero-bg.jpg` | The hero photograph, capped at 1000px for the same reason |
 | `benefits-portrait.jpg`, `steps.jpg` | The profile and interior shots at 900px. `steps.jpg` stands in for `anatomy.webp` — there is no illustration for this procedure, and drawing one would mean inventing anatomy |
-| `ba-1…6.jpg` | Six before/after **pairs** cut from a 6-pair grid on measured separators. The cuts are on the *between-pair* gutters (x 512–516, 1024–1028, y 510–514) so each card keeps its own burnt-in arrow — the arrow is what tells a visitor which half is which |
-| `compare-before.jpg`, `compare-after.jpg` | One pair from that grid, split **outside** the arrow glyph (which bleeds into both photographs at x 239–273, not into the gutter) and cropped to 238×298 so the slider isn't twice as tall as the text beside it |
-| `ba-7…12.jpg` | The clinic's own cards from `B A/`, resized only — all 700×380 |
+| `compare-before.jpg`, `compare-after.jpg` | One before/after pair from a 6-pair grid composite, split **outside** the arrow glyph (which bleeds into both photographs at x 239–273, not into the white gutter) and cropped to 238×298 so the slider isn't twice as tall as the text beside it. The other five pairs were emitted as gallery cards until the clinic asked for them to be dropped; the measured cut coordinates stay in the script, the files no longer ship |
+| `ba-1…6.jpg` | The clinic's own cards from `B A/`, resized only — all 700×380, so the gallery grid needs no ordering |
 
 The script also writes `lib/generated/images.ts` with each asset's natural
 dimensions and an inline blur placeholder, so `<Image>` never causes

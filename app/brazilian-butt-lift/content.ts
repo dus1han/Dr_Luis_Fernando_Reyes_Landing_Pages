@@ -208,7 +208,8 @@ export const BENEFITS = {
 } as const;
 
 /**
- * The gallery, card by card.
+ * The gallery, card by card. Six cards, all from the clinic's own `B A`
+ * folder and used exactly as supplied.
  *
  * Each card carries its own label because this set is not uniform, and
  * stamping "Before"/"After" across all of it would be a claim about
@@ -217,13 +218,24 @@ export const BENEFITS = {
  *   pair    a genuine side-by-side comparison — before left, after right
  *   result  a single post-operative photograph, labelled as a result only
  *
- * `area` says what the card actually shows. Cards 7-9 are waist and
+ * `area` says what the card actually shows. Cards 1-3 are waist and
  * abdomen: that is the donor site, and sculpting it is half of what a BBL
  * does, so they belong here — but calling them buttock results would not
  * be true.
  *
+ * ── WHAT USED TO BE HERE ────────────────────────────────────────────────
+ * Six more cards led this list: before/after pairs cut out of the grid
+ * composite in `Images/`, showing the buttocks themselves. They were
+ * removed at the clinic's request. The featured comparison at the top of
+ * the section is still cut from that same grid, so the page has not lost
+ * the procedure's own before/after — only the twelve-card gallery.
+ *
+ * The cut coordinates survive in `scripts/prepare-images.mjs`; restoring
+ * the cards means emitting them again and adding them back above.
+ * ────────────────────────────────────────────────────────────────────────
+ *
  * ── FOR THE CLINIC TO CONFIRM ───────────────────────────────────────────
- * `ba-10` (the two dress photographs) is labelled `result`, not `pair`.
+ * `ba-4` (the two dress photographs) is labelled `result`, not `pair`.
  * Both halves read as post-operative, and neither carries a "before"
  * marking. If it is in fact a before/after, change `kind` to "pair" and it
  * gets the two tags; do not leave it labelled a pair on a guess.
@@ -237,21 +249,12 @@ export type GalleryCard = {
 };
 
 export const GALLERY: GalleryCard[] = [
-  // Cut from the clinic's own 6-pair grid — the only source showing the
-  // buttocks before and after. Squares, so they fill whole rows first.
-  { key: "ba-1.jpg", kind: "pair", area: "Buttock shape and projection" },
-  { key: "ba-2.jpg", kind: "pair", area: "Buttock shape and projection" },
-  { key: "ba-3.jpg", kind: "pair", area: "Buttock shape and projection" },
-  { key: "ba-4.jpg", kind: "pair", area: "Buttock shape and projection" },
-  { key: "ba-5.jpg", kind: "pair", area: "Buttock shape and projection" },
-  { key: "ba-6.jpg", kind: "pair", area: "Buttock shape and projection" },
-  // The clinic's own composed cards, used exactly as supplied.
-  { key: "ba-7.jpg", kind: "pair", area: "Waist and abdomen" },
-  { key: "ba-8.jpg", kind: "pair", area: "Waist and abdomen" },
-  { key: "ba-9.jpg", kind: "pair", area: "Waist and abdomen" },
-  { key: "ba-10.jpg", kind: "result", area: "Silhouette" },
-  { key: "ba-11.jpg", kind: "result", area: "Silhouette" },
-  { key: "ba-12.jpg", kind: "result", area: "Silhouette" },
+  { key: "ba-1.jpg", kind: "pair", area: "Waist and abdomen" },
+  { key: "ba-2.jpg", kind: "pair", area: "Waist and abdomen" },
+  { key: "ba-3.jpg", kind: "pair", area: "Waist and abdomen" },
+  { key: "ba-4.jpg", kind: "result", area: "Silhouette" },
+  { key: "ba-5.jpg", kind: "result", area: "Silhouette" },
+  { key: "ba-6.jpg", kind: "result", area: "Silhouette" },
 ];
 
 export const RESULTS = {

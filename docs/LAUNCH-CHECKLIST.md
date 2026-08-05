@@ -8,12 +8,12 @@ Work top to bottom. Nothing below requires touching page or section code.
 > argument. Section 1 is page-specific, and that page has three extra
 > content items of its own:
 >
-> - [ ] **Confirm `ba-10`** in `app/brazilian-butt-lift/content.ts` →
+> - [ ] **Confirm `ba-4`** in `app/brazilian-butt-lift/content.ts` →
 >       `GALLERY`. It is labelled `result`, not `pair`, because neither
 >       half reads as a "before". If it is a before/after, change `kind`.
-> - [ ] **Confirm `ba-7`**, which carries a different surgeon's watermark
+> - [ ] **Confirm `ba-1`**, which carries a different surgeon's watermark
 >       (NE / Nicole Echeverry) rather than Dr. Luis's.
-> - [ ] **Confirm `ba-9`**, an intra-operative photograph. Legitimate as a
+> - [ ] **Confirm `ba-3`**, an intra-operative photograph. Legitimate as a
 >       before/after; also the most clinical image on the page.
 
 ---

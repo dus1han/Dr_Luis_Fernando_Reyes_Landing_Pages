@@ -33,7 +33,7 @@ Measured at 1440×900 with reduced motion.
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 838 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 2344 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1513 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 802 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1173 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 824 |
@@ -44,8 +44,9 @@ from the buccal page by more than their imports: **`Steps.tsx`** (which
 replaces `Anatomy.tsx`) and **`Results.tsx`**. Everything else is the same
 component reading different content.
 
-The page is 11.7k tall at 1440 against the buccal page's 10.3k. Almost all
-of the difference is the results gallery: twelve cards instead of six.
+The page is 10.9k tall at 1440 against the buccal page's 10.3k. Most of the
+difference is section 5, where four steps and a recovery panel run taller
+than the buccal page's three.
 
 ---
 
@@ -261,10 +262,17 @@ different crop.
 
 ### The gallery labels each card
 
-Twelve cards: six square pairs cut from the grid on the *between-pair*
-gutters (each keeps its own arrow — the arrow is what tells a visitor which
-half is which), then the six 700×380 cards from the `B A` folder, resized
-only. Squares first so each row of the three-column grid holds one shape.
+Six cards, all 700×380 from the `B A` folder and resized only. Uniform
+shape, so unlike the buccal gallery nothing has to be ordered to keep the
+rows even.
+
+> **It used to be twelve.** Six before/after pairs cut out of the grid
+> composite led the list, showing the buttocks themselves; they were removed
+> at the clinic's request. The featured comparison is still cut from that
+> same grid, so the page has not lost the procedure's own before/after —
+> only the longer gallery. The cut coordinates survive in
+> `prepare-images.mjs` (deliberately — re-deriving them is a pixel-scanning
+> job) but the cards are no longer emitted, so nothing unreferenced ships.
 
 The tags come from each card's own `kind` in `GALLERY`, not from a rule
 applied to the whole gallery:
@@ -283,16 +291,16 @@ why the distinction exists at all.
    `pair`. Both halves read as post-operative and neither carries a "before"
    marking. If it *is* a before/after, change `kind` to `"pair"` in
    `content.ts`; don't leave it labelled a pair on a guess.
-2. **`ba-7`** carries a different surgeon's watermark (**NE / Nicole
+2. **`ba-1`** carries a different surgeon's watermark (**NE / Nicole
    Echeverry**) rather than Dr. Luis's. It is presumably from the same
    practice, but it is the only card on the page not branded to him.
-3. **`ba-9`** is an intra-operative photograph — a patient on the table
+3. **`ba-3`** is an intra-operative photograph — a patient on the table
    beside the healed result. It is a legitimate before/after; it is also the
    most clinical image on a consumer landing page.
 
 ### `area` is copy, not decoration
 
-Cards 7–9 are waist and abdomen. That is the donor site, and sculpting it is
+Cards 1–3 are waist and abdomen. That is the donor site, and sculpting it is
 half of what a BBL does, so they belong here — but `area` says so, and the
 alt text says so, because calling them buttock results would not be true.
 
@@ -349,3 +357,22 @@ what distinguishes the two pages' leads in GTM.
 
 Kill any old server on the port first — a stale process serves a stale CSS
 chunk and the page renders completely unstyled.
+
+### Changing an image without changing its filename
+
+`npm run prepare-images` writing different bytes to the same name is not
+enough to see the change locally. Next's image optimiser caches by request
+URL under `.next/cache/images`, and `/_next/image?url=…%2Fba-1.jpg` is the
+same URL whatever `ba-1.jpg` now contains — so `next start` keeps serving
+the **old** picture from cache, correct markup and all.
+
+This is exactly how it looks when it happens: right number of cards, right
+Before/After tags, wrong photographs underneath them.
+
+```bash
+rm -rf .next/cache/images && npm run build && npm run start
+```
+
+Local only. A deploy builds a fresh image with no cache to go stale, so
+production never sees it — which is what makes it easy to mistake for a
+real bug.

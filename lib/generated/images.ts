@@ -159,42 +159,6 @@ export const BBL = {
     "height": 600,
     "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAACQAwCdASoUAA0APwlur0+rpiQiMAgBcCEJZwCdACHgl7wU9mE4AP7mEF7u8KQRKS91se7gS3Hvk91bNgAAAA=="
   },
-  "ba-1.jpg": {
-    "src": "/brazilian-butt-lift/ba-1.jpg",
-    "width": 512,
-    "height": 510,
-    "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAABwBACdASoUABQAPwlyrE+rpyQiMBgMAXAhCWMAnQAHynVK/NwFbkdWKF05wAD+P6j/EitJqgFbRFhtIhBCg/UaoaF2q9LkZR/B5dG3VAt6Tm0aVUM6HAAA"
-  },
-  "ba-2.jpg": {
-    "src": "/brazilian-butt-lift/ba-2.jpg",
-    "width": 507,
-    "height": 510,
-    "blurDataURL": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwBQCdASoUABQAPwlurlArpiQisBgMAXAhCWMAqSPCRyQUnnEpZ2DRVaVABPsAnHguAAD+g0Ude3bZDHzKNoxzBclQE6upBP+Nj3gm+OyY3scZEYCEbXndUGnvShIfB8yIMAAA"
-  },
-  "ba-3.jpg": {
-    "src": "/brazilian-butt-lift/ba-3.jpg",
-    "width": 507,
-    "height": 510,
-    "blurDataURL": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADQBACdASoUABQAPwl2r1IrpyQiqA1RcCEJYwC7ABEh1Yry+trAn1zG/wCaxTQQAAD+wCx8/2+qasABNorSdc7AoP1Kh++s0GmtBtjsWq6QMrKrYJFK13ysYIDfMAAAAAA="
-  },
-  "ba-4.jpg": {
-    "src": "/brazilian-butt-lift/ba-4.jpg",
-    "width": 512,
-    "height": 509,
-    "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAABQBACdASoUABQAPwl0sFGrpqSisBgIAXAhCWMAABvxtel6g6qr03jAnSZQAMvWksNCTrPh6F6a/VgeqFh+dsidNA2CeyaeSvMIKw27+eGWjNCA1el0AAAA"
-  },
-  "ba-5.jpg": {
-    "src": "/brazilian-butt-lift/ba-5.jpg",
-    "width": 507,
-    "height": 509,
-    "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADwAwCdASoUABQAPwl4sFErp6SisBgIAXAhCWMAAC28JWNgRtYmDXXIAP6kkDLFRqU3bpPuT9L32WrdAtQ62A1CJO73ng5FYr1EEyiHWPeEbWg9ms3skpAA"
-  },
-  "ba-6.jpg": {
-    "src": "/brazilian-butt-lift/ba-6.jpg",
-    "width": 507,
-    "height": 509,
-    "blurDataURL": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAwBACdASoUABQAPwlork+rpaQiN/VYAXAhCWMAACSeIkK9n59Am446J0AA/uXruQJty8wyXCHRw9fNaDlKfb37R7qt5xn3e1g939zqWiqWyvCj4qE2pcZylZ9k/SwC6UCzwL1DhgA="
-  },
   "compare-before.jpg": {
     "src": "/brazilian-butt-lift/compare-before.jpg",
     "width": 238,
@@ -207,38 +171,38 @@ export const BBL = {
     "height": 298,
     "blurDataURL": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABwBACdASoUABoAPwl2tVKrpyUiqAqpcCEJQBUeggv3LhppWXcT1Ph29YozzAD9GDpw04HC6PHPLhAYwmP6sGW2xT4wwn/F9shLOnO6Y256yS1PJNJOsWIcthEcql8HYAA="
   },
-  "ba-7.jpg": {
-    "src": "/brazilian-butt-lift/ba-7.jpg",
+  "ba-1.jpg": {
+    "src": "/brazilian-butt-lift/ba-1.jpg",
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAACwAwCdASoUAAsAPwlys1CrpqSisAgBcCEJYgCw7BAVXzy6c4VzYAD+wnC8P3mSSsvdTkazq2n3kQb0o4UZ2tixt5JpM/Eq4kZ/tFprGoL2V4HoAAA="
   },
-  "ba-8.jpg": {
-    "src": "/brazilian-butt-lift/ba-8.jpg",
+  "ba-2.jpg": {
+    "src": "/brazilian-butt-lift/ba-2.jpg",
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACQAwCdASoUAAsAPwlur0+rpiQiMAgBcCEJQBOmUAAg65CEi5AAAP62L07Dru3NzyIZUFZpwxZ8xVlUwIk27/jeX3N/Ua7Q67sioiQA"
   },
-  "ba-9.jpg": {
-    "src": "/brazilian-butt-lift/ba-9.jpg",
+  "ba-3.jpg": {
+    "src": "/brazilian-butt-lift/ba-3.jpg",
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAACQAwCdASoUAAsAPwlusFArpiSisAgBcCEJQBdgAlIgfeNX4LGUAP3qu2FNVn/1O1+hvUKEdKnW7rbOSi2O7QwUvrG69tqEhafAAA=="
   },
-  "ba-10.jpg": {
-    "src": "/brazilian-butt-lift/ba-10.jpg",
+  "ba-4.jpg": {
+    "src": "/brazilian-butt-lift/ba-4.jpg",
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAACwAwCdASoUAAsAPwlwr0+rpqQiMAgBcCEJZQAAWlPId69tEs0OAAD+3pTmOkDjduu7CEjU3X6bnqxbrxw/egAA"
   },
-  "ba-11.jpg": {
-    "src": "/brazilian-butt-lift/ba-11.jpg",
+  "ba-5.jpg": {
+    "src": "/brazilian-butt-lift/ba-5.jpg",
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAwCdASoUAAsAPwlys1CrpqSisAgBcCEJQBadAx1EMFdKbXjpJwAA/fPYCjcFDbFvwQMeaXk2UBNvO4wbm/kmqhi1xAPsF6IUwNAA"
   },
-  "ba-12.jpg": {
-    "src": "/brazilian-butt-lift/ba-12.jpg",
+  "ba-6.jpg": {
+    "src": "/brazilian-butt-lift/ba-6.jpg",
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoUAAsAPwlurk+rpiQiMAgBcCEJYwCsMoAA26YoY2QAAPxT2lZfFooKtVeMqLBlz3Q5Buir4/KcxuShBwSCAAAA"

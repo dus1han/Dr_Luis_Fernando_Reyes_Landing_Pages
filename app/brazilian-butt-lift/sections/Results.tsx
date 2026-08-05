@@ -110,13 +110,13 @@ export function Results() {
 
         {/*
           `items-start` so a card is never stretched away from its own
-          aspect ratio. GALLERY orders the six square pairs cut from the
-          clinic's grid before the six landscape cards, so each row of the
-          three-column grid holds one shape and comes out even.
+          aspect ratio. All six are 700x380 today, so nothing is ragged —
+          but the buccal page's gallery mixes two shapes, and a card added
+          here in a third would otherwise be stretched to match its row.
 
           Tags come from each card's own `kind`, not from a rule applied to
           the whole gallery: three of these photographs have no "before" in
-          them, and stamping the pair labels across all twelve would be
+          them, and stamping the pair labels across all six would be
           describing pictures that don't exist. See the note above GALLERY
           in content.ts.
         */}

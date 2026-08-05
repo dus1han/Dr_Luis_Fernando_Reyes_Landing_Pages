@@ -523,47 +523,23 @@ await emit(
   sharp(bblSrc("interior")).resize({ width: 900, withoutEnlargement: true })
 );
 
-console.log("\nBBL results grid — six pairs, cut on measured separators");
+console.log("\nBBL featured comparison — one pair, split at the arrow");
 /*
- * A 1536x1024 composite: two rows of three before/after PAIRS.
+ * The drag slider needs the two halves as separate, equally-sized files.
  *
- * Measured, not estimated. Scanning for columns that are ≥60% near-white
+ * Source is a 1536x1024 composite: two rows of three before/after PAIRS.
+ * Measured, not estimated — scanning for columns that are ≥60% near-white
  * gives five vertical separators and one horizontal one:
  *
  *   x 253-256   766-769   1290-1293   ← the "→" glyph, INSIDE a pair
  *   x 512-516   1024-1028              ← plain gutter, BETWEEN pairs
  *   y 510-514                          ← the row split
  *
- * So the pair boundaries are x 0-511 / 517-1023 / 1029-1535, and each
- * pair keeps its own arrow: the cards are cut on the *between-pair*
- * gutters, never the arrow, because the arrow is what tells a visitor
- * which half is which.
- */
-const PAIR_X = [
-  [0, 512],
-  [517, 507],
-  [1029, 507],
-];
-const PAIR_Y = [
-  [0, 510],
-  [515, 509],
-];
-{
-  let n = 0;
-  for (const [top, height] of PAIR_Y) {
-    for (const [left, width] of PAIR_X) {
-      n += 1;
-      await emit(
-        `ba-${n}.jpg`,
-        sharp(bblSrc("grid")).extract({ left, top, width, height })
-      );
-    }
-  }
-}
-
-console.log("\nBBL featured comparison — one pair, split at the arrow");
-/*
- * The drag slider needs the two halves as separate, equally-sized files.
+ * Only the first pair is used, and only for the slider. The gallery used
+ * to carry all six cut out as cards; it doesn't any more, so the other
+ * five are deliberately not emitted rather than shipped unreferenced. The
+ * measurements above are kept because they are what a future gallery would
+ * need, and re-deriving them is a pixel-scanning job.
  *
  * The arrow does not sit in the white gutter — it bleeds into both
  * photographs, spanning x 239-273 (measured the same way, by white pixels
@@ -598,15 +574,19 @@ await emit(
 
 console.log("\nBBL gallery — the clinic’s own cards, resized only");
 /*
- * Supplied already composed and watermarked, so the pipeline only
- * resizes: each file IS one finished card, and cropping one would either
+ * The whole gallery, and the same treatment the buccal page's cards get:
+ * supplied already composed and watermarked, so the pipeline only
+ * resizes. Each file IS one finished card, and cropping one would either
  * destroy the comparison it exists to make or cut the clinic's watermark
  * in half.
  *
- * All six are 700x380. Three are genuine side-by-side before/after pairs;
- * three are single post-operative photographs with no "before" in them,
- * which is why content.ts labels each card individually rather than the
- * page stamping "Before"/"After" on all of them.
+ * All six are 700x380, so the grid comes out even with no ordering
+ * needed — unlike the buccal page, which has to put its squares first.
+ *
+ * Three are genuine side-by-side before/after pairs; three are single
+ * post-operative photographs with no "before" in them, which is why
+ * content.ts labels each card individually rather than the page stamping
+ * "Before"/"After" on all of them.
  */
 const BBL_CARDS = [
   "Untitled design (20).png",
@@ -618,7 +598,7 @@ const BBL_CARDS = [
 ];
 for (const [i, file] of BBL_CARDS.entries()) {
   await emit(
-    `ba-${i + 7}.jpg`,
+    `ba-${i + 1}.jpg`,
     sharp(path.join(BBL_BA_SRC, file)).resize({ width: 1000, withoutEnlargement: true })
   );
 }
