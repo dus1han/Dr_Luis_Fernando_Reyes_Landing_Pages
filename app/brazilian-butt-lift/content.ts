@@ -120,14 +120,20 @@ export const PROCEDURE = {
 /**
  * The how-it's-performed stepper.
  *
- * Four steps rather than the buccal page's three, because the brief
- * describes four distinct stages and collapsing two of them would either
- * lose the operating time or lose the compression garment.
+ * Three steps, one per panel of the illustration beside it — which is what
+ * lets the locator ring travel between them, exactly as it does on the
+ * buccal page. Adding a fourth would leave it with nowhere to point.
  *
- * `note` is the brief's own "Recovery" heading. It sits under the steps
- * rather than becoming a fifth one: recovery is not a stage of the
- * operation, and numbering it as though it were would say the procedure
- * ends where it actually continues.
+ * Two things were folded in when this went from four steps to three:
+ * harvesting now sits inside step 01 with the anaesthesia, and the separate
+ * "Recovery" panel that used to hang below the grid is step 03. Nothing was
+ * lost — the operating time and the donor-area list both still appear, in
+ * the FAQ and in `PROCEDURE.body` respectively.
+ *
+ * Spelling is British throughout, like the rest of this file: the supplied
+ * copy read "anesthesia" and "personalized", and the page says
+ * "anaesthesia" everywhere else. Titles are sentence case for the same
+ * reason — every other heading on both pages is.
  */
 export const STEPS = {
   eyebrow: "How it's performed",
@@ -135,30 +141,20 @@ export const STEPS = {
   steps: [
     {
       n: "01",
-      title: "Comfortable under general anaesthesia",
-      body: "You're comfortably placed under general anaesthesia, so the surgery is performed safely while you remain asleep throughout. A BBL typically takes 3 to 5 hours, depending on how many areas are being sculpted and the complexity of your treatment.",
+      title: "Comfortably under general anaesthesia",
+      body: "Your procedure is performed under general anaesthesia. During surgery, fat is gently removed from selected areas to sculpt your body contours.",
     },
     {
       n: "02",
-      title: "The donor areas are sculpted",
-      body: "Using advanced liposuction techniques, fat is gently removed from carefully selected donor areas such as the abdomen, waist, flanks, back or thighs.",
+      title: "Purified fat is precisely transferred",
+      body: "The healthiest fat cells are purified and strategically transferred to create natural projection, balanced curves, and long-lasting results.",
     },
     {
       n: "03",
-      title: "Purified fat is placed with intent",
-      body: "The harvested fat is purified before the healthiest cells are meticulously injected into specific areas of the buttocks — placed by Dr. Luis to create smooth contours, natural projection and beautifully balanced curves.",
-    },
-    {
-      n: "04",
-      title: "Supported from the first hour",
-      body: "You're fitted with a specialised compression garment to reduce swelling and support the newly contoured areas, then discharged after a period of supervised recovery with detailed aftercare instructions and a personalised follow-up plan.",
+      title: "Recovery and aftercare",
+      body: "A compression garment supports healing after surgery, while personalised aftercare and scheduled follow-ups guide your recovery.",
     },
   ],
-  note: {
-    title: "Recovery",
-    body: "Dr. Luis and his medical team provide detailed guidance on everything from sleeping positions and sitting recommendations to compression garments, activity levels and follow-up appointments. Every stage of your recovery is carefully monitored to support optimal healing and fat retention.",
-  },
-  caption: "Colombian body contouring, performed in Dubai",
 };
 
 /**

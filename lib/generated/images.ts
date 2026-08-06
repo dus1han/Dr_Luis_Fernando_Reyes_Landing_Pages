@@ -153,11 +153,11 @@ export const BBL = {
     "height": 600,
     "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAACwAwCdASoUAA0APwlwr0+rpqQiMAgBcCEJZQAAWlW9utpgt1Al4AD9Erqp9R6Kjsi/UvcOEYYUM95xdJ8ONoqvQAA="
   },
-  "steps.jpg": {
-    "src": "/brazilian-butt-lift/steps.jpg",
-    "width": 900,
-    "height": 600,
-    "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAACQAwCdASoUAA0APwlur0+rpiQiMAgBcCEJZwCdACHgl7wU9mE4AP7mEF7u8KQRKS91se7gS3Hvk91bNgAAAA=="
+  "steps.webp": {
+    "src": "/brazilian-butt-lift/steps.webp",
+    "width": 1200,
+    "height": 800,
+    "blurDataURL": "data:image/webp;base64,UklGRkwBAABXRUJQVlA4WAoAAAAQAAAAEwAADAAAQUxQSNwAAAANuS5E9D80sFxrT63k4g5PPv+hubvLNL4Glz9/cfrnx+G6NemRp0PEBETXId3WTJrXbsKII7Nm7Bs2Ll3yX++Abet2tOnR6dgWoAu3yHzedjs5kOUckj6iHpqy7NlgbK9WgQlECscQgAEBBK5IlvM+nJxInt0bRebhfJfyCasS8pGKJUO36U+UJwUxAAZITPBOVZQBEbBAVFSLKxQiShAjBCXiiM+XbLIhKhICNAKxGFvp5zJrI6GfYPSc88FrVDk5Ycfo5sgL1enZmfPiSZYGFbi8RqqfeRQFfOkAVlA4IEoAAACwAwCdASoUAA0APwlwr0+rpqQiMAgBcCEJZQC7AB8igoV648gSXgD+UjlVRpc//bQX6EbIpJt0FoFeXRzY9gyM+LbSGR//PIAAAA=="
   },
   "ba-1.jpg": {
     "src": "/brazilian-butt-lift/ba-1.jpg",

@@ -184,10 +184,10 @@ covers every section properly** — what it reads from `content.ts`, what
 animates, and the gotchas. This table is only a map.
 
 `/brazilian-butt-lift` runs the same twelve sections in the same order, with
-two rebuilt. Section 5 loses the locator ring — there is no illustration for
-that procedure. Section 9 has no drag slider (nothing the clinic supplied
-can be split into two halves) and labels each gallery card individually,
-because not all of them contain a "before". See
+two rebuilt. Section 5 runs the same locator animation over its own
+three-panel illustration, one panel per step. Section 9 has no drag slider
+(nothing the clinic supplied can be split into two halves) and labels each
+gallery card individually, because not all of them contain a "before". See
 [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 
 | # | Section | In one line |
@@ -257,7 +257,8 @@ Output is namespaced into three buckets, which is also how
 | Output | Derived from |
 |---|---|
 | `hero-bg.jpg` | The hero photograph, capped at 1000px for the same reason |
-| `benefits-portrait.jpg`, `steps.jpg` | The profile and interior shots at 900px. `steps.jpg` stands in for `anatomy.webp` — there is no illustration for this procedure, and drawing one would mean inventing anatomy |
+| `benefits-portrait.jpg` | The profile shot for the benefits band, at 900px |
+| `steps.webp` | The three-panel procedure illustration — this page's `anatomy.webp`, and what the how-it's-performed locator ring travels across. Knocked out to transparency at 1200px so it floats on the sand band. Its plate is a flat **cream**, not white, so it goes through `knockOutTint` rather than `knockOutBackground`: the illustration contains surgeons' white gloves that are *brighter* than the background, so any brightness threshold that clears the cream eats them |
 | `ba-1…6.jpg` | The clinic's own before/after cards from `B A/`, resized only — all 700×380. **The whole of this page's results section is these six files:** one leads as the featured comparison, five fill the gallery. The 6-pair grid composite in `Images/` used to feed both and now feeds neither |
 
 The script also writes `lib/generated/images.ts` with each asset's natural

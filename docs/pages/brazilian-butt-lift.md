@@ -29,7 +29,7 @@ Measured at 1440×900 with reduced motion.
 | 2 | Trust strip | `sections/Stats.tsx` | — | espresso | 0 | 152 |
 | 3 | Credentials | `sections/Assurance.tsx` | — | sand | 68 / 44 | 512 |
 | 4 | What is a BBL | `sections/Procedure.tsx` | `procedure` | ivory | 68 / 44 | 727 |
-| 5 | How it's performed | **`sections/Steps.tsx`** | — | sand | 68 / 44 | 940 |
+| 5 | How it's performed | **`sections/Steps.tsx`** | — | sand | 68 / 44 | 763 |
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 838 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
@@ -44,9 +44,8 @@ from the buccal page by more than their imports: **`Steps.tsx`** (which
 replaces `Anatomy.tsx`) and **`Results.tsx`**. Everything else is the same
 component reading different content.
 
-The page is 10.8k tall at 1440 against the buccal page's 10.3k. Most of the
-difference is section 5, where four steps and a recovery panel run taller
-than the buccal page's three.
+The page is 10.6k tall at 1440 against the buccal page's 10.3k — close
+enough now that no one section accounts for the difference.
 
 ---
 
@@ -121,53 +120,75 @@ Unchanged component. The theatre photograph is now `SHARED["dr-surgery.jpg"]`
 
 ## 5. How it's performed — `sections/Steps.tsx`
 
-**This is the one section rebuilt rather than re-copied.** It replaces
-`Anatomy.tsx`, and the file is renamed because there is no anatomy in it.
+The file is named `Steps.tsx` rather than `Anatomy.tsx` because there is no
+anatomy in it, but it now runs **the same animation the buccal page does**:
+a gold locator ring travelling an illustration, a progress rail aligned to
+the same stops, and the self-playing stepper around both.
 
-### What was dropped, and why
+### The ring came back when the artwork did
 
-The buccal version puts a gold locator ring on a medical illustration and
-travels it between three measured stops — `x: 7.35, y: 64.07` is where the
-buccal fat pad actually sits in that artwork, found by scanning its alpha
-channel.
+It was dropped when this page was first built. The slot held an editorial
+photograph then — there was no illustration for the procedure, and a
+locator ring on a mood shot points at nothing. The clinic supplied a
+three-panel illustration (`Images/ChatGPT Image Aug 5, 2026, 08_51_13 PM`),
+one panel per step: cannula in the fat layer, purified fat in the vial,
+compression garment. That is exactly what a ring needs.
 
-There is no equivalent illustration for this procedure, and the clinic
-supplied none. A ring on an editorial photograph points at nothing, and
-drawing an anatomical diagram to put one back would mean inventing anatomy
-on a medical page. So the ring is gone and the slot holds a photograph —
-`BBL["steps.jpg"]`, the dark interior shot, dark on purpose so it doesn't
-compete with the four steps beside it.
+**Three steps, not four, and that is the constraint.** The step count is
+tied to the panel count — a fourth step would leave the ring with nowhere
+to travel. Harvesting folded into step 01 alongside the anaesthesia, and
+the separate "Recovery" panel that used to hang below the grid became step
+03. Nothing was lost: the operating time is still in the FAQ and the
+donor-area list is still in `PROCEDURE.body`.
 
-### What was kept
+### The stops are measured, not estimated
 
-Everything else about the behaviour: the self-playing stepper, `DWELL` of
-5200ms, pause on hover or focus, click to restart the dwell, the timer only
-running while the section is on screen, and the per-step progress hairline.
+Same discipline as the buccal page, different technique — that artwork has
+an alpha channel to scan, this one does not. Its background is a flat cream
+(250,244,238), so every element is found by asking which pixels are *not*
+that colour: three panel bands at x 72–485, 568–973 and 1055–1457, each
+split by an empty row band at y 342–394 into an inset circle above and the
+main oval below.
 
-The progress rail stays too, but its stops are now **evenly spaced**
-(`left: (i / last) * 100%`) rather than aligned to features in the artwork.
-That is honest: it is a position indicator for four steps, not a map of the
-image above it.
+The ring points at the **ovals** (y 398–861) — they are the panel; the
+inset is its detail, and it already carries a gold ring of its own in the
+artwork.
 
-### Four steps, not three
+**An ellipse, not a circle.** The ovals are 26.4% wide by 45.3% tall, so a
+circle either sits inside one or swallows the panel next door. `height`
+animates alongside `width` and the buccal version's `aspect-square` is
+gone. One `RING` size serves all three stops because they agree to within
+half a point — unlike the buccal stops, where the middle one is a 70px
+arrow between two 198px circles and genuinely needs its own size.
 
-The brief describes four distinct stages — anaesthesia and duration, donor
-sculpting, purification and placement, garment and discharge — and merging
-any two loses either the operating time or the compression garment.
+**The source is not trimmed to its ink, deliberately.** Trimming would put
+the first oval flush against the left edge and clip the ring that has to
+surround it. The 72px margin the artwork ships with is what the ring needs
+to breathe.
 
-### Recovery spans both columns
+### The background is knocked out by colour, not brightness
 
-`STEPS.note` is the brief's own "Recovery" heading, and it renders as a
-full-width strip **below** the grid.
+`steps.webp` floats on the sand band exactly as the buccal illustration
+does. It goes through `knockOutTint`, not `knockOutBackground`, and the
+difference matters: the plate is cream (250,244,238) and the illustration
+contains surgeons' white gloves at (250,250,250). By brightness those are
+indistinguishable — `min(r,g,b)` is 238 for the background and 250 for a
+glove — so any threshold that clears the cream also eats gloves wherever
+one reaches the edge of its panel. Per-channel distance from the actual
+background colour separates them: a glove is 6 away on green and 12 on
+blue, so a tolerance of 6 keeps it while the cream goes.
 
-Two reasons, and the second is the one that will bite if you move it back:
+### The columns are centred, not top-aligned
 
-- Recovery is not a stage of the operation. Numbering it as a fifth step
-  would say the procedure ends where it actually continues.
-- The photograph column is ~200px shorter than four steps plus a panel. With
-  the note inside the right-hand column, the left column ran out at the
-  progress rail and left a visible hole beneath it. Spanning both closes it.
-  The same shape is already established by the candidate band's CTA strip.
+`lg:items-center` where the buccal page uses `items-start`, and the shape
+of the artwork is why. The buccal illustration is a 2.65:1 strip, so its
+heading + image + rail comes to about the height of its three steps and the
+columns finish level. This one is 3:2 — 370px taller in the same width —
+while these three steps are shorter than the buccal page's. Left 627px
+against right 428px: top-aligned that put ~200px of dead sand under the
+steps; centred, the same slack splits above and below and reads as
+breathing room. The steps also carry `py-5` against the buccal `py-3`, for
+the same reason.
 
 ---
 

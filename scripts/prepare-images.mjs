@@ -69,7 +69,13 @@ const SOURCES = {
 const BBL_SOURCES = {
   hero: "Hero Image.png",
   profile: "ChatGPT Image Jul 25, 2026, 02_59_52 PM.png",
-  interior: "ChatGPT Image Jul 25, 2026, 03_09_16 PM.png",
+  /*
+   * Three panels, one per step of the procedure: cannula in the fat layer,
+   * purified fat in the vial, compression garment. It replaced an editorial
+   * photograph, and that is what let the buccal page's travelling locator
+   * ring come back — a ring needs something to point AT.
+   */
+  steps: "ChatGPT Image Aug 5, 2026, 08_51_13 PM.png",
 };
 
 const src = (k) => path.join(SRC, SOURCES[k]);
@@ -181,6 +187,76 @@ async function knockOutBackground(inputBuffer) {
       b >= NEAR_WHITE
         ? 0
         : Math.round(255 * (1 - (b - FEATHER) / (NEAR_WHITE - FEATHER)));
+    data[i + 3] = Math.min(data[i + 3], alpha);
+  }
+
+  return sharp(data, { raw: { width: w, height: h, channels: 4 } });
+}
+
+/**
+ * The same flood fill, but keyed to a flat *tinted* background rather than
+ * to brightness — which is the whole point of it existing separately.
+ *
+ * The BBL steps illustration sits on cream (250,244,238) and contains
+ * surgeons' white gloves at (250,250,250). By brightness those are
+ * indistinguishable: `min(r,g,b)` is 238 for the background and 250 for a
+ * glove, so any threshold that clears the cream also eats the gloves
+ * wherever one reaches the edge of its panel.
+ *
+ * Per-channel distance from the actual background colour separates them
+ * cleanly: a glove is 6 away on green and 12 on blue, so a tolerance of 6
+ * keeps it while the cream — 0 away on every channel — goes. Feathering to
+ * 22 catches the antialiased rim without reaching the gloves.
+ */
+async function knockOutTint(inputBuffer, tint, { near = 6, feather = 22 } = {}) {
+  const { data, info } = await sharp(inputBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width: w, height: h } = info;
+
+  const idx = (x, y) => (y * w + x) * 4;
+  const dist = (i) =>
+    Math.max(
+      Math.abs(data[i] - tint[0]),
+      Math.abs(data[i + 1] - tint[1]),
+      Math.abs(data[i + 2] - tint[2])
+    );
+
+  const visited = new Uint8Array(w * h);
+  const queue = [];
+  const push = (x, y) => {
+    const p = y * w + x;
+    if (visited[p]) return;
+    if (dist(idx(x, y)) > feather) return;
+    visited[p] = 1;
+    queue.push(p);
+  };
+
+  for (let x = 0; x < w; x++) {
+    push(x, 0);
+    push(x, h - 1);
+  }
+  for (let y = 0; y < h; y++) {
+    push(0, y);
+    push(w - 1, y);
+  }
+
+  while (queue.length) {
+    const p = queue.pop();
+    const x = p % w;
+    const y = (p / w) | 0;
+    if (x > 0) push(x - 1, y);
+    if (x < w - 1) push(x + 1, y);
+    if (y > 0) push(x, y - 1);
+    if (y < h - 1) push(x, y + 1);
+  }
+
+  for (let p = 0; p < w * h; p++) {
+    if (!visited[p]) continue;
+    const i = p * 4;
+    const d = dist(i);
+    const alpha = d <= near ? 0 : Math.round((255 * (d - near)) / (feather - near));
     data[i + 3] = Math.min(data[i + 3], alpha);
   }
 
@@ -513,15 +589,29 @@ await emit(
   sharp(bblSrc("profile")).resize({ width: 900, withoutEnlargement: true })
 );
 /*
- * Stands in for the buccal page's `anatomy.webp` beside the how-it's-
- * performed stepper. There is no medical illustration for this procedure
- * — and inventing one would be inventing anatomy — so the slot holds a
- * photograph instead. Dark and quiet on purpose: it sits on the sand band
- * and must not compete with the four steps beside it.
+ * The BBL equivalent of the buccal page's `anatomy.webp`: the illustration
+ * the how-it's-performed locator ring travels across.
+ *
+ * It replaced an editorial photograph that stood in while there was no
+ * illustration for this procedure. That photograph was the reason the ring
+ * had to be dropped — a locator on a mood shot points at nothing — so
+ * getting real artwork is what brought the animation back.
+ *
+ * Knocked out to transparency rather than left on its cream plate, so it
+ * floats on the sand band exactly as the buccal illustration does. The
+ * background is a flat tint, not white, which is why it goes through
+ * `knockOutTint` and not `knockOutBackground` — see the note there about
+ * white gloves.
+ *
+ * Emitted at 1200px: the column it renders into is ~617px at 1440, so this
+ * is very nearly 2x, and WebP with alpha keeps it near 100kB where a PNG
+ * would be several times that.
  */
 await emit(
-  "steps.jpg",
-  sharp(bblSrc("interior")).resize({ width: 900, withoutEnlargement: true })
+  "steps.webp",
+  (
+    await knockOutTint(await sharp(bblSrc("steps")).png().toBuffer(), [250, 244, 238])
+  ).resize({ width: 1200, withoutEnlargement: true })
 );
 
 console.log("\nBBL gallery — the clinic’s own cards, resized only");
