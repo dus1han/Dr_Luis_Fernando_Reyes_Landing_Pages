@@ -277,9 +277,22 @@ export type GalleryCard = {
   area: string;
 };
 
+/*
+ * Pairs first, then the single results — so the row of three that opens
+ * the grid is all genuine before/afters. `ba-2` is absent on purpose: it
+ * is the featured slider above, and showing it again here would be the
+ * same patient twice.
+ *
+ * `ba-7` is out of sequence because it was supplied last and keeps the
+ * number it was emitted under. Renumbering the others to tidy it up would
+ * point existing URLs at different bytes, which Next's image cache serves
+ * stale — the numbering is an implementation detail, the order here is
+ * what the visitor sees.
+ */
 export const GALLERY: GalleryCard[] = [
   { key: "ba-1.jpg", kind: "pair", area: "Waist and abdomen" },
   { key: "ba-3.jpg", kind: "pair", area: "Waist and abdomen" },
+  { key: "ba-7.jpg", kind: "pair", area: "Waist and abdomen" },
   { key: "ba-4.jpg", kind: "result", area: "Silhouette" },
   { key: "ba-5.jpg", kind: "result", area: "Silhouette" },
   { key: "ba-6.jpg", kind: "result", area: "Silhouette" },

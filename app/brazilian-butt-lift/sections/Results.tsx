@@ -90,16 +90,18 @@ export function Results() {
 
         {/*
           `items-start` so a card is never stretched away from its own
-          aspect ratio. All five are 700x380 today, so nothing is ragged —
+          aspect ratio. All six are 700x380 today, so nothing is ragged —
           but the buccal page's gallery mixes two shapes, and a card added
           here in a third would otherwise be stretched to match its row.
 
-          Flex wrap, not grid — and that is the whole reason it changed.
-          Five cards in three columns leaves an orphan row of two, and CSS
-          grid has no way to centre it: `justify-content` centres the
-          *track set*, so the two still sit in columns 1 and 2 with a hole
-          on the right. Flex lays out row by row, so `justify-center`
-          centres the trailing pair under the gap between the three above.
+          Flex wrap, not grid, and it stays that way even now the count is
+          even. It went to flex when the gallery was five: three columns
+          leave an orphan row of two, and CSS grid has no way to centre one
+          — `justify-content` centres the *track set*, so the pair stays in
+          columns 1 and 2 with a hole on the right. Flex lays out row by
+          row, so `justify-center` handles any count. This list has already
+          been twelve, six, five and six again; the layout should not need
+          revisiting the next time one is added or dropped.
 
           The widths reproduce the grid's columns arithmetically — one up,
           two from sm, three from lg — because `basis` has to do the job
@@ -107,7 +109,7 @@ export function Results() {
 
           Tags come from each card's own `kind`, not from a rule applied to
           the whole gallery: three of these photographs have no "before" in
-          them, and stamping the pair labels across all five would be
+          them, and stamping the pair labels across all six would be
           describing pictures that don't exist. See the note above GALLERY
           in content.ts.
         */}

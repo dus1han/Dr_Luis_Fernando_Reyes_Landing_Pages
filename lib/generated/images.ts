@@ -206,6 +206,12 @@ export const BBL = {
     "width": 700,
     "height": 380,
     "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoUAAsAPwlurk+rpiQiMAgBcCEJYwCsMoAA26YoY2QAAPxT2lZfFooKtVeMqLBlz3Q5Buir4/KcxuShBwSCAAAA"
+  },
+  "ba-7.jpg": {
+    "src": "/brazilian-butt-lift/ba-7.jpg",
+    "width": 700,
+    "height": 380,
+    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACQAwCdASoUAAsAPwlys1CrpqSisAgBcCEJQBOgAr2V/cfDK/cAAP3FTCpvUuvVpZtAs52PqNkNUvJ5H4pHD9ZW6m3wY6bZCHSYq/ZEAAA="
   }
 } as const;
 

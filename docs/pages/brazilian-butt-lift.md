@@ -252,8 +252,9 @@ size."
 The section with the most changes, all driven by what the clinic supplied.
 
 **Everything in this section comes from the clinic's `B A` folder.** Six
-files, six uses: five fill the gallery and the sixth is cut into the two
-halves of the featured slider. Nothing is sourced from `Images/`.
+files plus a seventh supplied later: six fill the gallery and one is cut
+into the two halves of the featured slider. Nothing is sourced from
+`Images/`.
 
 ### The drag slider, and which file could take it
 
@@ -314,21 +315,34 @@ layout too, so ask before adding one back.
 
 ### The gallery labels each card
 
-Five cards, all 700×380, resized only.
+Six cards, all 700×380, resized only — the three genuine pairs first, then
+the three single results, so the row that opens the grid is all
+before/afters.
 
-> **It used to be twelve, then six.** Six pairs cut out of a grid composite
-> in `Images/` led the list, and the featured slot was a slider cut from the
-> same grid. The clinic asked for the before/after to come from `B A` and
-> nothing else, so no part of this section is sourced outside that folder
-> now. The grid is still on disk and `prepare-images.mjs` still records
-> where its separators are, but nothing reads it.
+Two things about the keys. **`ba-2` is absent on purpose**: it is the
+featured slider above, and showing it again here would be the same patient
+twice. **`ba-7` is out of sequence** because it arrived last and keeps the
+number it was emitted under — renumbering the others to tidy it would point
+live URLs at different bytes, which the image cache then serves stale. The
+numbering is an implementation detail; the order in `GALLERY` is what the
+visitor sees.
 
-**Flex wrap, not grid.** Five cards in three columns leaves an orphan row of
-two, and CSS grid cannot centre it — `justify-content` centres the *track
-set*, so the two stay in columns 1 and 2 with a hole on the right. Flex lays
-out row by row, so `justify-center` puts the trailing pair under the gap
-between the three above. The `basis` widths reproduce the grid's columns
-arithmetically because they have to do the job `grid-cols` was doing.
+> **It used to be twelve, then six, then five.** Six pairs cut out of a grid
+> composite in `Images/` led the list, and the featured slot was a slider
+> cut from the same grid. The clinic asked for the before/after to come from
+> `B A` and nothing else, so the grid feeds none of it now — it is still on
+> disk, and `prepare-images.mjs` still records where its separators are, but
+> nothing reads it. The seventh card was supplied afterwards.
+
+**Flex wrap, not grid**, and it stays that way even now the count is even.
+It changed when the gallery was five: three columns leave an orphan row of
+two, and CSS grid cannot centre one — `justify-content` centres the *track
+set*, so the pair stays in columns 1 and 2 with a hole on the right. Flex
+lays out row by row, so `justify-center` handles any count. This list has
+already been twelve, six, five and six again; the layout should not need
+revisiting the next time a card is added or dropped. The `basis` widths
+reproduce the grid's columns arithmetically because they have to do the job
+`grid-cols` was doing.
 
 The tags come from each card's own `kind` in `GALLERY`, not from a rule
 applied to the whole gallery:
