@@ -63,48 +63,30 @@ export function Results() {
           Featured comparison — the one image on the page the visitor can
           actually operate, so it leads the proof section.
 
-          0.72fr, where the buccal page gives its slider 0.82fr. Its halves
-          are 766px of source and can be scaled down; these are 310px, cut
-          from a 700px card that is everything the clinic supplied. 0.72fr
-          lands at ~416px, a 1.34x upscale — about as far as a photograph
-          stretches before it reads as soft. A wider column only stretches
-          it further, and there is no larger crop to take.
-        */}
-        <div className="mb-14 grid items-center gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
-          <Reveal>
-            <div className="mb-4 flex items-baseline justify-between border-b border-ink/16 pb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-muted">
-              <span>Actual comparison</span>
-              <span>{FEATURED.area}</span>
-            </div>
-            <BeforeAfterSlider
-              before={compareBefore}
-              after={compareAfter}
-              beforeAlt={FEATURED.beforeAlt}
-              afterAlt={FEATURED.afterAlt}
-              sizes="(max-width: 1024px) 92vw, 420px"
-            />
-          </Reveal>
+          Centred and alone, where the buccal page sets its slider in a
+          two-column row beside a reading guide. That guide was removed
+          here at the clinic's request (see the note on RESULTS in
+          content.ts), and a lone column in a two-column grid is just an
+          element pinned to one side with a hole next to it.
 
-          {/* The reading guide, with no paragraph above it — see the note
-              on RESULTS in content.ts. The three rows now carry the column
-              on their own, so they are set a little larger than the buccal
-              page's, which follow an intro that has already set the tone. */}
-          <RevealGroup step={0.1}>
-            {RESULTS.lookFor.map((l) => (
-              <RevealItem
-                key={l.title}
-                className="border-t border-ink/12 py-6 last:border-b"
-              >
-                <h3 className="mb-2 font-display text-[21px] leading-[1.3] text-ink">
-                  {l.title}
-                </h3>
-                <p className="m-0 max-w-[54ch] text-[16px] leading-[1.65] text-muted">
-                  {l.body}
-                </p>
-              </RevealItem>
-            ))}
-          </RevealGroup>
-        </div>
+          430px, not the full shell. The halves are 310px of source — all
+          the clinic's card holds — so this is a 1.39x upscale, about as
+          far as a photograph stretches before it reads as soft. The rule
+          above shares the width so the two align as one block.
+        */}
+        <Reveal className="mx-auto mb-14 w-full max-w-[430px]">
+          <div className="mb-4 flex items-baseline justify-between border-b border-ink/16 pb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-muted">
+            <span>Actual comparison</span>
+            <span>{FEATURED.area}</span>
+          </div>
+          <BeforeAfterSlider
+            before={compareBefore}
+            after={compareAfter}
+            beforeAlt={FEATURED.beforeAlt}
+            afterAlt={FEATURED.afterAlt}
+            sizes="(max-width: 640px) 92vw, 430px"
+          />
+        </Reveal>
 
         {/*
           `items-start` so a card is never stretched away from its own

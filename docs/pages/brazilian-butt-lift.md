@@ -33,7 +33,7 @@ Measured at 1440×900 with reduced motion.
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 838 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1430 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1443 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 802 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1173 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 824 |
@@ -288,24 +288,29 @@ Three measurements shape the crop, all taken off the pixels:
 Emitted at native size: 310px is all there is, and upscaling in the
 pipeline would only move the softness from the browser into the file.
 
-**The column is `0.72fr`** against the buccal page's `0.82fr`. Its halves
-are 766px of source and get scaled *down*; these are 310px cut from a 700px
-card. `0.72fr` lands at ~416px — a 1.34× upscale, about as far as a
+**It is capped at 430px and centred**, where the buccal slider sits in a
+two-column row and fills its column. The halves are 310px of source — all
+the clinic's card holds — so 430px is a 1.39× upscale, about as far as a
 photograph stretches before it reads as soft, and there is no larger crop
-to take.
+to take. The rule above it shares the width so the two read as one block.
 
-> If the clinic would rather nothing of theirs be fragmented, the fix is a
-> supplied file rather than a code change: either the two photographs
-> separately, or the same card without the repeat watermark across the
-> middle.
+> If the clinic would rather nothing of theirs be fragmented, or wants it
+> sharper, the fix is a supplied file rather than a code change: either the
+> two photographs separately, or the same card without the repeat watermark
+> across the middle.
 
-### No paragraph above the reading guide
+### There is no reading guide
 
-The buccal page opens this column with an intro paragraph before its three
-points. That was removed here at the clinic's request, so the three rows
-carry the column alone — and are set a step larger than the buccal ones,
-which follow an intro that has already set the tone. `RESULTS` has no
-`intro` key at all; don't reinstate one without asking.
+The buccal page's results section runs an `intro` paragraph and a
+three-item `lookFor` list beside its slider, telling the visitor what to
+look at. **Both were removed here at the clinic's request** — the intro
+first, then the list.
+
+That is why this section has no two-column row at all. With nothing to sit
+beside it, a slider left in a two-column grid is just an element pinned to
+one side with a hole next to it, so it is centred on its own instead.
+`RESULTS` has neither key now; restoring either means restoring that
+layout too, so ask before adding one back.
 
 ### The gallery labels each card
 

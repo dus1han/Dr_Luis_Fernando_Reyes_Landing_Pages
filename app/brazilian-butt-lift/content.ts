@@ -289,26 +289,17 @@ export const RESULTS = {
   eyebrow: "Before & after",
   headline: ["The difference is in", "the proportions"] as const,
   /*
-   * There is no `intro` here, and that is deliberate — removed at the
-   * clinic's request. The buccal page opens this column with a paragraph
-   * before its reading guide; this one goes straight into the three
-   * points. Don't reinstate it without asking.
+   * ── NO READING GUIDE ON THIS PAGE ─────────────────────────────────────
+   * The buccal page's results section runs an `intro` paragraph and a
+   * three-item `lookFor` list beside its slider, telling the visitor what
+   * to look at. Both were removed here at the clinic's request — the intro
+   * first, then the list.
+   *
+   * That is why this section has no two-column row: with nothing to sit
+   * beside, the slider is centred on its own. Restoring either key means
+   * restoring that layout too, so ask before adding one back.
+   * ──────────────────────────────────────────────────────────────────────
    */
-  /** Describes what the photographs show — no claims beyond the headline. */
-  lookFor: [
-    {
-      title: "Projection",
-      body: "Purified fat is placed to build a rounded, projected shape rather than volume alone.",
-    },
-    {
-      title: "The waist",
-      body: "Fat taken from the abdomen, waist or flanks narrows the mid section, which is half of what makes a curve read.",
-    },
-    {
-      title: "The transitions",
-      body: "Waist to hip and hip to thigh soften, so the silhouette reads as one continuous line.",
-    },
-  ],
   /*
    * Longer than the buccal page's, and deliberately so: fat transfer has a
    * variable this page has already told the visitor about — not all of the

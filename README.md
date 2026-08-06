@@ -347,13 +347,14 @@ and never the lead.
 - **Results galleries are 3-column on desktop** because the source cards
   are small. At 2 columns they would be upscaled on high-DPI screens.
   Higher-resolution source art would allow a larger presentation.
-- **The BBL slider is upscaled ~1.34×, and its halves carry a watermark
+- **The BBL slider is upscaled ~1.39×, and its halves carry a watermark
   fragment.** They are 310px, cut from a 700px card — the only one of the
-  six supplied that can be split at all. The clinic's centre watermark
-  straddles the seam and no crop avoids it while keeping both bodies
-  whole, so a faint fragment sits at the inner edge of each half; both
-  corner wordmarks survive intact. Fixing either needs a supplied file,
-  not a different crop. Measured per file in
+  six supplied that can be split at all — and capped at 430px on the page
+  to hold the upscale down. The clinic's centre watermark straddles the
+  seam and no crop avoids it while keeping both bodies whole, so a faint
+  fragment sits at the inner edge of each half; both corner wordmarks
+  survive intact. Fixing either needs a supplied file, not a different
+  crop. Measured per file in
   [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 - **No BBL image shows a buttock before and after.** The only source that
   did was a grid composite in `Images/`, dropped when the before/after was
