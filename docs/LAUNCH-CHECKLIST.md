@@ -41,18 +41,20 @@ Work top to bottom. Nothing below requires touching page or section code.
       consented clinical photos, set `SHOW_RESULTS_DISCLAIMER = false` in
       `lib/site.ts` (or keep it — "individual results vary" is a
       reasonable line to leave up either way).
-- [ ] **Verify BOTH numbers and the email** in `lib/site.ts`. There are two
-      and they are not interchangeable:
-      - `phoneDisplay` / `phoneHref` — **`+971 55 557 2547`**, the voice
-        line. Appears in the **footer only**, plus `telephone` in the
-        structured data (which drives click-to-call in search results).
-      - `contactDisplay` / `contactHref` / `whatsappHref` — **`+971 56 663
-        6359`**, WhatsApp. Every other touchpoint on every page.
-- [ ] **Confirm `+971 56 663 6359` answers voice calls.** Four affordances
-      are labelled "call" and dial it — the sticky bar's phone icon, the FAQ
-      button, the 404 and the form's error message. If it is WhatsApp-only,
-      repoint those at `whatsappHref` or remove them; a call button that
-      rings nothing is worse than no call button.
+- [x] **Confirm the clinic number answers voice calls.** *Confirmed —
+      `+971 56 663 6359` takes calls and WhatsApp alike, so it is now the
+      only number on the site. The separate voice line
+      (`+971 55 557 2547`) is retired, and `contactDisplay` /
+      `contactHref` are gone with it: one number, one pair of constants.*
+- [ ] **Verify the number and the email** in `lib/site.ts`.
+      `phoneDisplay` / `phoneHref` — **`+971 56 663 6359`** — now carries
+      every touchpoint on every page, including `telephone` in the
+      structured data, which drives click-to-call straight from a search
+      result. `whatsappHref` is the same number.
+      *Check it on a live page before traffic:*
+      `npm run verify:phones -- http://127.0.0.1:3000 <slug>` lists every
+      `tel:` and `wa.me` link per route. Anything labelled `RETIRED 55…`
+      means a hardcoded number has crept back in.
 - [ ] **Verify the email** — `luisfernandoreyesmd@yahoo.com`.
       *A yahoo.com address on a premium clinic page reads as less
       established than a domain address — worth considering.*

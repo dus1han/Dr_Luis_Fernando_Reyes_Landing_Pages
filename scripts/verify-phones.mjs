@@ -13,10 +13,17 @@ const B = (process.argv[2] || "http://127.0.0.1:3000").replace(/\/+$/, "");
 const CHROME =
   process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe";
 
-/** Digits only, so a display-format change doesn't break the labelling. */
+/**
+ * Digits only, so a display-format change doesn't break the labelling.
+ *
+ * The clinic runs ONE number now, for calls and WhatsApp alike. The old
+ * voice line is still listed so this doubles as a regression check: if
+ * "RETIRED 55…" ever appears in the output, a hardcoded number has crept
+ * back in somewhere.
+ */
 const NUMBERS = [
-  { digits: "971555572547", label: "CALL 55…" },
-  { digits: "971566636359", label: "NEW 56…" },
+  { digits: "971566636359", label: "CLINIC 56…" },
+  { digits: "971555572547", label: "RETIRED 55…" },
 ];
 
 const b = await puppeteer.launch({

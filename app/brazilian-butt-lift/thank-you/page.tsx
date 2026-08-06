@@ -95,10 +95,10 @@ export default function ThankYou() {
                 than only a link back to the page they came from. */}
             <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <a
-                href={SITE.contactHref}
+                href={SITE.phoneHref}
                 className="inline-flex min-h-12 items-center justify-center rounded-[2px] bg-gold px-7 text-[13px] font-semibold uppercase tracking-[0.09em] text-white no-underline transition-colors duration-300 hover:bg-champagne hover:text-espresso-deep"
               >
-                Call {SITE.contactDisplay}
+                Call {SITE.phoneDisplay}
               </a>
               <a
                 href={SITE.whatsappHref}

@@ -229,7 +229,7 @@ export function Nav({ links }: { links: NavLink[] }) {
                 open ? "text-champagne" : "text-body"
               }`}
             >
-              {SITE.contactDisplay}
+              {SITE.phoneDisplay}
             </a>
             {/* Hidden on the smallest screens — the sticky bottom bar owns
                 the CTA there and two competing buttons hurt conversion.
@@ -352,7 +352,7 @@ export function Nav({ links }: { links: NavLink[] }) {
                   }}
                   className="grid min-h-12 place-items-center rounded-[2px] border border-champagne/30 text-[14px] font-medium text-champagne no-underline"
                 >
-                  WhatsApp {SITE.contactDisplay}
+                  WhatsApp {SITE.phoneDisplay}
                 </a>
               </motion.div>
             </div>

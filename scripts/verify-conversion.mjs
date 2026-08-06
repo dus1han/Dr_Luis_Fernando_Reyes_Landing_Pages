@@ -67,7 +67,7 @@ const VIEWPORT = { width: 1280, height: 900 };
 
 async function fillAndSubmit(page) {
   await page.type("#name", "Verification Test");
-  await page.type("#phone", "+971555572547");
+  await page.type("#phone", "+971500000000");
   await page.type("#email", "verify@example.com");
 
   /*

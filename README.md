@@ -140,7 +140,7 @@ deploy/                         remote-deploy.sh + Caddy reference
 | I want to… | Edit |
 |---|---|
 | Reword any copy | `app/<slug>/content.ts` |
-| Change phone / email / socials | `lib/site.ts` — note there are **two** numbers: the voice line (footer + structured data only) and the WhatsApp number used everywhere else. The WhatsApp prefill is procedure-neutral on purpose; the shared chrome has no page context |
+| Change phone / email / socials | `lib/site.ts` — **one** number now, `phoneDisplay` / `phoneHref`, carrying calls, WhatsApp and the structured data on every page. It used to be two; the separate voice line is retired. The WhatsApp prefill is procedure-neutral on purpose; the shared chrome has no page context |
 | Adjust a colour | `app/globals.css` → `@theme` |
 | Retune an animation | `lib/motion.ts` |
 | Add a section | new file in `sections/`, then add to `page.tsx` |

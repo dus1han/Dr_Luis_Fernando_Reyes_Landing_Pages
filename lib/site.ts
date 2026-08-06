@@ -11,37 +11,28 @@ export const SITE = {
   country: "United Arab Emirates",
 
   /*
-   * TWO numbers, and they are not interchangeable.
+   * ONE number, for calls and for WhatsApp, on every page.
    *
-   * `phoneDisplay` / `phoneHref` is the clinic's voice line. It appears in
-   * exactly one place — the footer — and in the structured data, because
-   * `telephone` in schema.org drives click-to-call in search results and
-   * should be the line that answers calls.
+   * It used to be two: a separate voice line (+971 55 557 2547) that
+   * appeared only in the footer and in the structured data, and this number
+   * for everything else. The clinic has since confirmed this one takes
+   * both, so the voice line is gone rather than kept as a second constant —
+   * two identical values under different names is how they drift apart
+   * again.
    *
-   * `contactDisplay` / `contactHref` and `whatsappHref` are the number the
-   * clinic wants people to reach it on. Every other touchpoint uses these.
+   * `phoneDisplay` is what schema.org's `telephone` carries, so it has to
+   * be the line that actually answers: it drives click-to-call straight
+   * from a search result.
    *
-   * Changing either means checking every usage: `grep -rn "phoneHref\|
-   * phoneDisplay\|contactHref\|contactDisplay\|whatsappHref"`. There are
-   * twelve.
+   * There is deliberately no `contactDisplay` / `contactHref` any more.
+   * They were the names for "the other number"; with one number they were
+   * just a second way to say the same thing.
+   *
+   * Changing this means checking every usage:
+   * `grep -rn "phoneHref\|phoneDisplay\|whatsappHref"`.
    */
-  phoneDisplay: "+971 55 557 2547",
-  phoneHref: "tel:+971555572547",
-
-  /** Shown and linked everywhere except the footer. WhatsApp-first. */
-  contactDisplay: "+971 56 663 6359",
-  /*
-   * A tel: link on the same number, used only by the affordances that are
-   * explicitly labelled "call" — the sticky bar's phone icon, the FAQ
-   * button, the 404 and the form's error message. Those already sit beside
-   * a separate WhatsApp button, so pointing them at WhatsApp too would give
-   * two identical buttons.
-   *
-   * If this number does NOT take voice calls, those four should be repointed
-   * at `whatsappHref` or removed — a call button that rings nothing is worse
-   * than no call button.
-   */
-  contactHref: "tel:+971566636359",
+  phoneDisplay: "+971 56 663 6359",
+  phoneHref: "tel:+971566636359",
 
   /*
    * The prefilled message is procedure-NEUTRAL, and has to stay that way.

@@ -835,29 +835,31 @@ and *what happens after I press this?* — so the form can stay short.
 
 - **Content:** `BOOKING` — `eyebrow`, `headline`, `lead`, `body[]`, `steps[]`
 
-### There are TWO numbers, and they are not interchangeable
+### There is ONE number, for calls and WhatsApp alike
 
 | | Number | Where | Behaviour |
 |---|---|---|---|
-| `phoneDisplay` / `phoneHref` | **+971 55 557 2547** | **Footer only**, plus `telephone` in the JSON-LD | `tel:` — the voice line |
-| `contactDisplay` / `contactHref` / `whatsappHref` | **+971 56 663 6359** | Everywhere else, every page | WhatsApp, or `tel:` where the affordance is explicitly labelled "call" |
+| `phoneDisplay` / `phoneHref` | **+971 56 663 6359** | Every page, plus `telephone` in the JSON-LD | `tel:` wherever the affordance is labelled "call" |
+| `whatsappHref` | the same number | Every page | Opens WhatsApp |
 
-The footer keeps the voice line because that is the number that answers
-calls, and `telephone` in schema.org drives click-to-call in search
-results — pointing it at a WhatsApp-only line would send searchers to a
-number that does not ring.
+**It used to be two.** A separate voice line, +971 55 557 2547, appeared in
+the footer and in the structured data, while this number carried everything
+else — and the checklist flagged that four affordances labelled "call"
+dialled a number nobody had confirmed would ring. The clinic has since
+confirmed this one takes both, so the voice line is retired and
+`contactDisplay` / `contactHref` are gone with it. Two identical values
+under different names is how they drift apart again.
 
-Everywhere else shows and links the WhatsApp number, because that is the
-channel the clinic wants enquiries on. **The nav number opens WhatsApp
-rather than a dialler** — it is a contact display, not a call button.
+`telephone` in schema.org drives click-to-call straight from a search
+result, so it has to be the line that actually answers — which is now the
+only line there is.
 
-> **Four affordances are labelled "call" and dial the WhatsApp number**:
-> the sticky bar's phone icon, the FAQ button, the 404 and the form's error
-> message. They sit beside a separate WhatsApp button in two of those
-> places, so pointing them at WhatsApp too would give two identical
-> buttons. **If that number does not take voice calls, repoint them at
-> `whatsappHref` or remove them** — a call button that rings nothing is
-> worse than no call button. Flagged in the launch checklist.
+One thing that has not changed: **the nav number opens WhatsApp rather than
+a dialler.** It is a contact display, not a call button.
+
+> `scripts/verify-phones.mjs` still lists the retired number, labelled
+> `RETIRED 55…`. That makes it a regression check — if it ever shows up in
+> the output, a hardcoded number has crept back in somewhere.
 
 Every WhatsApp link carries `target="_blank"` with
 `rel="noopener noreferrer"`. The audit fails a bare `target="_blank"`.

@@ -50,9 +50,9 @@ export function StickyCTA() {
           className="fixed inset-x-0 bottom-0 z-70 grid grid-cols-[auto_auto_1fr] items-stretch gap-2 border-t border-champagne/16 bg-espresso/97 px-3 pb-[calc(10px+env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-[8px] sm:hidden"
         >
           <a
-            href={SITE.contactHref}
+            href={SITE.phoneHref}
             onClick={() => track("call_click", { label: "sticky_bar" })}
-            aria-label={`Call ${SITE.doctorShort} on ${SITE.contactDisplay}`}
+            aria-label={`Call ${SITE.doctorShort} on ${SITE.phoneDisplay}`}
             className="grid min-h-12 w-12 place-items-center rounded-[2px] border border-champagne/30 text-champagne"
           >
             <PhoneIcon />

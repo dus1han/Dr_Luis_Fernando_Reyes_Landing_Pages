@@ -283,7 +283,7 @@ export default function Index() {
               rel="noopener noreferrer"
               className="text-champagne no-underline transition-colors duration-300 hover:text-white"
             >
-              {SITE.contactDisplay}
+              {SITE.phoneDisplay}
             </a>
           </p>
         </div>

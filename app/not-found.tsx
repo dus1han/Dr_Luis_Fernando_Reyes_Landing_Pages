@@ -57,7 +57,7 @@ export default function NotFound() {
               See the procedures
             </Link>
             <a
-              href={SITE.contactHref}
+              href={SITE.phoneHref}
               className="inline-flex min-h-12 items-center justify-center rounded-[2px] border border-champagne/35 px-7 text-[13px] font-semibold uppercase tracking-[0.09em] text-champagne no-underline transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-espresso-deep"
             >
               Call the clinic

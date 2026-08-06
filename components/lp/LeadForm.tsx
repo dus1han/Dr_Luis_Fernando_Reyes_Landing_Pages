@@ -297,8 +297,8 @@ export function LeadForm({ pageSlug }: { pageSlug: string }) {
           {status === "failed" && (
             <p role="alert" className="m-0 mt-3 text-center text-[13.5px] font-medium text-danger">
               Something went wrong sending your request. Please{" "}
-              <a href={SITE.contactHref} className="underline underline-offset-2">
-                call {SITE.contactDisplay}
+              <a href={SITE.phoneHref} className="underline underline-offset-2">
+                call {SITE.phoneDisplay}
               </a>{" "}
               or try again.
             </p>
