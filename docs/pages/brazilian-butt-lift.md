@@ -33,7 +33,7 @@ Measured at 1440×900 with reduced motion.
 | 6 | Benefits | `sections/Benefits.tsx` | `benefits` | ivory | 68 / 44 | 820 |
 | 7 | Am I a candidate | `sections/Candidate.tsx` | `candidate` | sand | 68 / 44 | 838 |
 | 8 | Meet Dr. Luis | `sections/Surgeon.tsx` | `surgeon` | espresso | 68 / 44 | 1251 |
-| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1471 |
+| 9 | Before & after | `sections/Results.tsx` | `results` | ivory | 68 / 44 | 1430 |
 | 10 | Reviews | `sections/Reviews.tsx` | `reviews` | sand | 68 / 44 | 802 |
 | 11 | FAQ | `sections/Faq.tsx` | `faq` | ivory | 68 / 44 | 1173 |
 | 12 | Booking | `sections/Booking.tsx` | `book` | espresso-deep | 68·44 / 44·30 | 824 |
@@ -252,41 +252,60 @@ size."
 The section with the most changes, all driven by what the clinic supplied.
 
 **Everything in this section comes from the clinic's `B A` folder.** Six
-files, six uses: one leads as the featured comparison, five fill the
-gallery. Nothing is sourced from `Images/`.
+files, six uses: five fill the gallery and the sixth is cut into the two
+halves of the featured slider. Nothing is sourced from `Images/`.
 
-### There is no drag slider here
+### The drag slider, and which file could take it
 
-The buccal page's featured slot is a `<BeforeAfterSlider>`, and that needs
-the before and after as two separate, equally sized files. No image in
-`B A` can supply them. Measured — scoring every column by the *median*
-row-to-row difference, so one high-contrast row can't fake a seam:
+`<BeforeAfterSlider>` needs the before and after as two separate, equally
+sized files, so one of the six cards has to be cut in half. Only one can
+be. Measured by scoring every column by its *median* row-to-row difference
+— median, so a single high-contrast row can't fake a seam:
 
-| File | Seam | Why it can't be split |
+| File | Seam | Verdict |
 |---|---|---|
 | `(20)` | none (score 8) | Both photographs sit on one continuous black backdrop with "NICOLE ECHEVERRY" spanning the join. There is no edge to cut on |
-| `(21)` | x313, weak (21) | A real tonal step, but the clinic's crown mark and "LUIS FERNANDO REYES" straddle it — a split leaves half a crown and "…S FERNANDO R" |
-| `(25)` | x350, hard (131) | Splits cleanly. It is also the intra-operative photograph |
-| `(26)` | x371, hard (296) | Splits, but into unequal halves, and it is not a confirmed pair |
+| **`(21)`** | **x313 (21)** | **Used.** A real tonal step, and the clearest of the three genuine pairs — also the only one carrying Dr. Luis's own watermark |
+| `(25)` | x350, hard (131) | Splits cleanly, and is the intra-operative photograph |
+| `(26)` | x371, hard (296) | Splits into unequal halves, and is not a confirmed pair |
 
-Cutting a clinic watermark in half to feed a slider is not a trade worth
-making, and the one file that does split is the one image on the page you'd
-least want blown up as the lead. So the slot holds `(21)` **whole**, as a
-large static card, with the header rule above it kept exactly as it was.
+Three measurements shape the crop, all taken off the pixels:
 
-**Consequence worth knowing:** `slider_interact` never fires on this page.
-The event contract in `lib/analytics.ts` is shared across pages, and a page
-with no slider simply doesn't emit one of its events. Nothing to fix.
+- **The bodies** are at x 31–299 and x 403–690, found by counting
+  skin-toned pixels per column. Both crops have to hold their subject
+  whole — clipping the silhouette is the one thing a before/after cannot
+  survive. That fixes the halves at 310px: `0–309` and `390–699`.
+- **The centre watermark** spans the seam at roughly x 242–435. No crop
+  keeps both bodies *and* avoids it, so a faint fragment sits at the inner
+  edge of each half. What the split does not cut is the branding proper:
+  each half keeps a **complete corner wordmark**.
+- **The burnt-in labels** sit in the top band at y 24–46 and y 59–80.
+  Cropping from y85 removes both, which is wanted twice over — the slider
+  draws its own captions, and the source's own were already clipped to
+  "ore" and "er" by the composite.
 
-The column split changes with it — `1.15fr` here against the buccal page's
-`0.82fr` — because this is a 1.84:1 landscape and that is a portrait. At
-`0.82` the card renders ~470×255 and the pair stops being readable; `1.15`
-lands near 640×347 and still leaves the reading guide ~475px.
+310×295 leaves the slider nearly square, close to the buccal one's 0.89.
+Emitted at native size: 310px is all there is, and upscaling in the
+pipeline would only move the softness from the browser into the file.
 
-No Before/After pills on this one either: the clinic burnt its own labels
-into the photograph, and a second set over the top would label each half
-twice. (Its "Before" is clipped to "ore" at the left edge — that is in the
-supplied file, not the crop.)
+**The column is `0.72fr`** against the buccal page's `0.82fr`. Its halves
+are 766px of source and get scaled *down*; these are 310px cut from a 700px
+card. `0.72fr` lands at ~416px — a 1.34× upscale, about as far as a
+photograph stretches before it reads as soft, and there is no larger crop
+to take.
+
+> If the clinic would rather nothing of theirs be fragmented, the fix is a
+> supplied file rather than a code change: either the two photographs
+> separately, or the same card without the repeat watermark across the
+> middle.
+
+### No paragraph above the reading guide
+
+The buccal page opens this column with an intro paragraph before its three
+points. That was removed here at the clinic's request, so the three rows
+carry the column alone — and are set a step larger than the buccal ones,
+which follow an intro that has already set the tone. `RESULTS` has no
+`intro` key at all; don't reinstate one without asking.
 
 ### The gallery labels each card
 

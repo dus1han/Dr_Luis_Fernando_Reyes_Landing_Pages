@@ -614,6 +614,42 @@ await emit(
   ).resize({ width: 1200, withoutEnlargement: true })
 );
 
+console.log("\nBBL featured comparison — one card split into slider halves");
+/*
+ * The drag slider needs the before and after as two separate, equally
+ * sized files, so the clinic's `Untitled design (21)` card is cut in two.
+ *
+ * It is the only one of the six that can take this. Scoring every column
+ * by its MEDIAN row-to-row difference — median so a single high-contrast
+ * row can't fake an edge — finds a real seam at x313 here, none at all in
+ * (20), and hard seams in (25) and (26) that belong to the intra-operative
+ * photograph and to a card that isn't a confirmed pair.
+ *
+ * Three measurements shape the crop, all taken off the pixels:
+ *
+ *   • Bodies at x 31-299 (before) and x 403-690 (after), found by counting
+ *     skin-toned pixels per column. Both crops have to hold their subject
+ *     whole — clipping the silhouette is the one thing a before/after
+ *     cannot survive.
+ *   • The clinic's centre watermark spans the seam at roughly x 242-435.
+ *     There is no crop that keeps both bodies AND avoids it, so a faint
+ *     fragment stays at the inner edge of each half. What each half does
+ *     keep is a COMPLETE corner wordmark, so the branding is not the thing
+ *     being cut.
+ *   • The burnt-in "Before"/"After" labels sit in the top band, at y 24-46
+ *     and y 59-80. Cropping from y85 removes both — which is wanted twice
+ *     over, because the slider draws its own captions and the source's own
+ *     were already clipped to "ore" and "er" by the composite.
+ *
+ * 310x295 leaves the slider nearly square, close to the buccal one's 0.89.
+ * Emitted at native size: 310px is all there is, and upscaling here would
+ * only move the softness from the browser into the file.
+ */
+const COMPARE = { top: 85, height: 295, width: 310 };
+const comparePair = path.join(BBL_BA_SRC, "Untitled design (21).png");
+await emit("compare-before.jpg", sharp(comparePair).extract({ left: 0, ...COMPARE }));
+await emit("compare-after.jpg", sharp(comparePair).extract({ left: 390, ...COMPARE }));
+
 console.log("\nBBL gallery — the clinic’s own cards, resized only");
 /*
  * The whole gallery, and the same treatment the buccal page's cards get:

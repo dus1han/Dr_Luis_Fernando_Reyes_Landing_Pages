@@ -14,7 +14,7 @@ everything pages 1 and 2 established.
 | Doc | What's in it |
 |---|---|
 | **[docs/pages/buccal-fat-removal.md](docs/pages/buccal-fat-removal.md)** | **Section-by-section reference for page 1** — what each section does, which content keys it reads, what animates, and the gotchas that will bite you if you change it. Start here for any edit, on either page. |
-| **[docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md)** | **Page 2, and only what differs** — the namespaced image manifest, the stepper rebuilt without an illustration, the results gallery that labels each card, and the three images the clinic still has to confirm |
+| **[docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md)** | **Page 2, and only what differs** — the namespaced image manifest, the measured locator stops on its own illustration, the results gallery that labels each card, how its slider halves were cut, and the three images the clinic still has to confirm |
 | [docs/pages/index.md](docs/pages/index.md) | The root index at `/` — how to add a page to it, why it's `noindex`, and the body-padding trap any page without a sticky bar will hit |
 | [docs/ads-readiness.md](docs/ads-readiness.md) | **Read before spending a penny on ads** — how the origin decides indexing, why AdsBot is named explicitly, the conversion contract, and the one thing still not done |
 | [docs/deployment.md](docs/deployment.md) | VPS, Docker and GitHub Actions — the site directory, the two build-time variables, and why editing them on the server does nothing |
@@ -185,9 +185,9 @@ animates, and the gotchas. This table is only a map.
 
 `/brazilian-butt-lift` runs the same twelve sections in the same order, with
 two rebuilt. Section 5 runs the same locator animation over its own
-three-panel illustration, one panel per step. Section 9 has no drag slider
-(nothing the clinic supplied can be split into two halves) and labels each
-gallery card individually, because not all of them contain a "before". See
+three-panel illustration, one panel per step. Section 9 labels each gallery
+card individually, because not all of them contain a "before", and cuts its
+slider from the one supplied card that can be split. See
 [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 
 | # | Section | In one line |
@@ -259,7 +259,8 @@ Output is namespaced into three buckets, which is also how
 | `hero-bg.jpg` | The hero photograph, capped at 1000px for the same reason |
 | `benefits-portrait.jpg` | The profile shot for the benefits band, at 900px |
 | `steps.webp` | The three-panel procedure illustration — this page's `anatomy.webp`, and what the how-it's-performed locator ring travels across. Knocked out to transparency at 1200px so it floats on the sand band. Its plate is a flat **cream**, not white, so it goes through `knockOutTint` rather than `knockOutBackground`: the illustration contains surgeons' white gloves that are *brighter* than the background, so any brightness threshold that clears the cream eats them |
-| `ba-1…6.jpg` | The clinic's own before/after cards from `B A/`, resized only — all 700×380. **The whole of this page's results section is these six files:** one leads as the featured comparison, five fill the gallery. The 6-pair grid composite in `Images/` used to feed both and now feeds neither |
+| `ba-1…6.jpg` | The clinic's own before/after cards from `B A/`, resized only — all 700×380. **The whole of this page's results section comes from that folder.** Five fill the gallery; the sixth is cut into the slider halves below. The 6-pair grid composite in `Images/` used to feed this section and now feeds none of it |
+| `compare-before.jpg`, `compare-after.jpg` | The featured slider, cut from `Untitled design (21)` — the only one of the six with a real seam that is not the intra-operative photograph. Measured three ways: the bodies at x 31–299 and x 403–690, so neither silhouette is clipped; the centre watermark at x 242–435, which no crop avoids while keeping both bodies whole (a faint fragment stays at each inner edge, both corner wordmarks survive); and the burnt-in labels at y 24–46 and y 59–80, cropped away because the slider draws its own. 310×295, native size |
 
 The script also writes `lib/generated/images.ts` with each asset's natural
 dimensions and an inline blur placeholder, so `<Image>` never causes
@@ -346,12 +347,14 @@ and never the lead.
 - **Results galleries are 3-column on desktop** because the source cards
   are small. At 2 columns they would be upscaled on high-DPI screens.
   Higher-resolution source art would allow a larger presentation.
-- **The BBL page has no drag slider.** A slider needs the before and after
-  as two separate files, and no image in the clinic's `B A` folder can be
-  split without cutting a watermark through the middle — measured per file
-  in [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
-  Its featured comparison is a static card instead, so `slider_interact`
-  never fires on that page.
+- **The BBL slider is upscaled ~1.34×, and its halves carry a watermark
+  fragment.** They are 310px, cut from a 700px card — the only one of the
+  six supplied that can be split at all. The clinic's centre watermark
+  straddles the seam and no crop avoids it while keeping both bodies
+  whole, so a faint fragment sits at the inner edge of each half; both
+  corner wordmarks survive intact. Fixing either needs a supplied file,
+  not a different crop. Measured per file in
+  [docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md).
 - **No BBL image shows a buttock before and after.** The only source that
   did was a grid composite in `Images/`, dropped when the before/after was
   restricted to the `B A` folder. Restoring one means new files in that

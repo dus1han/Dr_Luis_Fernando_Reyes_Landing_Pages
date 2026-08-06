@@ -159,6 +159,18 @@ export const BBL = {
     "height": 800,
     "blurDataURL": "data:image/webp;base64,UklGRkwBAABXRUJQVlA4WAoAAAAQAAAAEwAADAAAQUxQSNwAAAANuS5E9D80sFxrT63k4g5PPv+hubvLNL4Glz9/cfrnx+G6NemRp0PEBETXId3WTJrXbsKII7Nm7Bs2Ll3yX++Abet2tOnR6dgWoAu3yHzedjs5kOUckj6iHpqy7NlgbK9WgQlECscQgAEBBK5IlvM+nJxInt0bRebhfJfyCasS8pGKJUO36U+UJwUxAAZITPBOVZQBEbBAVFSLKxQiShAjBCXiiM+XbLIhKhICNAKxGFvp5zJrI6GfYPSc88FrVDk5Ycfo5sgL1enZmfPiSZYGFbi8RqqfeRQFfOkAVlA4IEoAAACwAwCdASoUAA0APwlwr0+rpqQiMAgBcCEJZQC7AB8igoV648gSXgD+UjlVRpc//bQX6EbIpJt0FoFeXRzY9gyM+LbSGR//PIAAAA=="
   },
+  "compare-before.jpg": {
+    "src": "/brazilian-butt-lift/compare-before.jpg",
+    "width": 310,
+    "height": 295,
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACwBACdASoUABMAPwlwslGrpiSisBgIAXAhCUAWnQFKuIwrmB5GNVrkAvDq+DCgAP7e3bm4tHaNoy3m++iXeIg98MkozThUoFwKhHKJtSd7noGMnokKJ2JWBHqgAA=="
+  },
+  "compare-after.jpg": {
+    "src": "/brazilian-butt-lift/compare-after.jpg",
+    "width": 310,
+    "height": 295,
+    "blurDataURL": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACwBACdASoUABMAPwlwsFIrpiQisBgIAXAhCUATpmhYIWKfPln4i5QIBUuDM+8AAP7TXRFkNysVLU9szPShkVjQUZ3NQMDhMEIwum1KRwf7yqUMrU9qDVs0HVrudaJtLeJNggAA"
+  },
   "ba-1.jpg": {
     "src": "/brazilian-butt-lift/ba-1.jpg",
     "width": 700,

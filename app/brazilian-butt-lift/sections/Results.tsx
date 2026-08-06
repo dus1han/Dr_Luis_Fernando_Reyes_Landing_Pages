@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { BeforeAfterSlider } from "@/components/lp/BeforeAfterSlider";
 import { Eyebrow } from "@/components/lp/Eyebrow";
-import { ImageReveal } from "@/components/lp/ImageReveal";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/lp/Reveal";
 import { ButtonLink } from "@/components/lp/Button";
@@ -11,7 +11,8 @@ import { BBL } from "@/lib/generated/images";
 import { SHOW_RESULTS_DISCLAIMER } from "@/lib/site";
 import { FEATURED, GALLERY, RESULTS } from "../content";
 
-const featured = BBL[FEATURED.key as keyof typeof BBL];
+const compareBefore = BBL[FEATURED.before as keyof typeof BBL];
+const compareAfter = BBL[FEATURED.after as keyof typeof BBL];
 
 /**
  * Frosted pill. `backdrop-blur` is what makes one legible over skin tones,
@@ -59,72 +60,50 @@ export function Results() {
         </SectionHead>
 
         {/*
-          Featured comparison — the clearest pair the clinic supplied,
-          shown whole and larger than the gallery cards so it leads the
-          proof section.
+          Featured comparison — the one image on the page the visitor can
+          actually operate, so it leads the proof section.
 
-          1.15fr where the buccal page gives its slider 0.82fr, because
-          this is a 1.84:1 landscape and that is a portrait. At 0.82 the
-          card renders ~470x255 and the pair stops being readable; 1.15
-          lands near 640x347, and the reading guide still has ~475px,
-          which is enough for the intro and three items. The two columns
-          finish within ~20px of each other.
-
-          Not a <BeforeAfterSlider>: it needs the halves as separate
-          files, and no image in the clinic's "B A" folder can be split
-          without cutting a watermark in half. Reasoning in content.ts,
-          above FEATURED.
+          0.72fr, where the buccal page gives its slider 0.82fr. Its halves
+          are 766px of source and can be scaled down; these are 310px, cut
+          from a 700px card that is everything the clinic supplied. 0.72fr
+          lands at ~416px, a 1.34x upscale — about as far as a photograph
+          stretches before it reads as soft. A wider column only stretches
+          it further, and there is no larger crop to take.
         */}
-        <div className="mb-14 grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+        <div className="mb-14 grid items-center gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
           <Reveal>
             <div className="mb-4 flex items-baseline justify-between border-b border-ink/16 pb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-muted">
               <span>Actual comparison</span>
               <span>{FEATURED.area}</span>
             </div>
-
-            <ImageReveal
-              curtain="bg-ivory"
-              className="rounded-[3px] shadow-[0_30px_60px_-38px_rgb(35_27_22/0.55)]"
-            >
-              <div className="relative">
-                <Image
-                  src={featured.src}
-                  alt={FEATURED.alt}
-                  width={featured.width}
-                  height={featured.height}
-                  sizes="(max-width: 1024px) 92vw, 640px"
-                  placeholder="blur"
-                  blurDataURL={featured.blurDataURL}
-                  className="h-auto w-full"
-                />
-                {/* No tags on this one. The clinic burnt its own
-                    "Before"/"After" into the photograph, and a second set
-                    of pills over the top would label each half twice. */}
-              </div>
-            </ImageReveal>
+            <BeforeAfterSlider
+              before={compareBefore}
+              after={compareAfter}
+              beforeAlt={FEATURED.beforeAlt}
+              afterAlt={FEATURED.afterAlt}
+              sizes="(max-width: 1024px) 92vw, 420px"
+            />
           </Reveal>
 
-          <div>
-            <Reveal as="p" className="m-0 max-w-[52ch] text-[17.5px] leading-[1.75] text-body">
-              {RESULTS.intro}
-            </Reveal>
-
-            <RevealGroup step={0.1} className="mt-9">
-              {RESULTS.lookFor.map((l) => (
-                <RevealItem
-                  key={l.title}
-                  className="border-t border-ink/12 py-5 last:border-b"
-                >
-                  <h3 className="mb-1.5 font-display text-[19px] leading-[1.3] text-ink">
-                    {l.title}
-                  </h3>
-                  <p className="m-0 max-w-[54ch] text-[15.5px] leading-[1.6] text-muted">
-                    {l.body}
-                  </p>
-                </RevealItem>
-              ))}
-            </RevealGroup>
-          </div>
+          {/* The reading guide, with no paragraph above it — see the note
+              on RESULTS in content.ts. The three rows now carry the column
+              on their own, so they are set a little larger than the buccal
+              page's, which follow an intro that has already set the tone. */}
+          <RevealGroup step={0.1}>
+            {RESULTS.lookFor.map((l) => (
+              <RevealItem
+                key={l.title}
+                className="border-t border-ink/12 py-6 last:border-b"
+              >
+                <h3 className="mb-2 font-display text-[21px] leading-[1.3] text-ink">
+                  {l.title}
+                </h3>
+                <p className="m-0 max-w-[54ch] text-[16px] leading-[1.65] text-muted">
+                  {l.body}
+                </p>
+              </RevealItem>
+            ))}
+          </RevealGroup>
         </div>
 
         {/*

@@ -204,36 +204,35 @@ export const BENEFITS = {
 } as const;
 
 /**
- * The featured comparison — the card the section leads on, shown large
- * beside the reading guide.
+ * The featured comparison — the drag slider the section leads on.
  *
- * `Untitled design (21)`: the clearest of the three genuine pairs, the
- * only one carrying Dr. Luis's own watermark rather than another
- * surgeon's, and it already has the clinic's "Before"/"After" burnt in.
+ * Both halves are cut from the clinic's `Untitled design (21)` card, which
+ * is the only one of the six that can be split: it is the clearest of the
+ * three genuine pairs, the only one carrying Dr. Luis's own watermark
+ * rather than another surgeon's, and the only one with a real seam that
+ * isn't the intra-operative photograph. The measurements behind the crop
+ * are in `scripts/prepare-images.mjs`.
  *
- * ── WHY THIS ISN'T THE DRAG SLIDER ──────────────────────────────────────
- * The buccal page's featured slot is a <BeforeAfterSlider>, which needs
- * the two halves as separate files. Nothing in `B A` can supply that:
+ * ── ONE THING THE SPLIT COSTS ───────────────────────────────────────────
+ * The clinic's centre watermark straddles the seam, and no crop keeps both
+ * bodies whole and avoids it — so a faint fragment of it sits at the inner
+ * edge of each half. What the split does NOT cut is the branding proper:
+ * each half keeps a complete corner wordmark.
  *
- *   (20)  no seam at all — both photographs sit on one black backdrop
- *         with "NICOLE ECHEVERRY" spanning the join
- *   (21)  a tonal step at x313, but the clinic's watermark straddles it,
- *         so a split leaves half a crown and "…S FERNANDO R" on one side
- *   (25)  splits cleanly at x350 — and is the intra-operative photograph
- *   (26)  splits at x371 into unequal halves, and is not a confirmed pair
- *
- * Cutting a clinic watermark in half to feed a slider is not a trade
- * worth making, so the slot holds the pair whole. The consequence to know
- * about: `slider_interact` never fires on this page. The event contract in
- * lib/analytics.ts is shared, and a page with no slider simply doesn't
- * emit it.
+ * If the clinic would rather nothing of theirs be fragmented, the fix is a
+ * supplied file, not a code change — either the two photographs separately,
+ * or the same card with the repeat watermark left off.
  * ────────────────────────────────────────────────────────────────────────
  */
 export const FEATURED = {
-  key: "ba-2.jpg",
-  /** Sits opposite "Actual comparison" on the rule above the card. */
+  before: "compare-before.jpg",
+  after: "compare-after.jpg",
+  /** Sits opposite "Actual comparison" on the rule above the slider. */
   area: "Waist & abdomen",
-  alt: "Waist and abdomen before and after body contouring with Dr. Luis Fernando Reyes — before left, after right",
+  beforeAlt:
+    "A patient's waist, abdomen and hip before body contouring with Dr. Luis Fernando Reyes",
+  afterAlt:
+    "The same patient after, showing a narrower waist and a smoother waist-to-hip transition",
 };
 
 /**
@@ -289,9 +288,13 @@ export const GALLERY: GalleryCard[] = [
 export const RESULTS = {
   eyebrow: "Before & after",
   headline: ["The difference is in", "the proportions"] as const,
-  intro:
-    "Look at the waist as much as the buttocks. The donor areas are sculpted before anything is transferred, so what changes is the whole silhouette rather than one part of it.",
-  /** Describes what the photographs show — no claims beyond the copy above. */
+  /*
+   * There is no `intro` here, and that is deliberate — removed at the
+   * clinic's request. The buccal page opens this column with a paragraph
+   * before its reading guide; this one goes straight into the three
+   * points. Don't reinstate it without asking.
+   */
+  /** Describes what the photographs show — no claims beyond the headline. */
   lookFor: [
     {
       title: "Projection",
