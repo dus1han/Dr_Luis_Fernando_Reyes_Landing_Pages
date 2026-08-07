@@ -240,10 +240,11 @@ Output is namespaced into three buckets, which is also how
 | Output | Derived from |
 |---|---|
 | `dr-portrait.jpg` | The full-length studio shot, cropped to a 4:5 portrait around head, shoulders and hands |
-| `dr-surgery.jpg`, `logo-white.png` | Resized and re-encoded |
+| `dr-surgery.jpg` | Resized and re-encoded |
+| `logo-full.png` | The English lockup (`PLASTIC SURGEON`, replacing the Spanish `CIRUJANO PLÁSTICO`), for the ivory nav. It arrives as a **JPEG** — two-colour artwork already composited onto white — so `liftOffWhite` inverts that composite rather than thresholding it: `a = 1 − min(r,g,b)/255`, then unpremultiply. Thresholding would leave the gold at ~41% opacity and visibly washed out; unpremultiplying returns it at full strength. Cropped to the measured ink box, x 132–1166 / y 147–567 |
 | `affil-*.png` (six) | The affiliation marks. Each is trimmed to its ink, recoloured to a flat champagne and normalised to 144px tall. Most arrive as dark line art on transparency and would be invisible on the espresso band; only the RGB is replaced, so the original alpha keeps the antialiasing and the interior cuts in the engraved seals. **AASMA has no alpha channel at all** — it came flattened on opaque white, so `onWhite: true` derives its alpha from `255 - min(r,g,b)` first; without that it emits a solid champagne rectangle. **Trim before resize** — otherwise each normalises to the height of its transparent padding rather than its artwork, and the row comes out ragged. `IMG_3483.PNG` duplicates `IMG_3478.PNG` byte for byte and is not emitted |
-| `logo-ink.png` | The supplied logo is white on transparent, so it is invisible on the ivory nav. This variant keeps the alpha channel as a mask and repaints every visible pixel in `ink` — same artwork, usable on light surfaces. The nav uses it; the dark footer keeps the white original |
-| `app/icon.png` | The favicon — just the logo's circular monogram, in ink on transparent. Its crop box was found by scanning the source for horizontal bands of opaque pixels. At 16px a full lockup is an illegible smear |
+| `logo-light.png` | The same lockup for espresso — the footer, the root index, the open mobile menu. Only the near-black **type** is repainted white; the gold monogram and rule keep their colour, because gold on espresso is a pairing the rest of the site already uses. Gold and type are told apart by `r − b`: the type is neutral, the gold is warm |
+| `app/icon.png` | The favicon — just the logo's circular monogram, at x 525–755 / y 147–380, found by scanning for the empty row bands that separate the lockup's four parts. At 16px a full lockup is an illegible smear. Left in its own **gold** rather than recoloured; the previous ink version was marginal on a dark tab strip and gold is lighter. If it still reads poorly, put an espresso-deep plate behind it rather than lightening the mark |
 
 **Buccal fat removal**
 

@@ -51,8 +51,26 @@ const SOURCES = {
   anatomy: "Untitled design (12).png",
   portrait: "DRA-NICOLE-Y-DR-LUIS-FERNANDO-5-scaled.jpg",
   surgery: "IMG_9759-scaled.jpg",
-  logo: "logo-reyes-blanco-1.png",
 };
+
+/*
+ * The English lockup, replacing `logo-reyes-blanco-1.png` — the Spanish
+ * one read "CIRUJANO PLÁSTICO", this one reads "PLASTIC SURGEON".
+ *
+ * It sits in the Nicole Echeverry folder, which is where it was delivered.
+ * Checked before use: the wordmark is LUIS FERNANDO REYES, not hers. Worth
+ * re-checking if it is ever swapped for another file from that folder.
+ *
+ * Completely different artwork to work from. The old logo was flat white on
+ * transparency, so every variant was a recolour of one silhouette. This is
+ * a two-colour lockup — gold mark and rule, near-black type — flattened
+ * onto a white JPEG plate, so the alpha has to be recovered before anything
+ * else can happen. See `liftOffWhite`.
+ */
+const WORDMARK_SRC = path.resolve(
+  __dirname,
+  "../../../Dr. Nicole Echeverry/New logos/WhatsApp Image 2026-08-06 at 16.08.57.jpeg"
+);
 
 /*
  * Photography only. Every before/after on this page comes from the "B A"
@@ -261,6 +279,80 @@ async function knockOutTint(inputBuffer, tint, { near = 6, feather = 22 } = {}) 
   }
 
   return sharp(data, { raw: { width: w, height: h, channels: 4 } });
+}
+
+/**
+ * Lift artwork off a white plate, recovering BOTH its alpha and its colour.
+ *
+ * The logo arrives as a JPEG: two-colour artwork already composited onto
+ * white. Every pixel is therefore `colour × a + 255 × (1 − a)`, and the
+ * inverse of that composite is what we want — not a threshold.
+ *
+ *   a      = 1 − min(r,g,b)/255
+ *   colour = (pixel − 255 × (1 − a)) / a          ← unpremultiply
+ *
+ * `min` rather than luminance for the same reason the affiliation marks
+ * use it: a saturated colour can be bright and still be ink. The gold here
+ * sits around (190,150,60); by luminance it is ~150 and would come out at
+ * 41% opacity, visibly washed out. By min-channel it is 60, so a = 0.765,
+ * and unpremultiplying returns roughly (170,118,0) — the gold at full
+ * strength, which is the whole point of doing this rather than thresholding.
+ *
+ * `floor` guards the divide: below a few percent alpha the division blows
+ * tiny JPEG ringing up into confetti, so those pixels are dropped instead.
+ */
+async function liftOffWhite(inputBuffer, { floor = 0.04 } = {}) {
+  const { data, info } = await sharp(inputBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  for (let i = 0; i < data.length; i += 4) {
+    const a = 1 - Math.min(data[i], data[i + 1], data[i + 2]) / 255;
+    if (a <= floor) {
+      data[i + 3] = 0;
+      continue;
+    }
+    for (let ch = 0; ch < 3; ch++) {
+      const v = (data[i + ch] - 255 * (1 - a)) / a;
+      data[i + ch] = Math.max(0, Math.min(255, Math.round(v)));
+    }
+    data[i + 3] = Math.round(a * 255);
+  }
+
+  return sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  });
+}
+
+/**
+ * Repaint the near-black type while leaving the gold alone.
+ *
+ * The dark half of the lockup disappears on espresso, so the footer needs
+ * a light variant — but flattening the whole mark to white would throw the
+ * gold away, and the gold is the brand. Classifying on `r − b` separates
+ * them cleanly: the type is neutral (r ≈ b, so ≈ 0), the gold is warm
+ * (r − b well over 40 once unpremultiplied).
+ *
+ * Alpha is untouched, so the antialiasing recovered above survives.
+ */
+async function relightType(pipeline, tint, { warmth = 28 } = {}) {
+  const { data, info } = await pipeline
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] === 0) continue;
+    if (data[i] - data[i + 2] > warmth) continue; // gold — leave it
+    data[i] = tint[0];
+    data[i + 1] = tint[1];
+    data[i + 2] = tint[2];
+  }
+
+  return sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  });
 }
 
 // ------------------------------------------------------------------
@@ -477,78 +569,84 @@ await emit(
   "dr-surgery.jpg",
   sharp(src("surgery")).resize({ width: 1100, withoutEnlargement: true })
 );
-await emit(
-  "logo-white.png",
-  sharp(src("logo")).resize({ width: 420, withoutEnlargement: true })
-);
-
-/**
- * The supplied logo is white on transparent, so it disappears on the
- * ivory nav. Recolour it by keeping the alpha channel as a mask and
- * repainting every visible pixel in ink — the artwork is untouched,
- * only its colour changes.
+console.log("\nLogo — English lockup, lifted off its white plate");
+/*
+ * Measured off the pixels, not eyeballed. Scanning for anything darker
+ * than 238 on every channel gives the ink box at x 132-1166, y 147-567,
+ * and three empty row bands inside it — 381-399, 480-505, 512-535 — which
+ * separate the monogram, the wordmark, the gold rule and "PLASTIC
+ * SURGEON". The monogram alone is x 525-755, y 147-380.
+ *
+ * Two variants, and NEW filenames rather than reusing `logo-white.png` and
+ * `logo-ink.png`. Different bytes under an existing name is how Next's
+ * image optimiser ends up serving the old picture from its cache — it
+ * keys on the request URL, which would not have changed. The names are
+ * also just more honest now: neither variant is a flat recolour any more.
  */
 {
-  const resized = await sharp(src("logo"))
-    .resize({ width: 420, withoutEnlargement: true })
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  const INK_BOX = { left: 132, top: 147, width: 1035, height: 421 };
+  const lifted = await (
+    await liftOffWhite(await sharp(WORDMARK_SRC).png().toBuffer())
+  )
+    .extract(INK_BOX)
+    .png()
+    .toBuffer();
 
-  const { data, info } = resized;
-  const INK = [0x23, 0x1b, 0x16];
-  for (let i = 0; i < data.length; i += 4) {
-    if (data[i + 3] === 0) continue;
-    data[i] = INK[0];
-    data[i + 1] = INK[1];
-    data[i + 2] = INK[2];
-  }
+  into("shared");
 
+  /*
+   * Full colour, for the ivory nav. The old pipeline flattened the mark to
+   * `ink` because the source was a white silhouette and had no colour to
+   * keep. This one does: near-black type and a gold monogram, both of
+   * which read cleanly on ivory, and the gold is the same family as the
+   * page's own accent.
+   */
   await emit(
-    "logo-ink.png",
-    sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } })
+    "logo-full.png",
+    sharp(lifted).resize({ width: 480, withoutEnlargement: true })
   );
-}
 
-/**
- * Favicon — just the circular monogram from the logo, not the wordmark.
- *
- * At 16px a full lockup is an illegible smear; the mark alone still reads.
- * Its bounding box (432,34 → 195x195) was found by scanning the source for
- * horizontal bands of opaque pixels: the logo splits into the symbol, then
- * "LUIS FERNANDO REYES", then "CIRUJANO PLÁSTICO", and the first band is
- * the symbol.
- *
- * The artwork is white on transparent, so it's recoloured to ink and left
- * on a transparent canvas — no plate behind it.
- *
- * Trade-off worth knowing: transparent + near-black means low contrast on
- * browsers using a dark tab strip. The mark is scaled to fill 94% of the
- * canvas to claw some of that back; if it ever proves hard to see, put the
- * espresso-deep plate back rather than lightening the mark.
- */
-{
+  /*
+   * For espresso — the footer, the root index, the open mobile menu.
+   *
+   * Only the type is repainted; the gold mark and rule keep their colour,
+   * because gold on espresso is a pairing the site already uses everywhere
+   * and flattening it to white would throw away half the lockup.
+   */
+  await emit(
+    "logo-light.png",
+    (await relightType(sharp(lifted), [255, 255, 255])).resize({
+      width: 480,
+      withoutEnlargement: true,
+    })
+  );
+
+  /*
+   * Favicon — the circular monogram alone, never the full lockup: at 16px
+   * a wordmark is an illegible smear.
+   *
+   * Left in its own gold rather than recoloured. The previous favicon was
+   * near-black on transparent and carried a note that it was marginal on a
+   * dark tab strip; gold is lighter than ink, so this is a small
+   * improvement on that. If it still proves hard to see, add the
+   * espresso-deep plate back rather than lightening the mark.
+   *
+   * Coordinates are relative to the lifted, already-cropped image, so the
+   * monogram's absolute box (525,147) has the ink box origin subtracted.
+   */
   const SIZE = 512;
   const INNER = Math.round(SIZE * 0.94);
-  const INK = [0x23, 0x1b, 0x16];
-
-  const mark = await sharp(src("logo"))
-    .extract({ left: 432, top: 34, width: 195, height: 195 })
-    .resize(INNER, INNER, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
-  for (let i = 0; i < mark.data.length; i += 4) {
-    if (mark.data[i + 3] === 0) continue;
-    mark.data[i] = INK[0];
-    mark.data[i + 1] = INK[1];
-    mark.data[i + 2] = INK[2];
-  }
-
-  const inked = await sharp(mark.data, {
-    raw: { width: mark.info.width, height: mark.info.height, channels: 4 },
-  })
+  const mark = await sharp(lifted)
+    .extract({
+      left: 525 - INK_BOX.left,
+      top: 147 - INK_BOX.top,
+      width: 231,
+      height: 234,
+    })
+    .resize(INNER, INNER, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
     .png()
     .toBuffer();
 
@@ -560,13 +658,16 @@ await emit(
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     },
   })
-    .composite([{ input: inked, gravity: "center" }])
+    .composite([{ input: mark, gravity: "center" }])
     .png({ compressionLevel: 9 })
     .toBuffer();
 
   // Next.js serves app/icon.png as the favicon automatically.
   await fs.writeFile(path.resolve(__dirname, "../app/icon.png"), icon);
-  console.log(`  app/icon.png           ${SIZE}x${SIZE}   ${(icon.length / 1024).toFixed(0)}kb  (ink on transparent)`);
+  console.log(
+    `  app/icon.png`.padEnd(44) +
+      `${SIZE}x${SIZE}  ${(icon.length / 1024).toFixed(0)}kb  (gold monogram on transparent)`
+  );
 }
 
 // ══════════════════════════════════════════════════════════════════

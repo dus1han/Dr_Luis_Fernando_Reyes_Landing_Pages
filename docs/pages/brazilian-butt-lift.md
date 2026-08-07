@@ -60,7 +60,7 @@ three:
 
 | Export | Public path | Holds |
 |---|---|---|
-| `SHARED` | `/shared/` | The clinic and the surgeon — `logo-white.png`, `logo-ink.png`, `dr-portrait.jpg`, `dr-surgery.jpg`, the six `affil-*.png` |
+| `SHARED` | `/shared/` | The clinic and the surgeon — `logo-full.png`, `logo-light.png`, `dr-portrait.jpg`, `dr-surgery.jpg`, the six `affil-*.png` |
 | `BUCCAL` | `/buccal-fat-removal/` | That page's own photography |
 | `BBL` | `/brazilian-butt-lift/` | This page's own photography |
 
@@ -71,7 +71,7 @@ The split is not cosmetic. Two things forced it:
    why `lib/pages.ts` now stores the asset object rather than a key.
 2. **The shared kit has no page context.** `Nav` and `GlowLogo` render on
    every route and take no props. Leaving the logo in the buccal bucket
-   would have had this page fetch `/buccal-fat-removal/logo-ink.png`.
+   would have had this page fetch `/buccal-fat-removal/logo-full.png`.
 
 `scripts/prepare-images.mjs` writes all three from one run; `into("bbl")`
 switches which bucket `emit` writes to. Adding page 3 is a bucket in `DIRS`

@@ -5,7 +5,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { SHARED } from "@/lib/generated/images";
 import { SITE } from "@/lib/site";
 
-const logo = SHARED["logo-white.png"];
+/* The light variant: white type, gold monogram kept. This component only
+   ever sits on espresso — the footer and the root index. */
+const logo = SHARED["logo-light.png"];
 
 /**
  * The clinic logo with a slow gold halo breathing behind it.

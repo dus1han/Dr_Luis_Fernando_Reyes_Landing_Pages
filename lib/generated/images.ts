@@ -57,17 +57,17 @@ export const SHARED = {
     "height": 1650,
     "blurDataURL": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAACQBACdASoUAB4APv1srE+rJiQiMAwBYB+JQBcGAkO1oJLhENcF6h6fHxHGzMAA/lgBkNLgKyyud22FY5H3HB1S8uu/YmML4p21Jf2x53pdCVd1MIwEPINrVD+T0iQOKkwgk0ehNhed6UJ6/CaysgRSHpt2hvcczan0WzfmYr+VYAAA"
   },
-  "logo-white.png": {
-    "src": "/shared/logo-white.png",
-    "width": 420,
-    "height": 170,
-    "blurDataURL": "data:image/webp;base64,UklGRqoAAABXRUJQVlA4WAoAAAAQAAAAEwAABwAAQUxQSF8AAAAFuQpE9D80cBtJciQd899fzs+HbP0TrTfKgDHgT4+YgNzkvXWwc3dxdONP+R4FkuYtIAgEEMjeaCRJdGYm3Utx6KuGWb9FqkpGSSXOrNDJX3S0KUa7K1jNDCTESf0XLgBWUDggJAAAALACAJ0BKhQACAA/CW6vT6umJCIwCAFwIQlpAAB7IAD+8EKAAA=="
+  "logo-full.png": {
+    "src": "/shared/logo-full.png",
+    "width": 480,
+    "height": 195,
+    "blurDataURL": "data:image/webp;base64,UklGRsoAAABXRUJQVlA4WAoAAAAQAAAAEwAABwAAQUxQSF0AAAABuTJE9D80jhpJcqQ9q+PP1vs7DDkAUv1vFYAjMP+ICZiAJcDKxtacd1cnY/CzxnjDV9+IEfBtx4CEEtb+NnAQEFIEe04NewS0EppujRQgkDSdqgKOYmOC2Lk4GwEAVlA4IEYAAABwAwCdASoUAAgAPwlur0+rpiQiMAgBcCEJQBdgA9XjWrgslAAA/u6+rxzEknw+u+i3c93uttCpyXBaqaQi353eH8GeAAAA"
   },
-  "logo-ink.png": {
-    "src": "/shared/logo-ink.png",
-    "width": 420,
-    "height": 170,
-    "blurDataURL": "data:image/webp;base64,UklGRsIAAABXRUJQVlA4WAoAAAAQAAAAEwAABwAAQUxQSF8AAAAFuQpE9D80cBtJciQd899fzs+HbP0TrTfKgDHgT4+YgNzkvXWwc3dxdONP+R4FkuYtIAgEEMjeaCRJdGYm3Utx6KuGWb9FqkpGSSXOrNDJX3S0KUa7K1jNDCTESf0XLgBWUDggPAAAADADAJ0BKhQACAA/CXCvT6umJCIwCAFwIQlnHwzBp4xp+QAA/u8vsoV5NFAoBHx2AtkFN1eUHj6SKMAAAA=="
+  "logo-light.png": {
+    "src": "/shared/logo-light.png",
+    "width": 480,
+    "height": 195,
+    "blurDataURL": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4WAoAAAAQAAAAEwAABwAAQUxQSF0AAAABuTJE9D80jhpJcqQ9q+PP1vs7DDkAUv1vFYAjMP+ICZiAJcDKxtacd1cnY/CzxnjDV9+IEfBtx4CEEtb+NnAQEFIEe04NewS0EppujRQgkDSdqgKOYmOC2Lk4GwEAVlA4IEQAAAAQAwCdASoUAAgAPwlur0+rpiQiMAgBcCEJQAAKkv+EtdgA/uraDRe8/ZYO/Hc0UorHpay1MLX6mlmYT5j59dZm2gAAAA=="
   }
 } as const;
 
