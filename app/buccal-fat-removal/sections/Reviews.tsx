@@ -134,19 +134,29 @@ function Card({
             className="mt-2 cursor-pointer border-0 bg-transparent p-0 text-[13px] font-semibold text-gold underline underline-offset-2 transition-colors duration-300 hover:text-ink"
           >
             Read more
-            <span className="sr-only"> from {review.name}</span>
+            {review.name && <span className="sr-only"> from {review.name}</span>}
           </button>
         )}
       </blockquote>
 
       {/* Name only. `review.meta` still holds the procedure each review is
           actually about, but it is no longer displayed — see the note on the
-          field in content.ts. */}
-      <figcaption className="mt-6 border-t border-ink/12 pt-4">
-        <span className="block font-display text-[17px] font-semibold text-ink">
-          {review.name}
-        </span>
-      </figcaption>
+          field in content.ts.
+
+          Rendered only when there IS a name. One review currently has none:
+          the clinic supplied the quote without the reviewer's handle, and an
+          invented handle would attribute a real person's words to someone
+          who doesn't exist. Dropping the whole caption leaves that card
+          unattributed; keeping it would print an empty rule and a blank
+          line, which reads as a rendering fault rather than a deliberate
+          omission. */}
+      {review.name && (
+        <figcaption className="mt-6 border-t border-ink/12 pt-4">
+          <span className="block font-display text-[17px] font-semibold text-ink">
+            {review.name}
+          </span>
+        </figcaption>
+      )}
     </figure>
   );
 }
@@ -195,7 +205,14 @@ function QuoteModal({
       onClick={(e) => {
         if (e.target === ref.current) ref.current?.close();
       }}
-      aria-labelledby={titleId}
+      /* The reviewer's name is this dialog's accessible name — except for
+         the one review with no name supplied, where `aria-labelledby`
+         would point at an empty span and leave the dialog unnamed. That
+         one gets a literal label describing what the dialog IS, which is
+         the honest fallback: it names the thing, not a person. */
+      {...(review.name
+        ? { "aria-labelledby": titleId }
+        : { "aria-label": "Patient review" })}
       className="m-auto w-[min(92vw,600px)] rounded-[3px] border border-ink/12 bg-ivory p-0 text-body backdrop:bg-ink/55 backdrop:backdrop-blur-[2px]"
     >
       <div className="p-7 sm:p-9">
@@ -207,14 +224,16 @@ function QuoteModal({
           </p>
         </blockquote>
 
-        <div className="mt-7 border-t border-ink/12 pt-4">
-          <span
-            id={titleId}
-            className="block font-display text-[18px] font-semibold text-ink"
-          >
-            {review.name}
-          </span>
-        </div>
+        {review.name && (
+          <div className="mt-7 border-t border-ink/12 pt-4">
+            <span
+              id={titleId}
+              className="block font-display text-[18px] font-semibold text-ink"
+            >
+              {review.name}
+            </span>
+          </div>
+        )}
 
         <button
           type="button"

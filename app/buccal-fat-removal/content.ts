@@ -256,11 +256,23 @@ export const REVIEWS = {
   eyebrow: "Patient stories",
   headline: ["In their", "own words"] as const,
   /**
-   * Five genuine patient reviews, supplied by the clinic and reproduced
-   * VERBATIM — including their typos. Editing a patient`s words changes a
-   * quote attributed to a real person, so the two that read as
-   * transcription slips ("Juno start", "from the begging to end") are left
-   * exactly as written. Correct them at source or not at all.
+   * Five genuine patient reviews, supplied by the clinic.
+   *
+   * ── THE VERBATIM RULE, AND WHO GETS TO BREAK IT ─────────────────────
+   * These are reproduced as supplied, typos included, because editing a
+   * patient`s words changes a quote attributed to a real person. That
+   * still holds for anyone working on this file.
+   *
+   * It does NOT bind the clinic, who own the relationship with the
+   * reviewer and have since amended one: the last quote had "from the
+   * begging to end" corrected to "beginning", "for the life change"
+   * dropped, and the sign-off changed from "I will always recommend
+   * Majestic and Dr. Reyes" to "…recommend Dr. Reyes". Those came from
+   * them, not from a tidy-up here.
+   *
+   * "Juno start" in the third quote is untouched and should stay that way
+   * unless the clinic says otherwise.
+   * ────────────────────────────────────────────────────────────────────
    *
    * Names are the reviewers` own handles from the platform they were left
    * on. Inventing tidier initials would misattribute them.
@@ -268,10 +280,9 @@ export const REVIEWS = {
    * ── READ THIS BEFORE THE PAGE GOES LIVE ─────────────────────────────
    * NONE of these describe buccal fat removal, and none were performed in
    * Dubai. They are body-contouring reviews from the Colombian practice —
-   * gluteal biopolymer removal, liposculpture with augmentation — and two
-   * name "Majestic" rather than the Dubai clinic. `meta` states the actual
-   * procedure for each, because labelling them "Buccal fat removal" would
-   * be a fabricated claim on a medical page.
+   * gluteal biopolymer removal, liposuction with fat transfer. `meta`
+   * states the actual procedure for each, because labelling them "Buccal
+   * fat removal" would be a fabricated claim on a medical page.
    *
    * That honesty is what makes the mismatch visible to a visitor: someone
    * researching a facial procedure reads five testimonials about bodies.
@@ -302,15 +313,31 @@ export const REVIEWS = {
       name: "Kap5645",
       meta: "Body contouring · Colombia",
     },
+    /*
+     * Supplied by the clinic to replace the "Laluna2016" review that sat
+     * here, on both pages. Reproduced verbatim, like the rest — the
+     * missing punctuation and "even tho" are the patient's own.
+     *
+     * ── NO NAME SUPPLIED ────────────────────────────────────────────────
+     * `name` is empty because the clinic sent the quote without the
+     * reviewer's handle, and inventing one would attribute a real person's
+     * words to a person who doesn't exist. `Reviews.tsx` renders the
+     * caption only when there is a name, so the card is currently
+     * unattributed rather than falsely attributed.
+     *
+     * Fill this in as soon as the handle arrives — an unattributed
+     * testimonial is weaker proof, and every other card here carries one.
+     * ────────────────────────────────────────────────────────────────────
+     */
     {
       quote:
-        "My experience with Dr. Reyes was terrific!!! His team is top-notch, his facility is high end and his sculpting skills are advanced. My body healed quickly and my results are exactly what I wanted. Everything is proportionate to my size. I had a liposculpture surgery with augmentation to hips and butt. Dr. Reyes listened to everything I wanted - he went above and beyond! I look like a Barbie doll! I only trust the Majestic team with my body! Thank you Dr. for giving me the body of my dreams.",
-      name: "Laluna2016",
-      meta: "Liposculpture with hip & gluteal augmentation",
+        "My experience with Dr. Luis Fernando was fantastic he listened to everything that I wanted and exceeded my expectations. I came out with no bruising even tho I had lipo and fat transferred to my butt and hips my boobs are small and perky just like I requested and my waist is super snatched and only 3 weeks out of surgery. only Dr Luis I will ever go back to for any type of work. God bless his hands",
+      name: "",
+      meta: "Liposuction with fat transfer to buttocks and hips",
     },
     {
       quote:
-        "Words are not enough to thank you for the life change! I had the best experience from the begging to end. Dr. Reyes and the whole team make you feel so comfortable, they’re always there to answer every single question and are very reachable through the phone. Their professionalism and knowledge will make you have the results you have always wanted. They do give the extra mile in everything, and really care about you as patient. Also, they have a beautiful and classy office. I will always recommend Majestic and Dr. Reyes",
+        "Words are not enough to thank you! I had the best experience from the beginning to end. Dr. Reyes and the whole team make you feel so comfortable, they’re always there to answer every single question and are very reachable through the phone. Their professionalism and knowledge will make you have the results you have always wanted. They do give the extra mile in everything, and really care about you as patient. Also, they have a beautiful and classy office. I will always recommend Dr. Reyes",
       name: "losman1",
       meta: "Patient review",
     },

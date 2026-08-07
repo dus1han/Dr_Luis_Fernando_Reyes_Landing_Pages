@@ -420,11 +420,23 @@ export const REVIEWS = {
   eyebrow: "Patient stories",
   headline: ["In their", "own words"] as const,
   /**
-   * Five genuine patient reviews, supplied by the clinic and reproduced
-   * VERBATIM — including their typos. Editing a patient's words changes a
-   * quote attributed to a real person, so the two that read as
-   * transcription slips ("Juno start", "from the begging to end") are left
-   * exactly as written. Correct them at source or not at all.
+   * Five genuine patient reviews, supplied by the clinic.
+   *
+   * ── THE VERBATIM RULE, AND WHO GETS TO BREAK IT ─────────────────────
+   * These are reproduced as supplied, typos included, because editing a
+   * patient's words changes a quote attributed to a real person. That
+   * still holds for anyone working on this file.
+   *
+   * It does NOT bind the clinic, who own the relationship with the
+   * reviewer and have since amended one: the last quote had "from the
+   * begging to end" corrected to "beginning", "for the life change"
+   * dropped, and the sign-off changed from "I will always recommend
+   * Majestic and Dr. Reyes" to "…recommend Dr. Reyes". Those came from
+   * them, not from a tidy-up here.
+   *
+   * "Juno start" in the third quote is untouched and should stay that way
+   * unless the clinic says otherwise.
+   * ────────────────────────────────────────────────────────────────────
    *
    * Names are the reviewers' own handles from the platform they were left
    * on. Inventing tidier initials would misattribute them.
@@ -433,8 +445,9 @@ export const REVIEWS = {
    * describe the right procedure: gluteal biopolymer removal, liposculpture
    * with hip and gluteal augmentation, body contouring. They are body
    * work, from the Colombian practice — which is what this page is about.
-   * Two still name "Majestic" rather than the Dubai clinic, and none was
-   * performed in Dubai.
+   * None was performed in Dubai. No quote names "Majestic" any more: one
+   * mention went when the clinic amended the last review, the other when
+   * the review carrying it was replaced.
    *
    * ── STILL TRUE, AND STILL WORTH READING ─────────────────────────────
    * DHA advertising rules restrict patient testimonials in healthcare
@@ -486,7 +499,7 @@ export const REVIEWS = {
     },
     {
       quote:
-        "Words are not enough to thank you for the life change! I had the best experience from the begging to end. Dr. Reyes and the whole team make you feel so comfortable, they’re always there to answer every single question and are very reachable through the phone. Their professionalism and knowledge will make you have the results you have always wanted. They do give the extra mile in everything, and really care about you as patient. Also, they have a beautiful and classy office. I will always recommend Majestic and Dr. Reyes",
+        "Words are not enough to thank you! I had the best experience from the beginning to end. Dr. Reyes and the whole team make you feel so comfortable, they’re always there to answer every single question and are very reachable through the phone. Their professionalism and knowledge will make you have the results you have always wanted. They do give the extra mile in everything, and really care about you as patient. Also, they have a beautiful and classy office. I will always recommend Dr. Reyes",
       name: "losman1",
       meta: "Patient review",
     },
