@@ -33,10 +33,23 @@ export type DeliveryResult =
  * them in the repo means the default is reviewable in a diff rather than
  * hidden in an untracked file on one server. `LEAD_TO` overrides at runtime
  * for the day someone needs to add or redirect a recipient in a hurry.
+ *
+ * ── THIS LIST IS NOT NECESSARILY WHAT PRODUCTION USES ───────────────────
+ * `LEAD_TO` in the server's `.env` wins outright — see the `to:` line
+ * below. If it is set, editing this array changes nothing on the live
+ * site. Check it before assuming a recipient change has landed.
+ * ────────────────────────────────────────────────────────────────────────
+ *
+ * `drnicole.ads@gmail.com` is also the SMTP sender. A mailbox sending to
+ * itself is fine and Gmail files it normally; it is listed here because
+ * the clinic asked for it, not by accident.
+ *
+ * Replaced `drluisfernandomarketing@gmail.com` and
+ * `luisfernandoreyesmd@yahoo.com`, both at the clinic's request.
  */
 const DEFAULT_RECIPIENTS = [
-  "drluisfernandomarketing@gmail.com",
-  "luisfernandoreyesmd@yahoo.com",
+  "plasticsurgeonsdubai@gmail.com",
+  "drnicole.ads@gmail.com",
 ] as const;
 
 type MailConfig = {

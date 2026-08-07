@@ -64,8 +64,11 @@ themselves are still built inside the GTM UI — see
 [docs/ads-readiness.md](docs/ads-readiness.md) for the event contract.
 
 **Lead email is live.** Consultation requests reach
-`drluisfernandomarketing@gmail.com` and `luisfernandoreyesmd@yahoo.com`,
-verified end to end against the production site. Sent from
+`plasticsurgeonsdubai@gmail.com` and `drnicole.ads@gmail.com` — changed at
+the clinic's request from the two earlier addresses. The delivery path was
+verified end to end against the production site on the **old** recipients;
+the new pair has not been re-tested live, and `LEAD_TO` on the server
+overrides this list outright if it is set. Sent from
 `drnicole.ads@gmail.com` via Gmail SMTP with an app password — a shared
 marketing mailbox, so the `From` does not match the clinic's own domain.
 Worth revisiting if it ever affects deliverability.
@@ -206,7 +209,7 @@ slider from the one supplied card that can be split. See
 | 11 | FAQ | Single-open accordion, all collapsed on arrival |
 | 12 | Booking | The case left, three-field form right |
 | — | Footer | Logo, contact + socials, map |
-| — | Sticky mobile bar | Call · WhatsApp · Book — appears after the hero |
+| — | Sticky CTA | Call · WhatsApp · Book, appearing after the hero. A bottom bar below `sm`; a right-edge rail from 1380px, which is the width at which the shell's margin finally clears it — in between, neither, because an overlay that covers body copy is worse than no overlay |
 
 Every animation uses `transform`/`opacity` only, and the whole system is
 disabled under `prefers-reduced-motion` — `MotionProvider` makes Motion

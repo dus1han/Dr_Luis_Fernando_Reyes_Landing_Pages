@@ -23,15 +23,69 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
+const CalendarIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <rect x="3.2" y="5" width="17.6" height="16" rx="2" stroke="currentColor" strokeWidth="1.7" />
+    <path d="M3.2 9.6h17.6M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+  </svg>
+);
+
 /**
- * Mobile-only action bar. Ads traffic is overwhelmingly mobile, and the
- * form sits far down the page — this keeps call, WhatsApp and booking
- * one thumb-tap away for the whole scroll.
+ * The three persistent actions, in one place so the phone bar and the
+ * desktop rail can never drift apart — same targets, same tracking
+ * labels, one edit if a number or an event name changes.
  *
- * Appears once the visitor starts moving. The threshold is deliberately
- * early: the hero photo pushes its own CTAs just below the fold on
- * phones, so this bar is what keeps a booking action reachable from the
- * moment scrolling begins.
+ * `label` is the rail's caption. The phone bar shows it only on the book
+ * button; its other two are icon-only by necessity at 390px.
+ */
+const ACTIONS = [
+  {
+    key: "call",
+    label: "Call now",
+    href: SITE.phoneHref,
+    icon: PhoneIcon,
+    event: "call_click",
+    aria: `Call ${SITE.doctorShort} on ${SITE.phoneDisplay}`,
+    external: false,
+  },
+  {
+    key: "whatsapp",
+    label: "WhatsApp",
+    href: SITE.whatsappHref,
+    icon: WhatsAppIcon,
+    event: "whatsapp_click",
+    aria: "Message the clinic on WhatsApp",
+    external: true,
+  },
+  {
+    key: "book",
+    label: "Book now",
+    href: "#book",
+    icon: CalendarIcon,
+    event: "cta_click",
+    aria: "Book a consultation",
+    external: false,
+  },
+] as const;
+
+/**
+ * Persistent action affordances, in two shapes.
+ *
+ *   • below `sm` — a bottom bar. Ads traffic is overwhelmingly mobile and
+ *     the form sits far down the page, so call, WhatsApp and booking stay
+ *     one thumb-tap away for the whole scroll.
+ *   • from `sm` — a rail pinned to the right edge, vertically centred.
+ *     Same three actions, stacked, each an icon over its caption.
+ *
+ * Both appear once the visitor starts moving. The threshold is
+ * deliberately early: the hero photo pushes its own CTAs just below the
+ * fold on phones, so this is what keeps a booking action reachable from
+ * the moment scrolling begins.
+ *
+ * They are separate elements rather than one restyled block because they
+ * animate from different edges — the bar rises, the rail slides in from
+ * the right — and a single element cannot do both. `ACTIONS` is what keeps
+ * them honest.
  */
 export function StickyCTA() {
   const { scrollY } = useScroll();
@@ -40,9 +94,11 @@ export function StickyCTA() {
   useMotionValueEvent(scrollY, "change", (y) => setShown(y > 340));
 
   return (
-    <AnimatePresence>
-      {shown && (
-        <motion.div
+    <>
+      <DesktopRail shown={shown} />
+      <AnimatePresence>
+        {shown && (
+          <motion.div
           initial={{ y: "110%" }}
           animate={{ y: 0 }}
           exit={{ y: "110%" }}
@@ -74,7 +130,85 @@ export function StickyCTA() {
           >
             Book a consultation
           </a>
-        </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/**
+ * The desktop rail: three tiles pinned to the right edge, vertically
+ * centred, each an icon over a small caption.
+ *
+ * `top-1/2 -translate-y-1/2` rather than a fixed offset, so it stays
+ * centred at any viewport height — at 1440x720 a top-anchored rail would
+ * sit level with the nav and read as part of it.
+ *
+ * Rounded on the left only. It is attached to the edge of the window, not
+ * floating in front of it, and rounding the right corners would put a
+ * sliver of page between the tile and the edge.
+ *
+ * ── WHY 1380px AND NOT `sm` ─────────────────────────────────────────────
+ * This rail overlays the page, so it may only appear where it covers
+ * nothing. `--shell` is `min(1220px, 90vw)`, so the free margin either
+ * side is:
+ *
+ *   below 1356px   0.05 × viewport   — 68px at the very top of that range
+ *   above 1356px   (viewport − 1220) / 2
+ *
+ * The rail is 78px wide, so the margin only clears it from
+ * (78 × 2) + 1220 = 1376px. Rounded to 1380. Below that it would sit on
+ * top of the right-hand edge of every section — a card, a form field, the
+ * end of a line of body copy — and covering content is worse than not
+ * having the affordance.
+ *
+ * That leaves 640–1380 with no persistent CTA, which is exactly where it
+ * was before this existed: the bottom bar is `sm:hidden`. No regression,
+ * just no gain in that band. Widening the bottom bar to cover it is a
+ * bigger change than it looks — it is laid out for a 390px thumb.
+ * ────────────────────────────────────────────────────────────────────────
+ *
+ * The tracking label is `desktop_rail`, separate from the bar's
+ * `sticky_bar`, so the two surfaces stay distinguishable in GTM. Same
+ * actions, different placement — averaging them would hide which one works.
+ */
+function DesktopRail({ shown }: { shown: boolean }) {
+  return (
+    <AnimatePresence>
+      {shown && (
+        <motion.nav
+          aria-label="Contact the clinic"
+          initial={{ x: "110%", opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: "110%", opacity: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed right-0 top-1/2 z-70 hidden -translate-y-1/2 flex-col overflow-hidden rounded-l-[3px] bg-espresso/97 shadow-[0_18px_44px_-20px_rgb(35_27_22/0.55)] backdrop-blur-[8px] min-[1380px]:flex"
+        >
+          {ACTIONS.map(({ key, label, href, icon: Icon, event, aria, external }) => (
+            <a
+              key={key}
+              href={href}
+              aria-label={aria}
+              {...(external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              onClick={() => track(event, { label: "desktop_rail" })}
+              /* 78px fixed, so the three tiles are identical whatever
+                 their caption length — and it is the number the 1380px
+                 breakpoint above is derived from, so the two move
+                 together. `nowrap` because "Call now" and "Book now" both
+                 wrap at 74px, which turns a 3-tile rail into a ragged
+                 5-line one. */
+              className="group flex w-[78px] flex-col items-center gap-1.5 whitespace-nowrap border-b border-champagne/14 px-1.5 py-3.5 text-champagne no-underline transition-colors duration-300 last:border-b-0 hover:bg-gold hover:text-white"
+            >
+              <Icon />
+              <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.06em]">
+                {label}
+              </span>
+            </a>
+          ))}
+        </motion.nav>
       )}
     </AnimatePresence>
   );

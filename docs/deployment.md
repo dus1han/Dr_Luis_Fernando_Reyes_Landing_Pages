@@ -142,7 +142,7 @@ Consultation requests are emailed to the clinic. These four keys go in the same
 | `SMTP_USER` | yes | the full mailbox address |
 | `SMTP_PASS` | yes | an **app password**, not the account password |
 | `MAIL_FROM` | no | defaults to `SMTP_USER` |
-| `LEAD_TO` | no | comma-separated; defaults to the two clinic addresses in `lib/lead-mail.ts` |
+| `LEAD_TO` | no | comma-separated; defaults to the two addresses in `lib/lead-mail.ts`. **If it is set, it wins outright** — editing that array changes nothing on the live site |
 
 ```bash
 sudo -u deploy bash -c 'cat >> /opt/sites/dr-luis-landing-pages/.env' <<'EOF'

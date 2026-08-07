@@ -54,8 +54,18 @@ export const SITE = {
       "Hello, I'd like to book a consultation with Dr. Luis."
     ),
 
-  email: "luisfernandoreyesmd@yahoo.com",
-  emailHref: "mailto:luisfernandoreyesmd@yahoo.com",
+  /*
+   * The address shown to visitors — the footer, and `email` in the
+   * structured data. It is NOT where leads go.
+   *
+   * Consultation requests are delivered by `lib/lead-mail.ts`, which has
+   * its own recipient list and does not read this field. Changing the
+   * address here does not reroute a single form submission; if this
+   * mailbox should also receive them, add it to `DEFAULT_RECIPIENTS`
+   * there or to `LEAD_TO` on the server.
+   */
+  email: "plasticsurgeonsdubai@gmail.com",
+  emailHref: "mailto:plasticsurgeonsdubai@gmail.com",
 
   instagram: "https://www.instagram.com/dr.luisfernandoreyes_surgery/",
   facebook: "https://www.facebook.com/drluisfernandoreyes/",

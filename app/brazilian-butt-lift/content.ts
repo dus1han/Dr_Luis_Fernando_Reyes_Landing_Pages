@@ -72,6 +72,20 @@ export const STATS: Stat[] = [
    * weeks", and turning that into a number would be inventing one.
    */
   { value: 5, display: "3-5 Hours", label: "Typical procedure" },
+  /*
+   * ── THIS NOW CONTRADICTS A BENEFIT CARD ─────────────────────────────
+   * "Zero implants used" came from the original brief, which framed the
+   * procedure as an alternative TO implants. The benefits card that used
+   * to agree with it ("Your own fat, no implants") has since been replaced
+   * with "More than one solution", which says the consultation may
+   * recommend implants, fat transfer, fillers or a combination.
+   *
+   * Both cannot be true on the same page. `CANDIDATE.items[0]` — "without
+   * implants" — has the same problem. Left as-is rather than guessed at,
+   * because which one the clinic wants is a positioning decision, not a
+   * copy fix. Raised with them.
+   * ────────────────────────────────────────────────────────────────────
+   */
   { value: 0, display: "Zero", label: "Implants used" },
 ];
 
@@ -175,10 +189,24 @@ export const BENEFITS = {
       title: "Fuller, naturally shaped curves",
       body: "Fat is placed to build shape and projection rather than volume alone, so the result reads as your own figure.",
     },
+    /*
+     * This card used to read "Your own fat, no implants". It was replaced
+     * at the clinic's request, and the change is a real one rather than a
+     * rewording: the old card ruled implants out, this one keeps them on
+     * the table. It now agrees with the FAQ, which already said Dr. Luis
+     * "will recommend the most suitable option for your anatomy".
+     *
+     * ── CHECK THIS AGAINST THE NUMBERS STRIP ────────────────────────────
+     * `STATS` still carries "Zero / Implants used", and `CANDIDATE` still
+     * opens with "without implants". Both came from the original brief and
+     * both now contradict this card. Flagged for the clinic — see the note
+     * on STATS.
+     * ────────────────────────────────────────────────────────────────────
+     */
     {
-      icon: "natural",
-      title: "Your own fat, no implants",
-      body: "Nothing artificial is placed in the body. For many patients their own fat gives a softer, more natural appearance.",
+      icon: "options",
+      title: "More than one solution",
+      body: "Not every patient needs the same treatment. Your consultation decides whether implants, fat transfer, fillers, or a combination will provide the best result.",
     },
     {
       icon: "waist",
@@ -422,11 +450,27 @@ export const REVIEWS = {
       name: "Philosophical968460",
       meta: "Gluteal biopolymer removal",
     },
+    /*
+     * Supplied by the clinic to replace the "Laluna2016" review that sat
+     * here. Reproduced verbatim, like the rest — the missing punctuation
+     * and "even tho" are the patient's own.
+     *
+     * ── NO NAME SUPPLIED ────────────────────────────────────────────────
+     * `name` is empty because the clinic sent the quote without the
+     * reviewer's handle, and inventing one would attribute a real person's
+     * words to a person who doesn't exist. `Reviews.tsx` renders the
+     * caption only when there is a name, so the card is currently
+     * unattributed rather than falsely attributed.
+     *
+     * Fill this in as soon as the handle arrives — an unattributed
+     * testimonial is weaker proof, and every other card here carries one.
+     * ────────────────────────────────────────────────────────────────────
+     */
     {
       quote:
-        "My experience with Dr. Reyes was terrific!!! His team is top-notch, his facility is high end and his sculpting skills are advanced. My body healed quickly and my results are exactly what I wanted. Everything is proportionate to my size. I had a liposculpture surgery with augmentation to hips and butt. Dr. Reyes listened to everything I wanted - he went above and beyond! I look like a Barbie doll! I only trust the Majestic team with my body! Thank you Dr. for giving me the body of my dreams.",
-      name: "Laluna2016",
-      meta: "Liposculpture with hip & gluteal augmentation",
+        "My experience with Dr. Luis Fernando was fantastic he listened to everything that I wanted and exceeded my expectations. I came out with no bruising even tho I had lipo and fat transferred to my butt and hips my boobs are small and perky just like I requested and my waist is super snatched and only 3 weeks out of surgery. only Dr Luis I will ever go back to for any type of work. God bless his hands",
+      name: "",
+      meta: "Liposuction with fat transfer to buttocks and hips",
     },
     {
       quote:

@@ -55,9 +55,17 @@ Work top to bottom. Nothing below requires touching page or section code.
       `npm run verify:phones -- http://127.0.0.1:3000 <slug>` lists every
       `tel:` and `wa.me` link per route. Anything labelled `RETIRED 55…`
       means a hardcoded number has crept back in.
-- [ ] **Verify the email** — `luisfernandoreyesmd@yahoo.com`.
-      *A yahoo.com address on a premium clinic page reads as less
-      established than a domain address — worth considering.*
+- [ ] **Verify the email** — `plasticsurgeonsdubai@gmail.com`. This is the
+      address **shown** to visitors (footer + structured data); it is not
+      what routes leads.
+      *A gmail.com address on a premium clinic page reads as less
+      established than one on the clinic's own domain — worth considering.*
+- [ ] **Re-test lead delivery on the new recipients — BLOCKING.** They
+      changed to `plasticsurgeonsdubai@gmail.com` and
+      `drnicole.ads@gmail.com` after the end-to-end test was run, so that
+      test proves nothing about the current pair. Check `LEAD_TO` is unset
+      on the VPS first: if it is set it wins outright and
+      `DEFAULT_RECIPIENTS` in `lib/lead-mail.ts` is ignored entirely.
 - [ ] **Check the clinic location link** resolves correctly:
       `SITE.mapUrl`.
 - [ ] **Add the clinic's street address — OUTSTANDING.** `SITE.addressLines`

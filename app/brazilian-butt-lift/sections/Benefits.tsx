@@ -21,10 +21,16 @@ const ICONS: Record<string, React.ReactNode> = {
   curves: (
     <path d="M4 6c4.5 0 7 2.2 8.4 5.2C13.8 14.2 16.6 17 21 18" strokeLinecap="round" />
   ),
-  natural: (
+  /* One path branching into three — several routes to the same result,
+     which is what the card beside it is saying. Replaced the shield-check
+     that went with "your own fat, no implants". */
+  options: (
     <>
-      <path d="M12 3.5 20 7v5.4c0 4.6-3.2 7.6-8 9.1-4.8-1.5-8-4.5-8-9.1V7l8-3.5Z" strokeLinejoin="round" />
-      <path d="m8.8 12.2 2.2 2.2 4.4-4.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 12h4" strokeLinecap="round" />
+      <path d="M8 12c3.6 0 3.4-6.4 7-6.4M8 12h7M8 12c3.6 0 3.4 6.4 7 6.4" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="17.4" cy="5.6" r="2.4" />
+      <circle cx="17.4" cy="12" r="2.4" />
+      <circle cx="17.4" cy="18.4" r="2.4" />
     </>
   ),
   /* Hourglass — the waist narrowing, which is the point of the card. */

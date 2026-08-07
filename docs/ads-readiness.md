@@ -221,7 +221,7 @@ learn from, and **it cannot be backfilled**.
 ## 6 · Lead delivery
 
 **Done — leads are emailed to the clinic.** `lib/lead-mail.ts` sends over SMTP
-to `drluisfernandomarketing@gmail.com` and `luisfernandoreyesmd@yahoo.com`, with
+to `plasticsurgeonsdubai@gmail.com` and `drnicole.ads@gmail.com`, with
 the page name in the subject:
 
 ```
