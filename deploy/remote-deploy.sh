@@ -182,7 +182,41 @@ else
 fi
 
 echo "==> starting"
-docker compose up -d --remove-orphans || fail "docker compose up failed."
+# Retried, because `up` has one failure mode that is transient and one that is
+# not, and they are worth telling apart.
+#
+# Transient: the daemon is still tearing down the previous container and
+# answers with "removal of container <id> is already in progress". Waiting a
+# few seconds and asking again works. The usual cause is two deploys
+# overlapping — the workflow now serialises them with a `concurrency` group,
+# so this should be rare — but a stale `docker rm` run by hand on the box
+# produces exactly the same race, and that is outside anything CI controls.
+#
+# Real: a bad image, a port already bound, a broken .env. Those fail the same
+# way on every attempt, so the loop costs 15 seconds before reporting what it
+# would have reported anyway.
+up_ok=""
+for attempt in 1 2 3; do
+  if out=$(docker compose up -d --remove-orphans 2>&1); then
+    printf '%s\n' "$out"
+    up_ok=1
+    break
+  fi
+
+  printf '%s\n' "$out"
+
+  # Only retry the race. Anything else is a real failure and retrying it just
+  # delays the error by fifteen seconds.
+  case "$out" in
+    *"is already in progress"*|*"removal of container"*)
+      [ "$attempt" -lt 3 ] || break
+      echo "==> container teardown still in progress; retrying in 5s (attempt $attempt/3)"
+      sleep 5
+      ;;
+    *) break ;;
+  esac
+done
+[ -n "$up_ok" ] || fail "docker compose up failed."
 
 # --- wait for healthy, not merely started ----------------------------------
 # `up -d` returns as soon as the process starts, which is well before Next is

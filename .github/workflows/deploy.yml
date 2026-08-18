@@ -10,6 +10,27 @@ on:
     branches: [main]
   workflow_dispatch: # lets you redeploy from the Actions tab without a commit
 
+# ── ONE DEPLOY AT A TIME ────────────────────────────────────────────────────
+# Two runs overlapping on the same VPS is not a theoretical problem: it has
+# already happened. Both reach `docker compose up -d` together, both try to
+# replace the same container, and the daemon answers the second one with
+#
+#     removal of container <id> is already in progress
+#
+# That run fails and reports the deploy red — while the other run finishes
+# fine and the site ends up on the correct image. A false alarm, but an
+# expensive one, because the next person to see it has to work out whether
+# production is actually broken.
+#
+# `cancel-in-progress: false` is deliberate and is the whole point. Cancelling
+# a deploy mid-flight is how you get a half-removed container and a site that
+# really is down — the second run must WAIT, not barge in. GitHub keeps only
+# one run pending per group, so a burst of pushes collapses to "finish the
+# current deploy, then deploy the newest commit", which is what you want.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}

@@ -466,6 +466,7 @@ Revert to `:latest` once the next good build ships.
 | **Images 500 in the container** | sharp missing from the standalone bundle — check `outputFileTracingIncludes` in `next.config.ts` |
 | **`docker compose pull` fails opaquely** | `IMAGE` case mismatch, or a private package with no `GHCR_PAT` |
 | **Port already allocated** | Two sites share a `SITE_PORT` |
+| **`removal of container … is already in progress`, deploy reports red** | Two deploys overlapping. Both reach `docker compose up` and race to replace the same container; the loser reports failure while the winner finishes and the site ends up correct — so **check the site before believing the red tick**. Fixed at the root by the `concurrency` group in `deploy.yml`, which queues runs instead of letting them race, and `remote-deploy.sh` retries this specific message three times. If it still appears, something removed the container by hand while a deploy was running |
 | **`EBUSY` / `unlink` error during `npm run build` on Windows** | A `next start` or standalone server is still running and holding sharp's DLL. Kill it first — this bit during setup |
 
 ---
