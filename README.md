@@ -17,6 +17,7 @@ everything pages 1 and 2 established.
 | **[docs/pages/brazilian-butt-lift.md](docs/pages/brazilian-butt-lift.md)** | **Page 2, and only what differs** — the namespaced image manifest, the measured locator stops on its own illustration, the results gallery that labels each card, how its slider halves were cut, and the three images the clinic still has to confirm |
 | [docs/pages/index.md](docs/pages/index.md) | The root index at `/` — how to add a page to it, why it's `noindex`, and the body-padding trap any page without a sticky bar will hit |
 | [docs/ads-readiness.md](docs/ads-readiness.md) | **Read before spending a penny on ads** — how the origin decides indexing, why AdsBot is named explicitly, the conversion contract, and the one thing still not done |
+| [docs/organic-search.md](docs/organic-search.md) | **Ranking these pages in Google** — a live audit of both pages and the main site, why subdomain-vs-subfolder is the decision that dominates the rest, and a phased plan. The technical SEO is already sound; the gaps are links, cost content and local |
 | [docs/deployment.md](docs/deployment.md) | VPS, Docker and GitHub Actions — the site directory, the two build-time variables, and why editing them on the server does nothing |
 | [docs/LAUNCH-CHECKLIST.md](docs/LAUNCH-CHECKLIST.md) | Ordered pre-launch steps: content sign-off, DHA approval, lead delivery, tracking, QA |
 | This file | Architecture, design system, image pipeline, conventions |
