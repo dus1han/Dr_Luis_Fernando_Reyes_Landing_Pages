@@ -34,8 +34,13 @@ const TITLE = "Buccal Fat Removal in Dubai";
  */
 const SHARE_TITLE = "Buccal Fat Removal in Dubai | Sharper Cheekbones & Jawline";
 
+/*
+ * Kept under ~155 characters, which is roughly where Google truncates. The
+ * previous one ran to 224 and lost its CTA to the ellipsis. Not a ranking
+ * factor, but most of what decides whether the result gets clicked.
+ */
 const DESCRIPTION =
-  "Buccal fat removal by Dr. Luis Fernando Reyes — double board certified plastic surgeon with 19+ years of international experience. Sharper cheekbones, a defined jawline, no scarring on the face. Book a consultation in Dubai.";
+  "Buccal fat removal in Dubai by Dr. Luis Fernando Reyes, double board certified plastic surgeon. Sharper cheekbones, a defined jawline, no facial scars.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -97,11 +102,59 @@ function StructuredData() {
             }
           : {}),
         hasMap: MAPS.place,
+        /*
+         * The service area, which is a different claim from the address and
+         * is the one that matters for "… in Dubai" queries. Safe to state
+         * without the street address, which is still outstanding.
+         */
+        areaServed: [
+          { "@type": "City", name: SITE.city },
+          { "@type": "Country", name: SITE.country },
+        ],
+        /* Ties the surgeon to the procedure as an entity rather than
+           leaving two unrelated nodes on the page. */
+        availableService: { "@id": `${ORIGIN}/${SLUG}#procedure` },
+      },
+      /*
+       * Describes the PAGE, where the nodes above describe the surgeon and
+       * the operation. Without it there is nothing for the breadcrumb to
+       * attach to and nothing declaring what the page is primarily about.
+       *
+       * No `lastReviewed` or `reviewedBy`: both are real E-E-A-T signals on
+       * medical pages and both are claims about a review process that has
+       * not happened. Add them when the clinic confirms who signed the
+       * content off and when — not before.
+       */
+      {
+        "@type": "MedicalWebPage",
+        "@id": `${ORIGIN}/${SLUG}#webpage`,
+        url: `${ORIGIN}/${SLUG}`,
+        name: SHARE_TITLE,
+        description: DESCRIPTION,
+        inLanguage: "en",
+        about: { "@id": `${ORIGIN}/${SLUG}#procedure` },
+        mainEntity: { "@id": `${ORIGIN}/${SLUG}#procedure` },
+        provider: { "@id": `${ORIGIN}/#physician` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: SITE.practice,
+            item: ORIGIN,
+          },
+          { "@type": "ListItem", position: 2, name: TITLE },
+        ],
       },
       {
         "@type": "MedicalProcedure",
+        "@id": `${ORIGIN}/${SLUG}#procedure`,
         name: "Buccal Fat Removal",
-        alternateName: "Buccal Lipectomy",
+        /* The names people actually search, so the entity matches the
+           query however it is phrased. */
+        alternateName: ["Buccal Lipectomy", "Cheek fat removal", "Cheek reduction"],
         bodyLocation: "Mid face",
         procedureType: "https://schema.org/SurgicalProcedure",
         howPerformed:
@@ -156,7 +209,7 @@ export default function BuccalFatRemovalPage() {
         <Booking />
       </main>
 
-      <Footer />
+      <Footer currentSlug={SLUG} />
       <StickyCTA />
     </>
   );

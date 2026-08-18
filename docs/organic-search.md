@@ -58,7 +58,11 @@ redirects, re-indexing, and losing whatever the subdomain has accumulated.
 
 ---
 
-## Where the pages stand today
+## Where the pages stood at audit
+
+The baseline, as found on 2026-08-18 and left here as the record to measure
+against. Several rows have since been closed — see “Done in the repo”
+below.
 
 The technical foundation is genuinely strong. This is not where the problem
 is:
@@ -87,6 +91,36 @@ links.
 
 ---
 
+## Done in the repo (2026-08-18)
+
+Phase 1 and the schema items, minus anything needing clinic input:
+
+- Cross-links between the two pages, in the footer. Until this landed they
+  had **no path between them and no internal links at all** — the only
+  other page on the subdomain is the `noindex` hub, so each page was an
+  island reachable only from `sitemap.xml`.
+- Meta descriptions cut to 151 and 157 characters, from 224 and 260. Both
+  were being truncated mid-sentence and losing their CTA.
+- BBL title now carries `(BBL)` — the initialism is a separate query from
+  the full phrase, and the title is the strongest signal available.
+- `MedicalWebPage`, `BreadcrumbList`, `areaServed` (Dubai + UAE) and
+  `availableService` added; `MedicalProcedure` nodes given stable `@id`s so
+  the surgeon, the page and the operation are one connected graph rather
+  than unrelated nodes. `alternateName` widened to the terms people search.
+- `lastmod` added to the sitemap — Google uses it for recrawl scheduling,
+  unlike `changefreq` and `priority`, which it ignores.
+
+**Deliberately not done:** `lastReviewed` and `reviewedBy`. Both are real
+E-E-A-T signals on medical pages and both are claims about a review process
+that has not happened. They go in when the clinic confirms who signed the
+content off, and when.
+
+Still outstanding and still the biggest items: the links from the main
+site, the cost content, the street address, and the Google Business
+Profile. None of those can be done from here.
+
+---
+
 ## Phase 1 — Free wins, this week
 
 Highest return per hour, and none of it needs new content.
@@ -96,10 +130,10 @@ Highest return per hour, and none of it needs new content.
    descriptive anchor text ("Brazilian Butt Lift in Dubai"), not "click
    here". This is the cheapest authority transfer available, and the reason
    the subdomain currently looks orphaned to a crawler.
-2. **Link the two pages to each other.** They share a surgeon, a clinic and
+2. **Link the two pages to each other — done.** They share a surgeon, a clinic and
    an audience, and today there is no path between them. A short "other
    procedures" block in the footer is enough.
-3. **Trim the BBL meta description** to ~155 characters so it is not cut
+3. **Trim the BBL meta description — done.** to ~155 characters so it is not cut
    mid-sentence in results.
 4. **Add the subdomain to Google Search Console** and request indexing.
    Confirm both pages are actually indexed — `site:surgery.luisfernandoreyesmd.com`

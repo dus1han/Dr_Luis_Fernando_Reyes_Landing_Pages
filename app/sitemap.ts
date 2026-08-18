@@ -29,8 +29,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
    */
   if (!INDEXABLE) return [];
 
+  /*
+   * `lastModified` is the build time, and that is honest rather than lazy:
+   * these pages are statically prerendered, so a new build IS the only way
+   * their content can have changed. A page that has not been rebuilt has
+   * not changed.
+   *
+   * Worth having because Google actually uses `lastmod` to schedule
+   * recrawls — unlike `changefreq` and `priority`, which it has said for
+   * years that it ignores. Those two stay only because they cost nothing
+   * and other crawlers still read them.
+   */
+  const lastModified = new Date();
+
   return LIVE_PAGES.map((page) => ({
     url: `${ORIGIN}/${page.slug}`,
+    lastModified,
     changeFrequency: "monthly" as const,
     priority: 1,
   }));

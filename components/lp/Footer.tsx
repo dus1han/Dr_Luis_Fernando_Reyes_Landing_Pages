@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { SITE } from "@/lib/site";
+import { LIVE_PAGES } from "@/lib/pages";
 import { GlowLogo } from "./GlowLogo";
 import { ClinicMap } from "./ClinicMap";
 
@@ -65,7 +67,58 @@ function ColHead({ children }: { children: React.ReactNode }) {
  * The logo leads at the left because it's the mark people carry away, and
  * the glow gives it the weight to hold that position on its own.
  */
-export function Footer() {
+/**
+ * Links to every other live landing page.
+ *
+ * ── WHY THIS EXISTS, AND WHY IT IS NOT DECORATION ───────────────────────
+ * Until this was added, the two landing pages had **no path between them
+ * and no internal links at all**. The root index is the only other page on
+ * the subdomain and it is `noindex`, so as far as a crawler was concerned
+ * each page was an island reachable only from `sitemap.xml`.
+ *
+ * Internal links are how crawl and authority move around a site, and on a
+ * new subdomain — which inherits nothing from the root domain — there is
+ * very little of either to spread. Two links is not many, but it is the
+ * difference between a link graph and no link graph.
+ *
+ * Anchor text is the procedure name rather than "learn more", because the
+ * anchor is one of the few things on the page that tells Google what the
+ * destination is about.
+ * ────────────────────────────────────────────────────────────────────────
+ *
+ * Renders nothing when there is no other live page, so this stays correct
+ * on a single-page deploy instead of printing an empty heading.
+ */
+function OtherProcedures({ currentSlug }: { currentSlug?: string }) {
+  const others = LIVE_PAGES.filter((p) => p.slug !== currentSlug);
+  if (!others.length) return null;
+
+  return (
+    <div className="mt-9">
+      <ColHead>Other procedures</ColHead>
+      <ul className="m-0 list-none p-0">
+        {others.map((p) => (
+          <li key={p.slug} className="mb-2.5 last:mb-0">
+            <Link
+              href={`/${p.slug}`}
+              className="group inline-flex items-baseline gap-2 text-[15px] leading-[1.5] text-white/72 no-underline transition-colors duration-300 hover:text-champagne"
+            >
+              <span>{p.title}</span>
+              <span
+                aria-hidden
+                className="text-gold transition-transform duration-300 group-hover:translate-x-0.5"
+              >
+                &rarr;
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function Footer({ currentSlug }: { currentSlug?: string } = {}) {
   return (
     /* No `grain` here: its ::after uses mix-blend-overlay, and a blend
        layer spanning a cross-origin iframe stops the map painting. The
@@ -131,6 +184,8 @@ export function Footer() {
                 {SITE.email}
               </span>
             </a>
+
+            <OtherProcedures currentSlug={currentSlug} />
 
             <div className="mt-9">
               <ColHead>Connect with us</ColHead>
