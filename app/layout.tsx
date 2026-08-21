@@ -51,6 +51,25 @@ export const metadata: Metadata = {
    * what anyone forgets. See INDEXABLE in lib/site-url.ts.
    */
   robots: { index: INDEXABLE, follow: INDEXABLE },
+  /*
+   * Search Console ownership for the URL-prefix property
+   * `https://surgery.luisfernandoreyesmd.com/`.
+   *
+   * Google re-checks this periodically and un-verifies the property if the tag
+   * stops appearing, so it has to be permanent. Living in the root layout
+   * means every route carries it and verification cannot be lost by renaming
+   * or deleting whichever page happened to hold it.
+   *
+   * Deliberately NOT gated on INDEXABLE, unlike everything around it. Proving
+   * ownership and asking to be indexed are different things — a preview build
+   * that dropped the tag would quietly un-verify the live property, and the
+   * tag itself does nothing to invite crawling.
+   *
+   * This replaced the `public/google….html` file method. Do not restore that
+   * file: the two are separate tokens, and the property is verified by this
+   * one.
+   */
+  verification: { google: "YtqkKnkewhiRG4ol4ZrnbRC9wFzKnp9wjJFeOKP_mn4" },
 };
 
 export const viewport: Viewport = {
