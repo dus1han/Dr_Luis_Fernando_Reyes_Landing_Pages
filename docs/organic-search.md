@@ -121,6 +121,53 @@ Profile. None of those can be done from here.
 
 ---
 
+## Done in the repo (2026-08-24) — the index now targets the name
+
+Decided by Dushan after the Search Console verification went in: the
+subdomain should also answer a search for **"Dr. Luis Fernando Reyes"**,
+not only the two procedure terms.
+
+That required reversing the `noindex` on `/`. The reasoning for the original
+`noindex` is unchanged and still worth respecting — see the risk below.
+
+- `/` is **indexable**, in the sitemap, and no longer a bare list of links.
+- Title is now `Dr. Luis Fernando Reyes | Plastic Surgeon in Dubai` (50
+  chars). It previously inherited the layout default, so the tab and any
+  result read as the bare name.
+- Description replaced. The old one — "Campaign landing pages for …" —
+  described the page's role in the ad account, which was fine while nobody
+  could see it and useless the moment it could.
+- `h1` leads with the surgeon's name instead of "Where would you like to
+  begin?". The strongest on-page signal now matches the query being targeted.
+- The index carries the full `Physician` entity, plus `ProfilePage` and
+  `WebSite` nodes, rather than no structured data at all.
+- **`sameAs` now names `luisfernandoreyesmd.com`** on every page. Nothing
+  previously connected the two hosts, so the surgeon described here and the
+  surgeon described on the main site were two entities sharing a name. This
+  is the single change most likely to help a name query, and it helps the
+  main site as much as this one.
+- The `Physician` node moved to `lib/schema.ts`. It was inline in both
+  landing pages; a third copy on the index would have been forty lines whose
+  only job is to be byte-identical, and its `@id` is what fuses them into one
+  entity.
+
+### The risk this accepts, and how to tell if it lands badly
+
+A thin hub on an ads subdomain outranking the clinic's own established site
+for the surgeon's own name is a **worse outcome than not ranking at all**.
+That is precisely what the `noindex` was preventing.
+
+**Watch in Search Console:** if `surgery.` starts taking brand-name queries
+away from `luisfernandoreyesmd.com`, revert `robots.index` in
+`app/page.tsx` to `false`. The comment there says the same thing.
+
+The genuinely safe version of this goal is still the main site ranking for
+the name, with this subdomain feeding it — which needs the links in Phase 1
+item 1 and the Google Business Profile in Phase 3, neither of which can be
+done from this repo.
+
+---
+
 ## Phase 1 — Free wins, this week
 
 Highest return per hour, and none of it needs new content.

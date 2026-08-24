@@ -6,8 +6,11 @@ import { INDEXABLE, ORIGIN } from "@/lib/site-url";
  * Built from `lib/pages.ts`, so adding a landing page puts it in the sitemap
  * with no second place to remember.
  *
+ * `/` is listed FIRST and carries the highest priority. It was excluded while
+ * it was `noindex`; it is now the page that answers a search for the
+ * surgeon's name, which makes it the one URL here that most needs crawling.
+ *
  * Deliberately absent:
- *   • `/` — the root index is a hub for an ads subdomain and is `noindex`.
  *   • `/<slug>/thank-you` — a confirmation page has no business in search,
  *     and indexing one invites strangers onto it from a query, which is both
  *     confusing and a source of phantom conversions if the conversion action
@@ -42,10 +45,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
    */
   const lastModified = new Date();
 
-  return LIVE_PAGES.map((page) => ({
-    url: `${ORIGIN}/${page.slug}`,
-    lastModified,
-    changeFrequency: "monthly" as const,
-    priority: 1,
-  }));
+  return [
+    {
+      url: ORIGIN,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      /*
+       * Ranked above the procedure pages at 0.9, where they were all
+       * previously a flat 1.
+       *
+       * Google ignores `priority` entirely and has said so for years, so
+       * this changes nothing there. It is set because the field is relative
+       * *within* one sitemap and a flat list states no order at all — and
+       * because the ordering is now true: this is the entity page, and the
+       * procedure pages hang off it.
+       */
+      priority: 1,
+    },
+    ...LIVE_PAGES.map((page) => ({
+      url: `${ORIGIN}/${page.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+    })),
+  ];
 }

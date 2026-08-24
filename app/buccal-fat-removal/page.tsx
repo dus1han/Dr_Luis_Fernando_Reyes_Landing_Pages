@@ -3,7 +3,8 @@ import { Footer } from "@/components/lp/Footer";
 import { Nav } from "@/components/lp/Nav";
 import { ScrollProgress } from "@/components/lp/ScrollProgress";
 import { StickyCTA } from "@/components/lp/StickyCTA";
-import { MAPS, SITE } from "@/lib/site";
+import { physicianNode } from "@/lib/schema";
+import { SITE } from "@/lib/site";
 import { ORIGIN } from "@/lib/site-url";
 import { FAQ, NAV_LINKS, SLUG } from "./content";
 import { Anatomy } from "./sections/Anatomy";
@@ -70,51 +71,7 @@ function StructuredData() {
   const graph = {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "Physician",
-        "@id": `${ORIGIN}/#physician`,
-        name: SITE.doctor,
-        medicalSpecialty: "PlasticSurgery",
-        telephone: SITE.phoneDisplay,
-        email: SITE.email,
-        url: ORIGIN,
-        sameAs: [SITE.instagram, SITE.facebook],
-        address: {
-          "@type": "PostalAddress",
-          // Emitted only once a real street address is filled in, so the
-          // markup never claims a location the site can't show.
-          ...(SITE.addressLines.length
-            ? { streetAddress: SITE.addressLines.join(", ") }
-            : {}),
-          addressLocality: SITE.city,
-          addressCountry: "AE",
-        },
-        // Coordinates are clinic-supplied and exact, so they carry the
-        // location for local search even while the street address is
-        // still outstanding.
-        ...(SITE.coords
-          ? {
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: SITE.coords.lat,
-                longitude: SITE.coords.lng,
-              },
-            }
-          : {}),
-        hasMap: MAPS.place,
-        /*
-         * The service area, which is a different claim from the address and
-         * is the one that matters for "… in Dubai" queries. Safe to state
-         * without the street address, which is still outstanding.
-         */
-        areaServed: [
-          { "@type": "City", name: SITE.city },
-          { "@type": "Country", name: SITE.country },
-        ],
-        /* Ties the surgeon to the procedure as an entity rather than
-           leaving two unrelated nodes on the page. */
-        availableService: { "@id": `${ORIGIN}/${SLUG}#procedure` },
-      },
+      physicianNode([`${ORIGIN}/${SLUG}#procedure`]),
       /*
        * Describes the PAGE, where the nodes above describe the surgeon and
        * the operation. Without it there is nothing for the breadcrumb to

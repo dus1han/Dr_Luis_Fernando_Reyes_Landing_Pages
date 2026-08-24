@@ -50,9 +50,7 @@ export const SITE = {
    */
   whatsappHref:
     "https://wa.me/971566636359?text=" +
-    encodeURIComponent(
-      "Hello, I'd like to book a consultation with Dr. Luis."
-    ),
+    encodeURIComponent("Hello, I'd like to book a consultation with Dr. Luis."),
 
   /*
    * The address shown to visitors — the footer, and `email` in the
@@ -69,6 +67,21 @@ export const SITE = {
 
   instagram: "https://www.instagram.com/dr.luisfernandoreyes_surgery/",
   facebook: "https://www.facebook.com/drluisfernandoreyes/",
+
+  /**
+   * The clinic's main WordPress site, which is a DIFFERENT host from this
+   * one — this is `surgery.` on the same registered domain.
+   *
+   * It exists here only to be listed in `sameAs`, and that is the whole
+   * point: Google treats a subdomain as substantially its own site, so
+   * without a statement tying the two together the surgeon described here
+   * and the surgeon described there are two entities that happen to share
+   * a name. `sameAs` is the documented way to say they are one.
+   *
+   * NOT a link target in the UI. Sending a visitor who is mid-consultation
+   * off to another site is the opposite of what these pages are for.
+   */
+  mainSite: "https://luisfernandoreyesmd.com",
   mapUrl: "https://share.google/JFXKjPDSRNDthp82J",
 
   /** Confirmed by the clinic. */
@@ -148,7 +161,7 @@ export const MAPS = {
    */
   embedSrc: SITE.coords
     ? `https://maps.google.com/maps?q=${encodeURIComponent(
-        SITE.clinicName || SITE.doctor
+        SITE.clinicName || SITE.doctor,
       )}&ll=${SITE.coords.lat},${SITE.coords.lng}&z=17&output=embed`
     : null,
 

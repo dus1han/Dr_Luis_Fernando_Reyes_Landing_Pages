@@ -7,37 +7,138 @@ import { GlowLogo } from "@/components/lp/GlowLogo";
 import { MaskedHeading } from "@/components/lp/MaskedHeading";
 import { Reveal } from "@/components/lp/Reveal";
 import { TiltCard } from "@/components/lp/TiltCard";
-import { PAGES, type LandingPage } from "@/lib/pages";
-import { INDEXABLE } from "@/lib/site-url";
+import { SHARED } from "@/lib/generated/images";
+import { LIVE_PAGES, PAGES, type LandingPage } from "@/lib/pages";
+import { physicianNode } from "@/lib/schema";
+import { INDEXABLE, ORIGIN } from "@/lib/site-url";
 import { SITE } from "@/lib/site";
 
+/*
+ * The tab title, and — now that this page is indexed — the result title for a
+ * search on the surgeon's name.
+ *
+ * Written out in full rather than left to the layout's `default`. A page at
+ * the same level as the root layout takes that default verbatim; it does not
+ * run through the `%s | …` template. So the bare name was the only thing this
+ * page could ever show, and a bare name does not distinguish this surgeon
+ * from anyone else who shares it.
+ */
+const TITLE = `${SITE.doctor} | Plastic Surgeon in ${SITE.city}`;
+
+/*
+ * Under ~155 characters, which is roughly where Google truncates.
+ *
+ * It replaced "Campaign landing pages for …" — a description of the page's
+ * role in the ad account. That was accurate and completely useless as a
+ * search result, which is what it becomes now the page is indexed.
+ *
+ * Deliberately does not name individual procedures: `lib/pages.ts` is built
+ * to grow, and a description listing two of four ages badly with nothing to
+ * flag that it has.
+ */
+const DESCRIPTION = `${SITE.doctor}, double board certified plastic surgeon in ${SITE.city}. Facial and body contouring, with consultation booking.`;
+
+const PORTRAIT = SHARED["dr-portrait.jpg"];
+
 export const metadata: Metadata = {
-  /*
-   * No `title` on purpose. This page sits at the same level as the root
-   * layout, so it takes that layout's `default` — "Dr. Luis Fernando Reyes" —
-   * rather than running through the `%s | …` template. Setting one here would
-   * produce a bare, unbranded tab, which is what it used to do ("Landing
-   * pages"): the one page with no clinic name in its tab was the hub.
-   */
-  description: `Campaign landing pages for ${SITE.doctor}, ${SITE.practice} in ${SITE.city}.`,
+  title: TITLE,
+  description: DESCRIPTION,
   /**
-   * noindex, follow.
+   * Indexable, reversing the `noindex` this page carried until 2026-08-24.
    *
-   * This is a hub for an ads subdomain, not a page anyone should reach
-   * from search. Indexing it would put a thin directory page into results
-   * competing with the practice's own site, and Ads doesn't need it — a
-   * campaign points at `/<slug>` directly. `follow` is kept so crawlers
-   * still reach the landing pages through it.
+   * The original reasoning still stands on its own terms: a thin hub on an
+   * ads subdomain competing with the clinic's established site for the
+   * surgeon's own name is a bad trade. That risk has not disappeared.
    *
-   * `follow` tracks INDEXABLE: on a preview build there is nothing here a
-   * crawler should follow either, and letting it walk through to the landing
-   * pages is how a temporary address gets discovered in the first place.
+   * It is indexed because ranking for the name is now an explicit goal, and
+   * a `noindex` page cannot rank for anything. Two things make it defensible
+   * rather than reckless — the page carries the full `Physician` entity
+   * below rather than being a bare list of links, and that entity's `sameAs`
+   * names the main site, so Google is told the two hosts are one surgeon
+   * instead of being left to infer it.
    *
-   * Flip `index` to true only if this subdomain is ever meant to rank.
+   * **Watch for the two hosts trading places on brand queries** in Search
+   * Console. If this page starts outranking the main site for the name, that
+   * is the failure mode the `noindex` was preventing — put it back.
    */
-  robots: { index: false, follow: INDEXABLE },
+  robots: { index: INDEXABLE, follow: INDEXABLE },
   alternates: { canonical: "/" },
+  /*
+   * The portrait, not a procedure photograph. A link to this page is a link
+   * to the surgeon, and the landing pages already own the procedure imagery.
+   */
+  openGraph: {
+    type: "website",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: ORIGIN,
+    locale: "en_AE",
+    images: [
+      {
+        url: PORTRAIT.src,
+        width: PORTRAIT.width,
+        height: PORTRAIT.height,
+        alt: SITE.doctor,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
+
+/**
+ * Structured data for the index.
+ *
+ * What this page offers search is the surgeon, not the list of cards — so
+ * the graph leads with `Physician` and declares the page to be *about* him.
+ * The `@id` is the one the landing pages emit, which is what makes three
+ * pages describe one surgeon rather than three who share a name.
+ *
+ * The `MedicalProcedure` nodes are referenced by `@id` without being defined
+ * here. That is deliberate and valid: they are defined on the pages that are
+ * actually about them, and duplicating them onto a hub would put the same
+ * operation on the site twice.
+ */
+function StructuredData() {
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      physicianNode(
+        LIVE_PAGES.map((page) => `${ORIGIN}/${page.slug}#procedure`),
+      ),
+      {
+        "@type": "ProfilePage",
+        "@id": `${ORIGIN}/#webpage`,
+        url: ORIGIN,
+        name: TITLE,
+        description: DESCRIPTION,
+        inLanguage: "en",
+        about: { "@id": `${ORIGIN}/#physician` },
+        mainEntity: { "@id": `${ORIGIN}/#physician` },
+      },
+      /* Names the site after the surgeon rather than the domain, which is
+         what a brand query is looking for. */
+      {
+        "@type": "WebSite",
+        "@id": `${ORIGIN}/#website`,
+        url: ORIGIN,
+        name: SITE.doctor,
+        inLanguage: "en",
+        publisher: { "@id": `${ORIGIN}/#physician` },
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+    />
+  );
+}
 
 /**
  * Grid shape is driven by how many pages exist, because a fixed
@@ -200,7 +301,9 @@ export default function Index() {
   const { cols, width } = shape(PAGES.length);
 
   return (
-    /* max-[640px]:-mb-[76px] cancels the body's bottom padding on phones.
+    <>
+      <StructuredData />
+      {/* max-[640px]:-mb-[76px] cancels the body's bottom padding on phones.
        globals.css reserves 76px there for the sticky CTA bar, which only
        exists on a landing page — here nothing covers it, so it rendered as
        a bare ivory strip under the footer line. The negative margin lets
@@ -208,86 +311,102 @@ export default function Index() {
        globally, which the landing page still needs. The breakpoint is
        written as an exact arbitrary value because Tailwind's `max-sm` is
        max-width:639px and the globals rule is 640px — a one-pixel window
-       where the strip would come back. */
-    <main className="grain relative min-h-screen overflow-hidden bg-espresso-deep py-[64px] max-[640px]:-mb-[76px] sm:py-[92px]">
-      {/* Aurora was written for an ivory panel, where its columns had to
+       where the strip would come back. */}
+      <main className="grain relative min-h-screen overflow-hidden bg-espresso-deep py-[64px] max-[640px]:-mb-[76px] sm:py-[92px]">
+        {/* Aurora was written for an ivory panel, where its columns had to
           stay below ivory in lightness to read as warm light rather than
           a white smear. On espresso-deep that same constraint works in its
           favour — gold, champagne and blush are all far lighter than the
           ground, so the columns genuinely glow. */}
-      <Aurora />
+        <Aurora />
 
-      {/* Same warm bloom the booking band and footer carry, sitting over
+        {/* Same warm bloom the booking band and footer carry, sitting over
           the columns so the centre stays quiet behind the headline. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-[14%] left-1/2 h-[76vw] max-h-[680px] w-[76vw] max-w-[680px] -translate-x-1/2 rounded-full opacity-40 blur-[100px]"
-        style={{
-          background:
-            "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, transparent 70%)",
-        }}
-      />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-[14%] left-1/2 h-[76vw] max-h-[680px] w-[76vw] max-w-[680px] -translate-x-1/2 rounded-full opacity-40 blur-[100px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, transparent 70%)",
+          }}
+        />
 
-      <div className="shell relative z-2">
-        <div className="flex justify-center">
-          <GlowLogo width={244} />
-        </div>
+        <div className="shell relative z-2">
+          <div className="flex justify-center">
+            <GlowLogo width={244} />
+          </div>
 
-        <div className="mx-auto mt-[52px] max-w-[54ch] text-center sm:mt-[66px]">
-          <Eyebrow onDark center>
-            {SITE.city} &middot; {SITE.practice}
-          </Eyebrow>
+          <div className="mx-auto mt-[52px] max-w-[54ch] text-center sm:mt-[66px]">
+            <Eyebrow onDark center>
+              {SITE.city} &middot; {SITE.practice}
+            </Eyebrow>
 
-          {/* accent-sheen is documented hero-only on contrast grounds: gold
+            {/* accent-sheen is documented hero-only on contrast grounds: gold
               is 3.06:1 on ivory, which only just clears the large-text
               minimum. On espresso-deep it sits near 4.4:1 and the glint
               travels toward champagne, so it gets lighter, not washed out.
               The constraint that made it hero-only doesn't bind here. */}
-          <MaskedHeading
-            as="h1"
-            immediate
-            lines={[
-              "Where would you",
-              <em key="accent" className="accent-sheen">
-                like to begin?
-              </em>,
-            ]}
-            className="font-display text-[clamp(36px,7vw,62px)] font-semibold leading-[1.06] tracking-[-0.02em] text-white"
-          />
+            {/* The surgeon's name, not "Where would you like to begin?".
+              The h1 is the strongest on-page signal there is, and this page
+              is now meant to answer a search for the name — a question that
+              never mentions him could not do that.
 
-          <Reveal
-            as="p"
-            delay={0.35}
-            className="mx-auto mb-0 mt-7 max-w-[48ch] text-[16px] leading-[1.78] text-white/64 sm:text-[17px]"
-          >
-            Each procedure has a page of its own &mdash; what it involves, who
-            it suits, and a consultation form for when you&rsquo;re ready.
-          </Reveal>
-        </div>
+              Split surname-onto-its-own-line rather than set as one string:
+              MaskedHeading gives each line its own overflow-hidden mask and
+              slides it up, so a line that WRAPS is clipped mid-entrance.
+              Twenty-three characters at clamp(36px,7vw,62px) wraps on a
+              phone. The break is editorial as well as mechanical — the
+              surname carries the accent, which is where the eye lands. */}
+            <MaskedHeading
+              as="h1"
+              immediate
+              lines={[
+                "Dr. Luis Fernando",
+                <em key="accent" className="accent-sheen">
+                  Reyes
+                </em>,
+              ]}
+              className="font-display text-[clamp(36px,7vw,62px)] font-semibold leading-[1.06] tracking-[-0.02em] text-white"
+            />
 
-        <div className={`mx-auto mt-[52px] grid gap-7 sm:mt-[64px] ${cols} ${width}`}>
-          {PAGES.map((page, i) => (
-            <Reveal key={page.slug} delay={0.08 * i} className="h-full">
-              <Card page={page} index={i} />
-            </Reveal>
-          ))}
-        </div>
-
-        <div className="mt-[68px] border-t border-white/12 pt-8 text-center sm:mt-[86px]">
-          <p className="m-0 text-[13px] leading-[1.7] text-white/48">
-            {SITE.doctor} &middot; {SITE.practice}
-            <span className="mx-2 opacity-40">|</span>
-            <a
-              href={SITE.whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-champagne no-underline transition-colors duration-300 hover:text-white"
+            <Reveal
+              as="p"
+              delay={0.35}
+              className="mx-auto mb-0 mt-7 max-w-[48ch] text-[16px] leading-[1.78] text-white/64 sm:text-[17px]"
             >
-              {SITE.phoneDisplay}
-            </a>
-          </p>
+              Double board certified in plastic, aesthetic and reconstructive
+              surgery. Each procedure has a page of its own &mdash; what it
+              involves, who it suits, and a consultation form for when
+              you&rsquo;re ready.
+            </Reveal>
+          </div>
+
+          <div
+            className={`mx-auto mt-[52px] grid gap-7 sm:mt-[64px] ${cols} ${width}`}
+          >
+            {PAGES.map((page, i) => (
+              <Reveal key={page.slug} delay={0.08 * i} className="h-full">
+                <Card page={page} index={i} />
+              </Reveal>
+            ))}
+          </div>
+
+          <div className="mt-[68px] border-t border-white/12 pt-8 text-center sm:mt-[86px]">
+            <p className="m-0 text-[13px] leading-[1.7] text-white/48">
+              {SITE.doctor} &middot; {SITE.practice}
+              <span className="mx-2 opacity-40">|</span>
+              <a
+                href={SITE.whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-champagne no-underline transition-colors duration-300 hover:text-white"
+              >
+                {SITE.phoneDisplay}
+              </a>
+            </p>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
