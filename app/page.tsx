@@ -10,7 +10,7 @@ import { TiltCard } from "@/components/lp/TiltCard";
 import { SHARED } from "@/lib/generated/images";
 import { LIVE_PAGES, PAGES, type LandingPage } from "@/lib/pages";
 import { physicianNode } from "@/lib/schema";
-import { INDEXABLE, ORIGIN } from "@/lib/site-url";
+import { ORIGIN, ROBOTS } from "@/lib/site-url";
 import { SITE } from "@/lib/site";
 
 /*
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
    * Console. If this page starts outranking the main site for the name, that
    * is the failure mode the `noindex` was preventing — put it back.
    */
-  robots: { index: INDEXABLE, follow: INDEXABLE },
+  robots: ROBOTS,
   alternates: { canonical: "/" },
   /*
    * The portrait, not a procedure photograph. A link to this page is a link
@@ -383,39 +383,6 @@ export default function Index() {
               involves, who it suits, and a consultation form for when
               you&rsquo;re ready.
             </Reveal>
-          </div>
-
-          {/*
-            The portrait, on the page rather than only in `openGraph`.
-
-            That distinction is the whole point of this block. A search
-            result thumbnail is picked from the images Google finds in the
-            markup; `openGraph.images` is a social-sharing tag and does not
-            enter that choice. This page carried the portrait in metadata
-            only, so the three images it actually rendered were the logo and
-            the two procedure thumbnails — and a search for the surgeon's
-            name came back with a buccal fat photograph beside it.
-
-            Deliberately NOT wrapped in <Reveal>, unlike its neighbours.
-            Reveal sets `initial="hidden"`, which ships `opacity:0` in the
-            static HTML; the one image here whose job is to be found should
-            not start invisible. `priority` follows from the same reasoning —
-            it sits at the fold and has no business waiting for the
-            lazy-load observer.
-          */}
-          <div className="mt-[46px] flex justify-center sm:mt-[56px]">
-            <div className="relative aspect-[4/5] w-[228px] overflow-hidden rounded-[3px] border border-white/12 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] sm:w-[264px]">
-              <Image
-                src={PORTRAIT.src}
-                alt={`${SITE.doctor}, plastic surgeon in ${SITE.city}`}
-                fill
-                sizes="(max-width: 639px) 228px, 264px"
-                placeholder="blur"
-                blurDataURL={PORTRAIT.blurDataURL}
-                className="object-cover object-[50%_16%]"
-                priority
-              />
-            </div>
           </div>
 
           <div
