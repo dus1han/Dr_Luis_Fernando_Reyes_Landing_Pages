@@ -69,6 +69,21 @@ export const metadata: Metadata = {
    */
   openGraph: {
     type: "website",
+    /*
+     * The name Google prints above the result, in place of the bare host.
+     *
+     * Both landing pages already set this; the index — the ONLY page a site
+     * name is ever read from — did not, which is why results were labelled
+     * `luisfernandoreyesmd.com`. Absent a name for this subdomain, Google
+     * falls back to the registered domain, so the parent site's host was
+     * standing in for the surgeon.
+     *
+     * It is one of four sources Google reconciles: this tag, the `WebSite`
+     * node below, the `<title>`, and the h1. The other three already say the
+     * surgeon's name — this was the only one disagreeing, and consistency
+     * across all four is what the guidance actually asks for.
+     */
+    siteName: SITE.doctor,
     title: TITLE,
     description: DESCRIPTION,
     url: ORIGIN,
