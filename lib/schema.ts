@@ -1,5 +1,8 @@
+import { SHARED } from "@/lib/generated/images";
 import { MAPS, SITE } from "@/lib/site";
 import { ORIGIN } from "@/lib/site-url";
+
+const PORTRAIT = SHARED["dr-portrait.jpg"];
 
 /**
  * The surgeon, as one JSON-LD node, built in one place.
@@ -26,6 +29,28 @@ export function physicianNode(procedureIds: string[]) {
     telephone: SITE.phoneDisplay,
     email: SITE.email,
     url: ORIGIN,
+    /*
+     * The photograph that represents the surgeon, given its own `@id` so a
+     * page can point `primaryImageOfPage` at this object rather than
+     * declaring a second one that says the same thing.
+     *
+     * This is the ONLY place any page states which image is him, and it is
+     * the reason the index used to show a buccal fat photograph in search
+     * results: a result thumbnail is chosen from what Google finds on the
+     * page, `openGraph.images` is not part of that, and the only images the
+     * index rendered were two procedure shots marked `aria-hidden`.
+     *
+     * Absolute, not `PORTRAIT.src`. Structured data is read away from the
+     * page it was served on, where a root-relative path resolves to nothing.
+     */
+    image: {
+      "@type": "ImageObject",
+      "@id": `${ORIGIN}/#portrait`,
+      url: `${ORIGIN}${PORTRAIT.src}`,
+      width: PORTRAIT.width,
+      height: PORTRAIT.height,
+      caption: SITE.doctor,
+    },
     /*
      * `mainSite` is the load-bearing entry, not the social profiles.
      *
