@@ -5,7 +5,7 @@ import { ClickIdCapture } from "@/components/analytics/ClickIdCapture";
 import { MotionProvider } from "@/components/lp/MotionProvider";
 import { ANALYTICS, analyticsEnabled } from "@/lib/analytics";
 import { SITE } from "@/lib/site";
-import { INDEXABLE, ORIGIN } from "@/lib/site-url";
+import { ORIGIN, ROBOTS } from "@/lib/site-url";
 import "./globals.css";
 
 /**
@@ -48,9 +48,11 @@ export const metadata: Metadata = {
    * just will not be fetched. The meta tag is what actually keeps it out.
    *
    * Derived from the origin, so a preview build cannot be indexed no matter
-   * what anyone forgets. See INDEXABLE in lib/site-url.ts.
+   * what anyone forgets. See INDEXABLE in lib/site-url.ts — and ROBOTS, which
+   * also carries `max-image-preview: large` so a result is allowed a full-size
+   * thumbnail instead of Google's smaller default.
    */
-  robots: { index: INDEXABLE, follow: INDEXABLE },
+  robots: ROBOTS,
   /*
    * Search Console ownership for the URL-prefix property
    * `https://surgery.luisfernandoreyesmd.com/`.

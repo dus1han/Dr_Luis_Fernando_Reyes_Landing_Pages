@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 /**
  * The public origin this site is served from, and whether that origin is real
  * enough to invite Google into.
@@ -70,3 +72,36 @@ export const INDEXABLE = (() => {
     return false;
   }
 })();
+
+/**
+ * The robots directives every page emits, in one place.
+ *
+ * Shared because it is set TWICE — the root layout, and the index, which
+ * overrides the layout's `robots` wholesale rather than merging into it.
+ * Next does not deep-merge that field, so two literals had to agree by hand,
+ * which is how they eventually stop agreeing.
+ *
+ * `max-image-preview: large` is why this exists at all. Leave it out and
+ * Google applies its own default, which is not `large`, and the result gets a
+ * thumbnail capped small enough to read as an afterthought. WordPress has put
+ * this directive on every page since 5.7 for the same reason.
+ *
+ * **It sets the SIZE of the preview and nothing else.** Which image gets
+ * chosen is decided by the page's own content and by `primaryImageOfPage` in
+ * the JSON-LD. `large` pointed at the wrong image simply shows the wrong
+ * image bigger.
+ *
+ * The `googleBot` block repeats index/follow on purpose. Google obeys the
+ * most specific user-agent block it finds, so a `googlebot` tag carrying only
+ * `max-image-preview` would take the `noindex` a preview build depends on
+ * down with it — the directive would be honoured and the protection lost.
+ */
+export const ROBOTS: Metadata["robots"] = {
+  index: INDEXABLE,
+  follow: INDEXABLE,
+  googleBot: {
+    index: INDEXABLE,
+    follow: INDEXABLE,
+    "max-image-preview": "large",
+  },
+};
