@@ -79,7 +79,7 @@ export const ASSURANCE = {
     },
     {
       icon: "heart",
-      title: "Patient-Centred Safety Standards",
+      title: "Individual Assessment & Care",
       body: "Every face individually assessed, including when the honest answer is no.",
     },
   ],
@@ -186,7 +186,7 @@ export const RESULTS = {
    * surgical page: results vary by anatomy.
    */
   disclaimer:
-    "Individual results vary and are determined by your own facial anatomy.",
+    "Disclaimer: Before-and-after results may vary from person to person.",
 };
 
 export const SURGEON = {
@@ -396,6 +396,20 @@ export const FAQ = {
     {
       q: "Is there a suitable age range?",
       a: "Rather than going by age alone, each patient is evaluated individually, looking at your facial anatomy, the amount and position of buccal fat, and how your features are likely to change over time. A face at one age can be a strong candidate while another isn't, so it's the structure of your face, not a number, that guides the decision. Your consultation is where that's assessed properly.",
+    },
+    {
+      q: "Can men have buccal fat removal?",
+      a: "Yes. Buccal fat removal is an option for men who have naturally full or rounded cheeks that remain despite weight loss or a healthy lifestyle. The procedure can reduce fullness in the lower cheeks and enhance facial definition while preserving balanced, masculine facial proportions.",
+    },
+    /*
+     * Cost sits last on purpose. It is the highest-intent question here and
+     * the one most often searched, so it belongs on the page — but leading
+     * with price frames the procedure as a purchase before the visitor has
+     * decided they want it, and the answer routes to a consultation anyway.
+     */
+    {
+      q: "How much does buccal fat removal cost in Dubai?",
+      a: "The cost of buccal fat removal in Dubai varies depending on your facial anatomy and whether it is combined with other facial contouring procedures. During your consultation, Dr. Luis will assess your facial structure and recommend a treatment plan, after which you'll receive a quotation based on your individual needs.",
     },
   ],
 };

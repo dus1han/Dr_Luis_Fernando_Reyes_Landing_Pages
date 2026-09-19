@@ -197,15 +197,23 @@ export function Results() {
           })}
         </RevealGroup>
 
+        {/* Directly beneath the photographs, not tucked under the CTA where
+            it used to sit. A qualifying statement belongs next to the claim
+            it qualifies; below a booking button it reads as small print
+            about the button. */}
+        {SHOW_RESULTS_DISCLAIMER && (
+          <Reveal
+            as="p"
+            className="mx-auto m-0 mt-8 max-w-[62ch] text-center text-[13px] leading-[1.7] text-muted"
+          >
+            {RESULTS.disclaimer}
+          </Reveal>
+        )}
+
         <Reveal delay={0.12} className="mt-11 text-center">
           <ButtonLink href="#book" event="cta_click" eventLabel="results">
             See what&rsquo;s possible for your face
           </ButtonLink>
-          {SHOW_RESULTS_DISCLAIMER && (
-            <p className="mx-auto m-0 mt-6 max-w-[62ch] text-[13px] leading-[1.7] text-muted">
-              {RESULTS.disclaimer}
-            </p>
-          )}
         </Reveal>
       </div>
     </Section>

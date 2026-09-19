@@ -179,16 +179,18 @@ export const MAPS = {
 /**
  * The "individual results vary" line under the results gallery.
  *
- * **Off at the clinic's request.** The copy still exists in
- * `RESULTS.disclaimer`, so switching this back to `true` restores it
- * without rewriting anything.
+ * **On.** It was switched off at the clinic's request and switched back on
+ * by them on 2026-09-19, so the absence was a decision and so is its return
+ * — do not read either state as an oversight.
  *
- * ── WORTH RAISING AT DHA APPROVAL ───────────────────────────────────
- * This page now shows the clinic's own before/after photography of real
- * surgical patients with no qualifying statement beneath it. A
- * results-vary line is the usual expectation on medical advertising and
- * is cheap insurance; its absence is the kind of thing an approval pass
- * asks about.
+ * Each page supplies its own wording in `RESULTS.disclaimer`, because what
+ * makes a result vary is not the same on the two pages: facial anatomy on
+ * one, donor fat and graft retention on the other.
+ *
+ * ── STILL OPEN AT DHA APPROVAL ─────────────────────────────────────
+ * The results-vary line above closes the first half of this. It is the
+ * usual expectation on medical advertising and its absence was the kind of
+ * thing an approval pass asks about.
  *
  * Separately, written consent to publish is still unconfirmed. Some of
  * the images are anonymised (eyes masked, or cropped below the eyeline)
@@ -198,7 +200,7 @@ export const MAPS = {
  * consent.
  * ────────────────────────────────────────────────────────────────────
  */
-export const SHOW_RESULTS_DISCLAIMER = false;
+export const SHOW_RESULTS_DISCLAIMER = true;
 
 /**
  * Renders reviews marked `placeholder: true` in content.ts.
