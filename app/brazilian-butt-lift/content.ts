@@ -390,7 +390,7 @@ export const SURGEON = {
   pullQuote: "Proportion, never simply size.",
   pullQuoteMeta: "The principle behind every body procedure",
   why: [
-    "Dr. Luis brings the renowned artistry of Colombian plastic surgery to Dubai, where the focus is creating beautifully balanced, natural-looking body proportions. Colombian aesthetic philosophy is built around creating harmony, where the waist, hips, buttocks and overall silhouette complement one another naturally.",
+    "Dr. Luis brings his experience in Colombian aesthetic body contouring to his practice in Dubai. His approach focuses on individual anatomy, body proportions and personalised surgical planning.",
     "A Brazilian Butt Lift is never approached as simply increasing the size of the buttocks. It begins by sculpting the donor areas to create a slimmer waist, smoother transitions and improved body proportions before carefully transferring purified fat to enhance shape, projection and balance.",
     "Most importantly, your journey doesn't end after surgery. From your first consultation to every follow-up appointment, Dr. Luis and his experienced medical team remain closely involved, ensuring your recovery progresses smoothly while supporting you every step of the way.",
   ],
@@ -484,15 +484,9 @@ export const REVIEWS = {
      */
     {
       quote:
-        "My experience with Dr. Luis Fernando was fantastic he listened to everything that I wanted and exceeded my expectations. I came out with no bruising even tho I had lipo and fat transferred to my butt and hips my boobs are small and perky just like I requested and my waist is super snatched and only 3 weeks out of surgery. only Dr Luis I will ever go back to for any type of work. God bless his hands",
+        "My experience with Dr. Luis Fernando was fantastic he listened to everything that I wanted. I came out with no bruising even tho I had lipo and fat transferred to my butt and hips my boobs are small and perky just like I requested and my waist is super snatched and only 3 weeks out of surgery. only Dr Luis I will ever go back to for any type of work. God bless his hands.",
       name: "",
       meta: "Liposuction with fat transfer to buttocks and hips",
-    },
-    {
-      quote:
-        "Dr Luis Fernando Reyes is a life changing surgeon. He completely changed my life and gave me the Juno start I needed on my fitness journey. If you are looking for a highly professional, extremely talented, safe and trustworthy dr, look no further. Dr Luis’ work is the closest thing to magic on this earth. The results I experienced were above and beyond my expectations. I came home with a brand new body and my confidence restored. Dr Luis and his entire team made my trip to Colombia comfortable and seamless. If I had to do it, I would do it all over again with dr Luis because I know 100% I am in good hands. I cannot thank dr Luis enough, I am grateful for him everyday.",
-      name: "Kap5645",
-      meta: "Body contouring · Colombia",
     },
     {
       quote:
