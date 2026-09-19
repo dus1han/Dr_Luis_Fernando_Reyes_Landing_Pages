@@ -25,7 +25,7 @@ export const HERO = {
    * the structured data — so the page still answers it, just not in the first
    * sentence a visitor reads.
    */
-  lede: "Combining Colombian aesthetic artistry with precise facial contouring to define the jawline and reduce cheek fullness.",
+  lede: "Achieve slimmer cheeks and reduce excess cheek fullness for a more sculpted facial appearance & defined jawline.",
   primaryCta: "Book a consultation",
   secondaryCta: "See real results",
   // No credentials line here — the trust strip immediately below already
