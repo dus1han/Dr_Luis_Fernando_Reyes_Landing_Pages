@@ -15,7 +15,7 @@ export const NAV_LINKS = [
 ];
 
 export const HERO = {
-  eyebrow: "Facial contouring · Dubai",
+  eyebrow: "Facial contouring · Dubai & Abu Dhabi",
   kicker: "Achieve a slimmer, more sculpted face",
   headline: ["Buccal Fat", "Removal"] as const,
   /*
