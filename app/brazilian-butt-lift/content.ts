@@ -32,7 +32,7 @@ export const HERO = {
   eyebrow: "Body contouring · Dubai",
   kicker: "Curves that look naturally yours",
   headline: ["Brazilian", "Butt Lift"] as const,
-  lede: "Enhance your natural curves with Colombian aesthetic artistry, creating fuller, beautifully balanced proportions.",
+  lede: "Get the hourglass shape you've been dreaming of. Rounder, lifted buttocks and a waist to match, curves that finally feel like you.",
   /*
    * "Book a consultation", not the brief's "Book Your Consultation".
    *
@@ -73,20 +73,24 @@ export const STATS: Stat[] = [
    */
   { value: 5, display: "3-5 Hours", label: "Typical procedure" },
   /*
-   * ── THIS NOW CONTRADICTS A BENEFIT CARD ─────────────────────────────
-   * "Zero implants used" came from the original brief, which framed the
-   * procedure as an alternative TO implants. The benefits card that used
-   * to agree with it ("Your own fat, no implants") has since been replaced
-   * with "More than one solution", which says the consultation may
-   * recommend implants, fat transfer, fillers or a combination.
+   * Was "Zero / Implants used", from the original brief, which framed the
+   * procedure as an alternative TO implants. That contradicted the "More
+   * than one solution" benefit card — which says the consultation may
+   * recommend implants, fat transfer, fillers or a combination — and both
+   * could not be true on one page. The clinic resolved it in favour of the
+   * card, so the contradiction leaves with the stat.
    *
-   * Both cannot be true on the same page. `CANDIDATE.items[0]` — "without
-   * implants" — has the same problem. Left as-is rather than guessed at,
-   * because which one the clinic wants is a positioning decision, not a
-   * copy fix. Raised with them.
-   * ────────────────────────────────────────────────────────────────────
+   * ──────────────────── ONE HALF IS STILL OPEN ────────────────────
+   * `CANDIDATE.items[0]` still opens "without implants" and has exactly the
+   * same problem. It was flagged alongside this one and has not been
+   * answered. Raise it again rather than guessing — which line the clinic
+   * wants is a positioning decision, not a copy fix.
+   * ────────────────────────────────────────
+   *
+   * Counts up, unlike the two stats above it: 360 has sensible intermediate
+   * states, so it takes `suffix` and leaves `display` unset.
    */
-  { value: 0, display: "Zero", label: "Implants used" },
+  { value: 360, suffix: "°", label: "Body contouring" },
 ];
 
 /**
@@ -196,11 +200,10 @@ export const BENEFITS = {
      * the table. It now agrees with the FAQ, which already said Dr. Luis
      * "will recommend the most suitable option for your anatomy".
      *
-     * ── CHECK THIS AGAINST THE NUMBERS STRIP ────────────────────────────
-     * `STATS` still carries "Zero / Implants used", and `CANDIDATE` still
-     * opens with "without implants". Both came from the original brief and
-     * both now contradict this card. Flagged for the clinic — see the note
-     * on STATS.
+     * ──────────────────── ONE CONTRADICTION LEFT ────────────────────
+     * The numbers strip has been fixed — "Zero / Implants used" is now
+     * "360° / Body contouring". `CANDIDATE` still opens with "without
+     * implants" and still contradicts this card. See the note on STATS.
      * ────────────────────────────────────────────────────────────────────
      */
     {
@@ -348,7 +351,7 @@ export const RESULTS = {
    * be leaving out the one thing that actually varies most.
    */
   disclaimer:
-    "Individual results vary and are determined by your own anatomy, the donor fat available and how much of the transferred fat is retained during healing.",
+    "Individual results vary. Images are provided for informational purposes and do not guarantee a particular outcome.",
 };
 
 export const SURGEON = {
@@ -561,6 +564,19 @@ export const FAQ = {
     {
       q: "What happens after my surgery?",
       a: "Your care doesn't end when your procedure is complete. Dr. Luis and his medical team continue to monitor your recovery through scheduled follow-up appointments, checking you're healing as expected, answering your questions and guiding you through each stage. Should you need advice or reassurance during your healing journey, the team is always available to support you.",
+    },
+    {
+      q: "Is a Brazilian Butt Lift safe?",
+      a: "Every BBL is performed by Dr. Luis with his expert team, under general anaesthesia in a DHA-licensed, fully accredited facility, with a dedicated team monitoring you throughout. He assesses your health and anatomy carefully and follows your recovery at every stage.",
+    },
+    {
+      q: "How soon can I sit, fly, or return to work?",
+      a: "Most patients return to desk work in about two to three weeks, and Dr. Luis will guide you on sitting and flying based on your recovery — typically easing back into sitting within the first couple of weeks and travelling once he's happy with your healing. Every timeline is personal, and your follow-ups are there to make sure you progress comfortably.",
+    },
+    /* Cost last, for the reason given on the buccal page's FAQ. */
+    {
+      q: "How much does a BBL cost in Dubai?",
+      a: "The cost of Brazilian Butt Lift surgery varies according to your treatment plan. Factors can include the areas requiring liposuction, the amount of fat available for transfer and your individual surgical plan.",
     },
   ],
 };
