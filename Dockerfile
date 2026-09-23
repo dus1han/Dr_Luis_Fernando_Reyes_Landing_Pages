@@ -36,6 +36,8 @@ COPY . .
 # changing it requires rebuilding the image, not just restarting the container.
 ARG NEXT_PUBLIC_GTM_ID=""
 ENV NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID
+ARG NEXT_PUBLIC_CLARITY_ID=""
+ENV NEXT_PUBLIC_CLARITY_ID=$NEXT_PUBLIC_CLARITY_ID
 
 # SITE_URL is a build arg for the same reason, despite not being NEXT_PUBLIC_*.
 # `/` and `/buccal-fat-removal` are statically prerendered — that is why the

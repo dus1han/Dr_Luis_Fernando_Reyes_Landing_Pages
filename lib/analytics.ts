@@ -31,6 +31,47 @@ const DEFAULT_GTM_ID = "GTM-NHBRF7G5";
 
 const CONFIGURED_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim() ?? "";
 
+/**
+ * Microsoft Clarity — session recordings and heatmaps.
+ *
+ * Behavioural analytics, not conversion tracking. It answers "where did they
+ * hesitate, how far did they scroll, what did they rage-click" rather than
+ * "did they convert", so it sits ALONGSIDE the GTM stack rather than inside
+ * it and has its own switch below.
+ *
+ * **Installed in code rather than as a GTM tag, deliberately.** Clarity has
+ * an official GTM template and using it would have cost no deploy — but
+ * through GTM the snippet cannot load until the container has, and the first
+ * seconds of a session are exactly the part worth recording. The whole point
+ * of a replay is the hesitation before the scroll.
+ *
+ * Same override rule as the container ID above: `NEXT_PUBLIC_CLARITY_ID`
+ * wins, `off` disables it outright, and empty falls back to this constant —
+ * because an unset variable is far more often an oversight than a decision.
+ *
+ * **A project ID is not a secret.** It ships in the page source of every site
+ * that uses Clarity, so there is nothing here to keep out of the repository.
+ *
+ * ────────────────── WORTH RAISING WITH THE CLINIC ──────────────────
+ * Clarity is not page-view analytics: it RECORDS SESSIONS — mouse movement,
+ * scrolling, clicks and typed input on a live visitor — and sets its own
+ * cookies to stitch a returning visitor's sessions together.
+ *
+ * This site has no privacy policy and no cookie notice anywhere in it,
+ * verified at the time this was added. A consultation form collecting a
+ * name, phone number and email, on a page that now records the session in
+ * which they were typed, is the combination that makes that a real gap
+ * rather than a formality — under the UAE PDPL and for any EU visitor.
+ *
+ * Clarity masks input fields by default, so form contents are not captured
+ * unless masking is turned off in the Clarity dashboard. **Leave it on.**
+ * Nothing in this repo can enforce that.
+ * ────────────────────────────────────
+ */
+const DEFAULT_CLARITY_ID = "ymp7t3vadz";
+
+const CONFIGURED_CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID?.trim() ?? "";
+
 export const ANALYTICS = {
   /**
    * e.g. "GTM-XXXXXXX". Defaults to the clinic's container; override with the
@@ -51,8 +92,22 @@ export const ANALYTICS = {
   GA4_ID: "",
   /** e.g. { id: "AW-123456789", label: "AbC-D_efGh" } */
   ADS_CONVERSION: { id: "", label: "" },
+  /**
+   * e.g. "ymp7t3vadz". Compiled in at build time exactly like `GTM_ID`, so
+   * **changing it needs a rebuild, not a restart** — putting it in `.env` on
+   * the server does nothing.
+   */
+  CLARITY_ID:
+    CONFIGURED_CLARITY_ID === "off"
+      ? ""
+      : CONFIGURED_CLARITY_ID || DEFAULT_CLARITY_ID,
 } as const;
 
+/**
+ * Gates the GTM/GA4 tag stack only. Clarity is deliberately NOT included:
+ * it has its own `CLARITY_ID` gate, and folding it in here would load the
+ * whole tag manager on a build where only Clarity was configured.
+ */
 export const analyticsEnabled = Boolean(
   ANALYTICS.GTM_ID || ANALYTICS.GA4_ID
 );

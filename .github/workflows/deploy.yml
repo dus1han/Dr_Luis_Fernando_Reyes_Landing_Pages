@@ -72,6 +72,14 @@ jobs:
             echo "✓ GTM container: ${{ vars.NEXT_PUBLIC_GTM_ID }} (overriding the default)"
           fi
 
+          if [ "${{ vars.NEXT_PUBLIC_CLARITY_ID }}" = "off" ]; then
+            echo "::warning::NEXT_PUBLIC_CLARITY_ID is 'off' — deploying with NO session recording."
+          elif [ -z "${{ vars.NEXT_PUBLIC_CLARITY_ID }}" ]; then
+            echo "✓ Clarity project: default from lib/analytics.ts"
+          else
+            echo "✓ Clarity project: ${{ vars.NEXT_PUBLIC_CLARITY_ID }} (overriding the default)"
+          fi
+
           # The origin is baked into the prerendered HTML by this build, and it
           # decides whether the site is indexable. Both failure directions are
           # invisible from looking at the page, so state them here.
@@ -136,6 +144,7 @@ jobs:
           # Unset falls back to the default in lib/site-url.ts.
           build-args: |
             NEXT_PUBLIC_GTM_ID=${{ vars.NEXT_PUBLIC_GTM_ID }}
+            NEXT_PUBLIC_CLARITY_ID=${{ vars.NEXT_PUBLIC_CLARITY_ID }}
             SITE_URL=${{ vars.SITE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
