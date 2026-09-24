@@ -343,10 +343,10 @@ export default function Index() {
           the columns so the centre stays quiet behind the headline. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-[14%] left-1/2 h-[76vw] max-h-[680px] w-[76vw] max-w-[680px] -translate-x-1/2 rounded-full opacity-40 blur-[100px]"
+          className="pointer-events-none absolute -top-[14%] left-1/2 h-[76vw] max-h-[680px] w-[76vw] max-w-[680px] -translate-x-1/2 rounded-full opacity-40"
           style={{
             background:
-              "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, transparent 70%)",
+              "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, rgb(168 127 73 / 0.374) 25%, rgb(168 127 73 / 0.198) 45%, rgb(168 127 73 / 0.077) 65%, transparent 82%)",
           }}
         />
 

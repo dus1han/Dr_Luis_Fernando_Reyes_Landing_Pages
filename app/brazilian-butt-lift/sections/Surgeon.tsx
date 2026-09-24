@@ -56,9 +56,9 @@ export function Surgeon() {
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className="absolute -left-[10%] top-[8%] h-[46vw] max-h-[560px] w-[46vw] max-w-[560px] rounded-full opacity-45 blur-[90px]"
+          className="absolute -left-[10%] top-[8%] h-[46vw] max-h-[560px] w-[46vw] max-w-[560px] rounded-full opacity-45"
           style={{
-            background: "radial-gradient(circle, rgb(168 127 73 / 0.5) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgb(168 127 73 / 0.5) 0%, rgb(168 127 73 / 0.34) 25%, rgb(168 127 73 / 0.18) 45%, rgb(168 127 73 / 0.07) 65%, transparent 82%)",
           }}
         />
       </div>

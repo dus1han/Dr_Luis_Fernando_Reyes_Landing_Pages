@@ -22,10 +22,10 @@ export default function NotFound() {
       <div className="relative">
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[70vw] max-h-[520px] w-[70vw] max-w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-35 blur-[90px]"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[70vw] max-h-[520px] w-[70vw] max-w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-35"
           style={{
             background:
-              "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, transparent 70%)",
+              "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, rgb(168 127 73 / 0.374) 25%, rgb(168 127 73 / 0.198) 45%, rgb(168 127 73 / 0.077) 65%, transparent 82%)",
           }}
         />
 

@@ -25,9 +25,9 @@ export function Booking() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-[8%] top-[12%] h-[42vw] max-h-[520px] w-[42vw] max-w-[520px] rounded-full opacity-40 blur-[90px]"
+        className="pointer-events-none absolute -right-[8%] top-[12%] h-[42vw] max-h-[520px] w-[42vw] max-w-[520px] rounded-full opacity-40"
         style={{
-          background: "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgb(168 127 73 / 0.55) 0%, rgb(168 127 73 / 0.374) 25%, rgb(168 127 73 / 0.198) 45%, rgb(168 127 73 / 0.077) 65%, transparent 82%)",
         }}
       />
 

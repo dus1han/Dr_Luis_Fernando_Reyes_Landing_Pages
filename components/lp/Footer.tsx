@@ -132,9 +132,9 @@ export function Footer({ currentSlug }: { currentSlug?: string } = {}) {
           two dark sections read as one continuous close. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-[6%] top-[10%] h-[38vw] max-h-[440px] w-[38vw] max-w-[440px] rounded-full opacity-30 blur-[90px]"
+        className="pointer-events-none absolute -left-[6%] top-[10%] h-[38vw] max-h-[440px] w-[38vw] max-w-[440px] rounded-full opacity-30"
         style={{
-          background: "radial-gradient(circle, rgb(168 127 73 / 0.5) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgb(168 127 73 / 0.5) 0%, rgb(168 127 73 / 0.34) 25%, rgb(168 127 73 / 0.18) 45%, rgb(168 127 73 / 0.07) 65%, transparent 82%)",
         }}
       />
 
