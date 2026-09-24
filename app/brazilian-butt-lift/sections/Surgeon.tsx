@@ -177,13 +177,27 @@ export function Surgeon() {
           >
             {SURGEON.affiliations.map((a) => {
               const logo = SHARED[a.image as keyof typeof SHARED];
+              /*
+               * The RENDERED size, not the file's own.
+               *
+               * Passing the intrinsic dimensions made next/image build its
+               * srcset around a 373px-wide mark and fall back to an 828px
+               * candidate — for a logo that paints at 88px. Lighthouse costed
+               * the six of them at roughly 80 KiB of wasted download.
+               *
+               * Derived from the file's aspect ratio rather than written out,
+               * so replacing a logo with one of a different shape cannot
+               * silently start squashing it.
+               */
+              const h = a.height;
+              const w = Math.round((logo.width / logo.height) * h);
               return (
                 <RevealItem as="li" key={a.image}>
                   <Image
                     src={logo.src}
                     alt={a.name}
-                    width={logo.width}
-                    height={logo.height}
+                    width={w}
+                    height={h}
                     /* Height is fixed per logo and the width follows, so
                        every mark is optically the same weight whatever
                        its aspect ratio. */

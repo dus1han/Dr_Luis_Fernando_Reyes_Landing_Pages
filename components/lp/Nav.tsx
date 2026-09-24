@@ -204,6 +204,16 @@ export function Nav({ links }: { links: NavLink[] }) {
               alt={`${SITE.doctor}, Plastic Surgeon`}
               width={logoDark.width}
               height={logoDark.height}
+              /*
+               * Without `sizes`, next/image sizes the srcset from the file
+               * — 480px wide — and points `src` at a 1080px candidate, for a
+               * lockup that never paints wider than 152. It is `priority`,
+               * so that download sat in the critical path of every page.
+               *
+               * The three widths below are the class on this element; they
+               * have to stay in step with it.
+               */
+              sizes="(min-width: 1024px) 152px, (min-width: 640px) 142px, 124px"
               priority
               className="h-auto w-[124px] sm:w-[142px] lg:w-[152px]"
             />

@@ -56,6 +56,9 @@ export function GlowLogo({
         alt={`${SITE.doctor} — ${SITE.practice}`}
         width={logo.width}
         height={logo.height}
+        /* Follows the `width` prop rather than the file, for the reason
+           given on the nav lockup. */
+        sizes={`${width}px`}
         style={{ width }}
         className="relative h-auto"
       />
