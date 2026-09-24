@@ -12,9 +12,27 @@ import "./globals.css";
  * Self-hosted via next/font — no render-blocking request to Google and
  * no layout shift when the display face swaps in.
  */
+/*
+ * Weights are exactly what the site uses, and nothing more. Audited: the
+ * only weight utilities anywhere are `font-medium` (500) and
+ * `font-semibold` (600); `font-bold` and `font-light` appear nowhere, and
+ * globals.css sets h1-h4 and `strong` to 600 and body to 400.
+ *
+ * Playfair dropped 700. **That saves no bytes** — it is a variable font, so
+ * next/font serves one file per style whatever the weight list says, and
+ * the two preloaded Playfair files (~38 KB each) are the whole family. It is
+ * removed because declaring a weight the site never sets is misleading, not
+ * as an optimisation.
+ *
+ * Poppins dropped 300, and that one is real: Poppins ships static instances,
+ * so the unused weight was a 7.8 KB file preloaded on every page.
+ *
+ * Both faces are needed for the first paint — Playfair normal AND italic are
+ * in the hero headline — so neither can be deferred without a visible swap.
+ */
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["500", "600"],
   style: ["normal", "italic"],
   display: "swap",
   variable: "--font-playfair",
@@ -22,7 +40,7 @@ const playfair = Playfair_Display({
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600"],
   display: "swap",
   variable: "--font-poppins",
 });
