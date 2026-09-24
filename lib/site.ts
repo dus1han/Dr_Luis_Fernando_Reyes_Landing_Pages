@@ -183,9 +183,11 @@ export const MAPS = {
  * by them on 2026-09-19, so the absence was a decision and so is its return
  * — do not read either state as an oversight.
  *
- * Each page supplies its own wording in `RESULTS.disclaimer`, because what
- * makes a result vary is not the same on the two pages: facial anatomy on
- * one, donor fat and graft retention on the other.
+ * Both pages now carry the SAME wording in `RESULTS.disclaimer`, at the
+ * clinic's request. They were briefly page-specific — facial anatomy on one,
+ * donor fat and graft retention on the other — which was more informative
+ * but read as two different standards for the same claim. If they ever
+ * diverge again, it should be a decision rather than a drifted copy edit.
  *
  * ── STILL OPEN AT DHA APPROVAL ─────────────────────────────────────
  * The results-vary line above closes the first half of this. It is the

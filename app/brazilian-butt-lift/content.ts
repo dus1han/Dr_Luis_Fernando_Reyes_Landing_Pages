@@ -351,7 +351,7 @@ export const RESULTS = {
    * be leaving out the one thing that actually varies most.
    */
   disclaimer:
-    "Individual results vary. Images are provided for informational purposes and do not guarantee a particular outcome.",
+    "Disclaimer: Before-and-after results may vary from person to person.",
 };
 
 export const SURGEON = {
