@@ -116,8 +116,28 @@ export default function RootLayout({
         <MotionProvider>{children}</MotionProvider>
 
         {/* Nothing loads until an ID is filled in — see lib/analytics.ts */}
+        {/*
+          `lazyOnload`, not `afterInteractive`.
+          
+          GTM was the single largest cost on the page: 332 KiB transferred,
+          141 KiB of it unused, and 372ms of CPU landing inside the window
+          that Total Blocking Time is measured over. Deferring it to after
+          load takes all of that out of that window.
+
+          **No conversion can be lost to this, and that is not an
+          assumption.** `track()` and `pushDataLayer()` in lib/analytics.ts
+          both do `window.dataLayer = window.dataLayer || []` before
+          pushing, so an event fired before the container arrives sits in
+          that array and GTM drains it on load. The form submit that
+          matters happens seconds later regardless, and `gclid` capture is
+          <ClickIdCapture>, which does not involve GTM at all.
+
+          What this genuinely costs: a visitor who lands and leaves within
+          a second or two may not be counted. That is bounce measurement,
+          not conversion measurement.
+        */}
         {analyticsEnabled && ANALYTICS.GTM_ID && (
-          <Script id="gtm" strategy="afterInteractive">
+          <Script id="gtm" strategy="lazyOnload">
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${ANALYTICS.GTM_ID}');`}
           </Script>
         )}
