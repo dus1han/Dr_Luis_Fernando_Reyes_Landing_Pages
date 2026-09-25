@@ -105,6 +105,33 @@ export default function RootLayout({
     <html lang="en" className={`${playfair.variable} ${poppins.variable}`}>
       <body>
         {/*
+          Microsoft Clarity, as a plain tag rather than <Script>.
+
+          This is deliberate and it is a fix, not a style preference. Under
+          next/script an inline snippet is NOT emitted into the HTML — it is
+          serialised into the RSC flight payload and injected by the client
+          after hydration. Two consequences, both bad for a session recorder:
+          it cannot run until React has hydrated, which is the part of the
+          visit worth recording; and it is invisible to `view-source` and to
+          curl, so there is no way to confirm the tag shipped short of
+          opening DevTools.
+
+          Rendered here it is in the document, executes during parse, and can
+          be verified from the command line. The snippet itself only creates
+          the `clarity` queue and appends an async script, so it blocks
+          nothing.
+
+          GTM below stays on <Script> on purpose: it is deferred ON PURPOSE
+          for performance, and it has no equivalent reason to run early.
+        */}
+        {ANALYTICS.CLARITY_ID && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${ANALYTICS.CLARITY_ID}");`,
+            }}
+          />
+        )}
+        {/*
           The second half of the GTM snippet, which has to sit immediately
           after the opening <body> tag.
 
@@ -159,22 +186,6 @@ export default function RootLayout({
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${ANALYTICS.GTM_ID}');`}
           </Script>
         )}
-        {/*
-          Microsoft Clarity. Gated on its own ID rather than on
-          `analyticsEnabled`, because it is not part of the GTM/GA4 stack —
-          see the note in lib/analytics.ts for why it is installed here
-          instead of as a GTM tag.
-
-          `afterInteractive`, matching GTM: session replay does not need to
-          block first paint, and Clarity attaches its listeners as soon as it
-          runs regardless.
-        */}
-        {ANALYTICS.CLARITY_ID && (
-          <Script id="clarity" strategy="afterInteractive">
-            {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${ANALYTICS.CLARITY_ID}");`}
-          </Script>
-        )}
-
         {analyticsEnabled && ANALYTICS.GA4_ID && (
           <>
             <Script
